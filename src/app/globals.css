@@ -40,3 +40,27 @@ a {
     color-scheme: dark;
   }
 }
+
+.button-normal {
+    background: white;
+}
+
+.button-accent {
+    background: #005aff;
+    color: white;
+}
+
+.button-success {
+    background: #0b9421;
+    color: black;
+}
+
+.button-error {
+    background: #c52e2e;
+    color: white;
+}
+
+
+.button:hover {
+    cursor: pointer;
+}
