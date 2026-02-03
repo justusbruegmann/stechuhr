@@ -22,3 +22,8 @@
 .button:hover {
     cursor: pointer;
 }
+
+.button {
+    border: 1px solid #ccc;
+    border-radius: .5rem;
+}
