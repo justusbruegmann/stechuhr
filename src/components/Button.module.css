@@ -3,27 +3,39 @@
     background: white;
 }
 
+.button-normal:hover {
+    filter: brightness(0.9); /* darken the visible color */
+
+
+}
+
 .button-accent {
     background: #005aff;
     color: white;
 }
 
 .button-success {
-    background: #0b9421;
+    background: #1ca232;
     color: black;
 }
 
 .button-error {
-    background: #c52e2e;
+    background: #d34545;
     color: white;
 }
 
 
 .button:hover {
     cursor: pointer;
+    opacity: 90%;
 }
 
 .button {
     border: 1px solid #ccc;
     border-radius: .5rem;
+    box-shadow: .5rem .5rem .5rem rgba(0, 0, 0, .1);
+}
+
+.bg-black {
+    background-color: #000;
 }
