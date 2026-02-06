@@ -11,11 +11,11 @@ type Props = {
 };
 
 export default function Button({type = 'primary', label, height, width, onClick}: Props) {
-    const variantClass =    type === 'primary' ? styles['button-normal']
-         : type === 'accent' ? styles['button-accent']
-         : type === 'success' ? styles['button-success']
-         : type === 'error' ? styles['button-error']
-         : styles['button-normal'];
+    const variantClass = type === 'primary' ? styles['button-normal']
+        : type === 'accent' ? styles['button-accent']
+            : type === 'success' ? styles['button-success']
+                : type === 'error' ? styles['button-error']
+                    : styles['button-normal'];
     // and add the css class here
 
     const style: React.CSSProperties = {};
