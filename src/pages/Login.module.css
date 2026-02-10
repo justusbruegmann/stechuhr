@@ -1,8 +1,11 @@
 .login-page {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
     height: 60vh;
     width: 20vw;
     background-color: lightgray;
-    border: 2px solid rgb(0, 0, 0,.5);
+    border: 2px solid rgb(0, 0, 0, .5);
     border-radius: 10px;
 }
 
@@ -14,5 +17,16 @@
     width: 100%;
     height: 100vh;
     background-color: #f2f2f2;
+}
 
+.login-input {
+    margin: .75rem;
+    height: 2rem;
+}
+
+.login-center{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }

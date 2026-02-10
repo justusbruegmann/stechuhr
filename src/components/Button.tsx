@@ -1,29 +1,44 @@
+// src/components/Button.tsx
+import * as React from 'react';
 import styles from './Button.module.css';
-import React from 'react'
-
 
 type Props = {
-    type?: 'primary' | 'accent' | 'success' | 'error'; // for extending the options add here
-    label: string | React.ReactElement;
-    width?: number | string; // number -> rem, string -> raw CSS (e.g. '50%' or '3rem')
-    height?: number | string; // number -> rem, string -> raw CSS
+    type?: 'primary' | 'accent' | 'success' | 'error';
+    label: React.ReactNode;
+    width?: number | string;
+    height?: number | string;
     onClick?: React.MouseEventHandler<HTMLButtonElement>;
+    className?: string;
+    style?: React.CSSProperties;
 };
 
-export default function Button({type = 'primary', label, height, width, onClick}: Props) {
-    const variantClass = type === 'primary' ? styles['button-normal']
-        : type === 'accent' ? styles['button-accent']
-            : type === 'success' ? styles['button-success']
-                : type === 'error' ? styles['button-error']
-                    : styles['button-normal'];
-    // and add the css class here
+export default function Button({
+                                   type = 'primary',
+                                   label,
+                                   height,
+                                   width,
+                                   onClick,
+                                   className,
+                                   style,
+                               }: Props) {
+    const variantClass =
+        type === 'primary' ? styles['button-normal']
+            : type === 'accent' ? styles['button-accent']
+                : type === 'success' ? styles['button-success']
+                    : styles['button-error'];
 
-    const style: React.CSSProperties = {};
-    if (width !== undefined) style.width = typeof width === 'number' ? `${width}rem` : width;
-    if (height !== undefined) style.height = typeof height === 'number' ? `${height}rem` : height;
+    const computedStyle: React.CSSProperties = {};
+    if (width !== undefined) computedStyle.width = typeof width === 'number' ? `${width}rem` : width;
+    if (height !== undefined) computedStyle.height = typeof height === 'number' ? `${height}rem` : height;
+
+    const mergedStyle = {...computedStyle, ...style}; // external style overrides computed
+    const mergedClassName = `${styles.button} ${variantClass} ${className ?? ''}`.trim();
+
     return (
-        <div className="button">
-            <button className={`${variantClass} ${styles.button}`} style={style} onClick={onClick}>{label}</button>
+        <div className={styles.wrapper} style={mergedStyle}>
+            <button className={mergedClassName} style={{ height: '100%', width: '100%' }} onClick={onClick}>
+                {label}
+            </button>
         </div>
     );
 }
