@@ -7,7 +7,8 @@ export default function Timecard() {
         
         <div className={`${Styles["background"]}`}>
             <div className={`${Styles["card"]}`}>
-                    <h1 className={`${Styles["timeStyle"]}`}>{time.toLocaleTimeString()}</h1>
+                    <span className={`${Styles["timeStyle"]}`}>{time.toLocaleTimeString()}</span>
+                    <span className={`${Styles["standardTextHeader"]}`}>{time.toDateString()}</span>
                 <div className={`${Styles["statusDiv"]}`}>
                     <span className={`${Styles["standardTextHeader"]}`}>Status</span>
                     <span className={`${Styles["standardTextBody"]}`}>Nicht im Dienst</span>
@@ -19,6 +20,7 @@ export default function Timecard() {
                 <Button label={"Einstempeln"} type={"success"} height={2.5} width={"100%"}></Button>
                 <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"}></Button>
             </div>
-        </div>     
+        </div>
+
     );
 }   
