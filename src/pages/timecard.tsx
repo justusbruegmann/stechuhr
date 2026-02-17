@@ -2,10 +2,12 @@ import Button from "@/components/Button";
 import Styles from "./timecard.module.css";
 
 export default function Timecard() {
+    const time = new Date();
     return (
+        
         <div className={`${Styles["background"]}`}>
             <div className={`${Styles["card"]}`}>
-                    <h1>TimeCard</h1>
+                    <h1 className={`${Styles["timeStyle"]}`}>{time.toLocaleTimeString()}</h1>
                 <div className={`${Styles["statusDiv"]}`}>
                     <span className={`${Styles["standardTextHeader"]}`}>Status</span>
                     <span className={`${Styles["standardTextBody"]}`}>Nicht im Dienst</span>
