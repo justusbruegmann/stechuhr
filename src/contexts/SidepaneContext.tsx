@@ -1,7 +1,7 @@
 "use client";
 
-import {createContext, ReactNode, useContext, useMemo, useState} from "react";
-import { SidepaneOverlay } from "@/components/SidepaneOverlay";
+import {createContext, ReactNode, useContext, useState} from "react";
+import {SidepaneOverlay} from "@/components/SidepaneOverlay";
 
 interface SidepaneContextType {
     showSidepane: (content: ReactNode) => void;
@@ -10,12 +10,12 @@ interface SidepaneContextType {
 
 const SidepaneContext = createContext<SidepaneContextType | undefined>(undefined);
 
-export default function SidepaneProvider({ children }: { children: ReactNode }) {
+export default function SidepaneProvider({children}: { children: ReactNode }) {
     const [sidepaneContentComponent, setSidepaneContentComponent] = useState<ReactNode | null>(null);
 
     const showSidepane = (content: ReactNode) => setSidepaneContentComponent(content);
     const hideSidepane = () => setSidepaneContentComponent(null);
-    const value = useMemo(() => ({ showSidepane, hideSidepane }), []);
+    const value = {showSidepane, hideSidepane};
 
     return (
         <SidepaneContext.Provider value={value}>
@@ -31,6 +31,6 @@ export default function SidepaneProvider({ children }: { children: ReactNode }) 
 
 export function useSidepane() {
     const context = useContext(SidepaneContext);
-    if (!context) throw new Error("useSidepane cannot be used outside OverlayProvider");
+    if (!context) throw new Error("useSidepane cannot be used outside SidepaneProvider");
     return context;
 }

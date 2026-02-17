@@ -1,4 +1,6 @@
 .overlay-background {
+    --sidepane-animation-duration: 300ms;
+
     position: fixed;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.6);
@@ -6,12 +8,12 @@
     display: flex;
 
     /* Fade-in animation */
-    animation: fade-in 0.3s forwards ease-out;
+    animation: fade-in var(--sidepane-animation-duration) forwards ease-out;
 }
 
 .overlay-background.fade-out {
     /* Fade-out animation */
-    animation: fade-out 0.3s forwards ease-out;
+    animation: fade-out var(--sidepane-animation-duration) forwards ease-out;
 }
 
 .sidepane-container {
@@ -28,12 +30,12 @@
 
     /* Slide-in animation */
     transform: translateX(100%); /* start off-screen */
-    animation: slide-in 0.3s forwards ease-out;
+    animation: slide-in var(--sidepane-animation-duration) forwards ease-out;
 }
 
 .sidepane-container.slide-out {
     /* Slide-out animation */
-    animation: slide-out 0.3s forwards ease-out;
+    animation: slide-out var(--sidepane-animation-duration) forwards ease-out;
 }
 
 /* Keyframes for sliding from right */
