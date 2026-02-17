@@ -8,7 +8,12 @@ export default function Timecard() {
         <div className={`${Styles["background"]}`}>
             <div className={`${Styles["card"]}`}>
                     <span className={`${Styles["timeStyle"]}`}>{time.toLocaleTimeString()}</span>
-                    <span className={`${Styles["standardTextHeader"]}`}>{time.toDateString()}</span>
+                    <span className={`${Styles["standardTextHeader"]}`}>{time.toLocaleDateString("de-DE",{
+                                                                                                    weekday: "long", 
+                                                                                                    day: "numeric", 
+                                                                                                    month: "long", 
+                                                                                                    year: "numeric"
+                                                                                                })}</span>
                 <div className={`${Styles["statusDiv"]}`}>
                     <span className={`${Styles["standardTextHeader"]}`}>Status</span>
                     <span className={`${Styles["standardTextBody"]}`}>Nicht im Dienst</span>
