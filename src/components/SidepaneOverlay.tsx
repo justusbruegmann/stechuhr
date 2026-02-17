@@ -34,7 +34,7 @@ export function SidepaneOverlay({children, onClose}: SidepaneOverlayProps) {
         const el = overlayRef.current;
         if (!el) return;
 
-        const raw = getComputedStyle(el).getPropertyValue("--sidepane-anim-duration");
+        const raw = getComputedStyle(el).getPropertyValue("--sidepane-animation-duration");
         const ms = parseCssTimeToMs(raw);
 
         if (Number.isFinite(ms) && ms > 0) {
@@ -69,7 +69,8 @@ export function SidepaneOverlay({children, onClose}: SidepaneOverlayProps) {
     if (!portalRoot) return null;
 
     return createPortal(
-        <div className={`${styles["overlay-background"]} ${isClosing ? styles["fade-out"] : ""}`} onClick={handleClose}>
+        <div className={`${styles["overlay-background"]} ${isClosing ? styles["fade-out"] : ""}`} onClick={handleClose}
+             ref={overlayRef}>
             <div className={`${styles["sidepane-container"]} ${isClosing ? styles["slide-out"] : ""}`}
                  onClick={(e) => e.stopPropagation()}>
                 {children}
