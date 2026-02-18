@@ -18,7 +18,7 @@ function parseCssTimeToMs(value: string): number {
     return Number.parseFloat(v);
 }
 
-export function SidepaneOverlay({children, onClose}: SidepaneOverlayProps) {
+export function Sidepane({children, onClose}: SidepaneOverlayProps) {
     const [portalRoot, setPortalRoot] = useState<HTMLDivElement | null>(null);
 
     const [isClosing, setIsClosing] = useState(false);
