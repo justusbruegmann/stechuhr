@@ -79,7 +79,7 @@ export function Sidepane({children, onClose}: SidepaneOverlayProps) {
             <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose}>
                 <Image
                     src={`/arrow_menu_close.svg`}
-                    alt="Page not found icon"
+                    alt="Close sidepane"
                     width={48}
                     height={48}
                     priority
