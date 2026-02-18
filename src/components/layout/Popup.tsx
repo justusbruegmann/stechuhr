@@ -1,8 +1,9 @@
 "use client";
 
 import {createPortal} from "react-dom";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState, CSSProperties} from "react";
 import styles from './PopupOverlay.module.css';
+import Card from "@/components/layout/Card";
 
 interface PopupProps {
     children: React.ReactNode;
@@ -71,7 +72,7 @@ export function Popup({children, onClose}: PopupProps) {
     return createPortal(
         <div className={`${styles["overlay-background"]} ${isClosing ? styles["fade-out"] : ""}`} onClick={handleClose}
              ref={overlayRef}>
-            <div className={`${styles["popup-container"]} ${isClosing ? styles["slide-out"] : ""}`}
+            <div className={`${styles["popup-container"]} ${isClosing ? styles["pop-out"] : ""}` }
                  onClick={(e) => e.stopPropagation()}>
                 {children}
             </div>
