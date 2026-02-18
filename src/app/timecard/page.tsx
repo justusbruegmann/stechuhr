@@ -2,6 +2,7 @@
 
 import Button from "@/components/layout/Button";
 import Styles from "./timecard.module.css";
+import Card from "@/components/layout/Card";
 import { useState, useEffect } from "react";
 
 export default function Timecard() {
@@ -16,9 +17,8 @@ export default function Timecard() {
     }, []);
 
     return (
-        
         <div className={`${Styles["background"]}`}>
-            <div className={`${Styles["card"]}`}>
+            <Card width={"20vw"} height={"75vh"} styleOverrides={{flexDirection: "column"}}>
                     <span className={`${Styles["timeStyle"]}`}>{time.toLocaleTimeString("de-DE", { hour12: false })}</span>
                     <span className={`${Styles["standardTextHeader"]}`}>{time.toLocaleDateString("de-DE",{
                                                                                                     weekday: "long", 
@@ -35,9 +35,9 @@ export default function Timecard() {
                     <span className={`${Styles["workTimeTextBody"]}`}>0h 0m</span>
                 </div>
                 <Button label={"Einstempeln"} type={"success"} height={2.5} width={"100%"}></Button>
-                <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"}></Button>
-            </div>
+                <hr className={Styles["gap"]}></hr>
+                <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"} className={Styles["gap"]}></Button>
+            </Card>
         </div>
-
     );
 }   

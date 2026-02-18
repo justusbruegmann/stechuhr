@@ -7,19 +7,6 @@
     background-color: rgba(230, 235, 245, 0.5);
 }
 
-.card{
-    display: flex;
-    margin-right: 50vw;
-    flex-direction: column;
-    gap: 10px;
-    padding: 1rem;
-    height: 75vh;
-    width: 20vw;
-    background-color: white; 
-    border: 2px solid lightgray;
-    border-radius: 10px;
-}
-
 .statusDiv{
     display: flex;
     flex-direction: column;
@@ -29,6 +16,8 @@
     height: 85px;
     background-color: rgba(230, 235, 245, 0.5);
     border-radius: 10px;
+    margin-bottom: 10px;
+    margin-top: 30px;
 }
 
 .workTimeDiv{
@@ -40,17 +29,18 @@
     height: 85px;
     background-color: rgba(140, 185, 240, 0.5);
     border-radius: 10px;
+    margin-bottom: 15px;
 }
 
 .workTimeTextHeader{
     font-size: 0.8rem ;
-    color: blue;
+    color: #005aff;
     font-family: Arial, Helvetica, sans-serif;
 }
 
 .workTimeTextBody{
     font-size: 1.2rem ;
-    color: blue;
+    color: #005aff;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
 }
@@ -75,4 +65,10 @@
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
     text-align: center;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.gap{
+    margin-top: 30px;
 }
