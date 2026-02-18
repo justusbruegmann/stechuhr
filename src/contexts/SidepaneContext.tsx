@@ -1,7 +1,7 @@
 "use client";
 
 import {createContext, ReactNode, useContext, useState} from "react";
-import {SidepaneOverlay} from "@/components/SidepaneOverlay";
+import {SidepaneOverlay} from "@/components/layout/SidepaneOverlay";
 
 interface SidepaneContextType {
     showSidepane: (content: ReactNode) => void;
