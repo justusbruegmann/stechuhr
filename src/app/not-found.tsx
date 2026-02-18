@@ -7,7 +7,7 @@ export default function NotFound() {
     return (
 
         <div className={`${styles["container"]}`}>
-            <Card height={"20vh"} width={"15vw"} shadow={true} styleOverrides={{justifyContent: "center"}}>
+            <Card height={"20vh"} width={"15vw"} styleOverrides={{justifyContent: "center"}}>
                 <div className={`${styles["not-found-center"]}`}>
                     <h1 className={`${styles["not-found-title"]}`}>404</h1>
                     <Image
