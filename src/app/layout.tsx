@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import SidepaneProvider from "@/contexts/SidepaneContext";
+import SidepaneProvider from "@/contexts/ModalContext";
 import {ReactNode} from "react";
 
 const geistSans = Geist({
