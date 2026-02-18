@@ -1,0 +1,20 @@
+.wrapper {
+    background-color: rgba(240, 128, 128, 0.2);
+    border: 1px solid lightcoral;
+    color: red;
+    flex-direction: column;
+}
+
+.time-display {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.information {
+    display: flex;
+    gap: 1rem;
+    color: gray;
+    font-size: 0.8em;
+}
+
