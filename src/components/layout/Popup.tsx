@@ -35,7 +35,7 @@ export function Popup({children, onClose}: PopupProps) {
         const el = overlayRef.current;
         if (!el) return;
 
-        const raw = getComputedStyle(el).getPropertyValue("--Popup-animation-duration");
+        const raw = getComputedStyle(el).getPropertyValue("--popup-animation-duration");
         const ms = parseCssTimeToMs(raw);
 
         if (Number.isFinite(ms) && ms > 0) {

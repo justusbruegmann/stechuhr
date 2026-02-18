@@ -4,7 +4,7 @@
     position: fixed;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.6);
-    z-index: 2147483647;
+    z-index: 100000;
     display: flex;
 
     /* Fade-in animation */
@@ -38,6 +38,29 @@
     animation: slide-out var(--sidepane-animation-duration) forwards ease-out;
 }
 
+
+.close-button {
+    position: fixed;
+    top: 50vh;
+    right: max(35vw, 300px);
+    transform: translateY(-50%);
+    z-index: 100001; /* above the sidepane */
+    display: flex;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    color: white;
+
+    /* Slide-in animation */
+    animation: slide-in-close-button var(--sidepane-animation-duration) forwards ease-out;
+}
+
+.close-button.slide-out {
+    /* Slide-out animation */
+    animation: slide-out-close-button var(--sidepane-animation-duration) forwards ease-out;
+}
+
 /* Keyframes for sliding from right */
 @keyframes slide-in {
     from {
@@ -54,6 +77,24 @@
     }
     to {
         transform: translateX(100%);
+    }
+}
+
+@keyframes slide-in-close-button {
+    from {
+        transform: translateX(400%) translateY(-50%);
+    }
+    to {
+        transform: translateX(0) translateY(-50%);
+    }
+}
+
+@keyframes slide-out-close-button {
+    from {
+        transform: translateX(0) translateY(-50%);
+    }
+    to {
+        transform: translateX(400%) translateY(-50%);
     }
 }
 

@@ -52,7 +52,7 @@
 /* Keyframes for sliding from right */
 @keyframes pop-in {
     from {
-        transform: translate(-50%, -50%) scale(0.5);;
+        transform: translate(-50%, -50%) scale(0.5);
     }
     to {
         transform: translate(-50%, -50%) scale(1);
