@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/components/Button";
+import Button from "@/components/layout/Button";
 import Styles from "./timecard.module.css";
 import { useState, useEffect } from "react";
 
