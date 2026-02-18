@@ -14,16 +14,16 @@ interface CardProps {
 }
 
 export default function Card({
-                                 children,
-                                 width,
-                                 height,
-                                 backgroundColor,
-                                 shadow = true,
-                                 border,
-                                 borderRadius,
-                                 borderColor,
-                                 styleOverrides
-                             }: CardProps) {
+    children,
+    width,
+    height,
+    backgroundColor,
+    shadow = true,
+    border,
+    borderRadius,
+    borderColor,
+    styleOverrides
+}: CardProps) {
 
 
     const computedStyle: React.CSSProperties = {};
