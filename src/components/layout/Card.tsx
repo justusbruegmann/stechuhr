@@ -10,20 +10,26 @@ interface CardProps {
     border?: boolean;
     borderRadius?: number | string;
     borderColor?: string;
+    className?: string;
     styleOverrides?: React.CSSProperties;
+    onClick?: React.MouseEventHandler<HTMLDivElement>;
+    ref?: React.Ref<HTMLDivElement>;
 }
 
 export default function Card({
-    children,
-    width,
-    height,
-    backgroundColor,
-    shadow = true,
-    border,
-    borderRadius,
-    borderColor,
-    styleOverrides
-}: CardProps) {
+                                 children,
+                                 width,
+                                 height,
+                                 backgroundColor,
+                                 shadow = true,
+                                 border,
+                                 borderRadius,
+                                 borderColor,
+                                 className,
+                                 styleOverrides,
+                                 onClick,
+                                 ref
+                             }: CardProps) {
 
 
     const computedStyle: React.CSSProperties = {};
@@ -37,8 +43,10 @@ export default function Card({
 
     const mergedStyle = {...computedStyle, ...styleOverrides}; // external style overrides computed
 
+    const classNameList = [styles["card-container"], className].filter(Boolean).join(" ");
+
     return (
-        <div className={styles["card-container"]} style={mergedStyle}>
+        <div className={classNameList} style={mergedStyle} {...(onClick && { onClick })} {...(ref && { ref })}>
             {children}
         </div>
     );
