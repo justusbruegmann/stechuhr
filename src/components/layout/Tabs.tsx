@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styles from './Tabs.module.css';
 import Card from "@/components/layout/Card";
-import Button from "@/components/layout/Button";
 
 interface TabsProps {
     tabs: Record<string, React.ReactNode>;
