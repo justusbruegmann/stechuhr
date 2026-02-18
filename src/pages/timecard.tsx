@@ -1,8 +1,20 @@
+"use client";
+
 import Button from "@/components/Button";
 import Styles from "./timecard.module.css";
+import { useState, useEffect } from "react";
 
 export default function Timecard() {
-    const time = new Date();
+    const [time, setTime] = useState(new Date());
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTime(new Date());
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         
         <div className={`${Styles["background"]}`}>
