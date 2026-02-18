@@ -3,6 +3,7 @@
 import {createPortal} from "react-dom";
 import React, {useEffect, useRef, useState} from "react";
 import styles from './SidepaneOverlay.module.css';
+import Image from "next/image";
 
 interface SidepaneOverlayProps {
     children: React.ReactNode;
@@ -74,6 +75,15 @@ export function Sidepane({children, onClose}: SidepaneOverlayProps) {
             <div className={`${styles["sidepane-container"]} ${isClosing ? styles["slide-out"] : ""}`}
                  onClick={(e) => e.stopPropagation()}>
                 {children}
+            </div>
+            <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose}>
+                <Image
+                    src={`/arrow_menu_close.svg`}
+                    alt="Page not found icon"
+                    width={48}
+                    height={48}
+                    priority
+                />
             </div>
         </div>,
         portalRoot
