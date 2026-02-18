@@ -19,7 +19,7 @@ export default function Timecard() {
         
         <div className={`${Styles["background"]}`}>
             <div className={`${Styles["card"]}`}>
-                    <span className={`${Styles["timeStyle"]}`}>{time.toLocaleTimeString()}</span>
+                    <span className={`${Styles["timeStyle"]}`}>{time.toLocaleTimeString("de-DE", { hour12: false })}</span>
                     <span className={`${Styles["standardTextHeader"]}`}>{time.toLocaleDateString("de-DE",{
                                                                                                     weekday: "long", 
                                                                                                     day: "numeric", 
