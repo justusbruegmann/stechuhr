@@ -42,7 +42,7 @@
 .close-button {
     position: fixed;
     top: 50vh;
-    right: 35vw;
+    right: max(35vw, 300px);
     transform: translateY(-50%);
     z-index: 100001; /* above the sidepane */
     display: flex;
