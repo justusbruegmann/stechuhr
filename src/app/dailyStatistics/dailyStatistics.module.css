@@ -1,0 +1,9 @@
+.nachtragen-button{
+    background-color: var(--primary);
+    color: var(--background);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    justify-content: center;
+}
