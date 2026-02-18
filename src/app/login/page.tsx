@@ -1,11 +1,12 @@
+'use client'
+
 import Button from "@/components/Button";
 
-3
 import Image from "next/image";
 
 import styles from "./Login.module.css"
 
-export default function Login() {
+export default function Page() {
     return (
         <div className={`${styles.container}`}>
             <div className={`${styles["login-page"]}`}>
@@ -24,9 +25,9 @@ export default function Login() {
                 <input type="text" id="usernameInput" className={`${styles["login-input"]}`} placeholder="Username"/>
                 <input type="password" id="passwordInput" className={`${styles["login-input"]}`}
                        placeholder="Password"/>
-                <Button style={{margin: '.75rem'}} label={"Login"} type={"accent"} height={2.5} width={"calc(100%-1rem)"}
+                <Button style={{margin: '.75rem'}} label={"Page"} type={"accent"} height={2.5} width={"calc(100%-1rem)"}
                         onClick={() => {
-                            alert("Login")
+                            alert("Page")
                         }}/>
             </div>
         </div>

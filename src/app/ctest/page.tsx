@@ -1,3 +1,5 @@
+'use client'
+
 import Button from "@/components/Button";
 import { useSidepane } from "@/contexts/SidepaneContext";
 
@@ -8,7 +10,7 @@ export default function Ctest() {
     return (
         <>
             <h1>Test</h1>
-            <Button label={"Login"} type={"primary"} height={3} width={15} onClick={() => alert("Login")}/>
+            <Button label={"Page"} type={"primary"} height={3} width={15} onClick={() => alert("Page")}/>
             <br/>
             <Button label={"test"} type={"accent"} height={5} width={10}/>
             <Button label={"test"} type={"success"} height={5} width={10}/>

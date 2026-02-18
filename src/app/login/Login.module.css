@@ -22,6 +22,7 @@
 .login-input {
     margin: .75rem;
     height: 2rem;
+    border-radius: .5rem;
 }
 
 .login-center{
