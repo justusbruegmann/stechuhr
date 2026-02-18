@@ -1,7 +1,7 @@
 import styles from "./not-found.module.css";
 import Link from "next/link";
 import Image from "next/image";
-import Card from "@/components/Card";
+import Card from "@/components/layout/Card";
 
 export default function NotFound() {
     return (
