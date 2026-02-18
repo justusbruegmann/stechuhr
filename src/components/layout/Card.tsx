@@ -41,9 +41,29 @@ export default function Card({
     if (borderRadius !== undefined) computedStyle.borderRadius = typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius;
     if (borderColor !== undefined) computedStyle.borderColor = borderColor;
 
-    const mergedStyle = {...computedStyle, ...styleOverrides}; // external style overrides computed
-
+    // Extract CSS rules from className elements and overwrite the Card defaults with these rules
+    const classNameStyles: React.CSSProperties = {};
     const classNameList = [styles["card-container"], className].filter(Boolean).join(" ");
+
+    if (typeof document !== 'undefined') {
+        const tempEl = document.createElement('div');
+        tempEl.className = classNameList;
+        document.body.appendChild(tempEl);
+        const computedStyles = getComputedStyle(tempEl);
+
+        // Extract relevant CSS properties
+        const cssProperties = ['width', 'height', 'backgroundColor', 'boxShadow', 'border', 'borderRadius', 'borderColor'];
+        cssProperties.forEach(prop => {
+            const value = computedStyles.getPropertyValue(prop);
+            if (value) {
+                (classNameStyles as any)[prop] = value;
+            }
+        });
+
+        document.body.removeChild(tempEl);
+    }
+
+    const mergedStyle = {...computedStyle, ...classNameStyles, ...styleOverrides}; // computed -> className -> explicit overrides
 
     return (
         <div className={classNameList} style={mergedStyle} {...(onClick && { onClick })} {...(ref && { ref })}>

@@ -39,11 +39,20 @@
     animation: pop-out var(--popup-animation-duration) forwards ease-out;
 }
 
+.close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+}
+
 /* Keyframes for sliding from right */
 @keyframes pop-in {
     from {
-        transform: translate(-50%, -50%) scale(0.5);
-    ;
+        transform: translate(-50%, -50%) scale(0.5);;
     }
     to {
         transform: translate(-50%, -50%) scale(1);
