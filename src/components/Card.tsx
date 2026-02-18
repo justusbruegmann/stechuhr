@@ -27,13 +27,13 @@ export default function Card({
 
 
     const computedStyle: React.CSSProperties = {};
-    if (width) computedStyle.width = typeof width === 'number' ? `${width}rem` : width;
-    if (height) computedStyle.height = typeof height === 'number' ? `${height}rem` : height;
-    if (backgroundColor) computedStyle.backgroundColor = backgroundColor;
+    if (width !== undefined) computedStyle.width = typeof width === 'number' ? `${width}rem` : width;
+    if (height !== undefined) computedStyle.height = typeof height === 'number' ? `${height}rem` : height;
+    if (backgroundColor !== undefined) computedStyle.backgroundColor = backgroundColor;
     if (shadow) computedStyle.boxShadow = "0 0 10px rgba(0,0,0,0.2)";
     if (border) computedStyle.border = "1px solid black";
-    if (borderRadius) computedStyle.borderRadius = typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius;
-    if (borderColor) computedStyle.borderColor = borderColor;
+    if (borderRadius !== undefined) computedStyle.borderRadius = typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius;
+    if (borderColor !== undefined) computedStyle.borderColor = borderColor;
 
     const mergedStyle = {...computedStyle, ...styleOverrides}; // external style overrides computed
 
