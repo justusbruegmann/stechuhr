@@ -12,7 +12,7 @@ export default function NotFound() {
                     <h1 className={`${styles["not-found-title"]}`}>404</h1>
                     <Image
                         src={`/error_icon.svg`}
-                        alt="error_icon"
+                        alt="Page not found icon"
                         width={48}
                         height={48}
                         style={{filter: 'invert()'}}
