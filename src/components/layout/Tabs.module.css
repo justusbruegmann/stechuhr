@@ -1,0 +1,28 @@
+.tabbox {
+    padding: 0;
+    margin: 0 0 1rem;
+    background-color: var(--muted-foreground);
+    border-radius: 1rem;
+    justify-content: space-around;
+}
+
+.tabbox-buttons{
+    width: 100%;
+    margin: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 1rem;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.selected-tab {
+    background-color: var(--background);
+}
+
+.content {
+    width: 100%;
+    height: 100%;
+    background-color: lightskyblue;
+}
