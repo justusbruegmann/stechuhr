@@ -1,21 +1,27 @@
 import styles from "./kalender.module.css"
 
 export default function Kalender() {
-    const heute = new Date();
-    const monat = heute.getMonth();
-    const jahr = heute.getFullYear();
+    const aktTag = new Date();
+    const aktMonat = aktTag.getMonth();
+    const aktJahr = aktTag.getFullYear();
 
-    const tageImMonat = new Date(jahr, monat + 1, 0).getDate();
+    const tageAktMonat = new Date(aktJahr, aktMonat + 1, 0).getDate();
 
-    let ersterTag = new Date(jahr, monat, 1).getDay();
-    ersterTag = (ersterTag + 6) % 7;
+    let eTagMonat = new Date(aktJahr, aktMonat, 1).getDay();
+    eTagMonat = (eTagMonat + 6) % 7;
 
     const tageArray = [];
-    for (let i = 0; i < ersterTag; i++) {
+    for (let i = 0; i < eTagMonat; i++) {
         tageArray.push(null);
     }
-    for (let tag = 1; tag <= tageImMonat; tag++) {
+    for (let tag = 1; tag <= tageAktMonat; tag++) {
         tageArray.push(tag);
+    }
+    const restTageMonat = tageArray.length % 7;
+    if (restTageMonat !== 0) {
+        for (let i = restTageMonat; i < 7; i++) {
+            tageArray.push(null);
+        }
     }
 
     return (
