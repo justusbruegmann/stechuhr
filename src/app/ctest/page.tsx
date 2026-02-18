@@ -1,11 +1,11 @@
 'use client'
 
 import Button from "@/components/layout/Button";
-import { useSidepane } from "@/contexts/SidepaneContext";
+import { useModal } from "@/contexts/ModalContext";
 
 export default function Ctest() {
 
-    const { showSidepane, hideSidepane } = useSidepane();
+    const { showModal } = useModal();
 
     return (
         <>
@@ -18,9 +18,19 @@ export default function Ctest() {
             <br/>
             <Button label={"Open Sidepane"} type={"primary"} height={3} width={15}
                     onClick={() =>
-                        showSidepane(
+                        showModal("sidepane",
                             <div>
                                 Ich bin ein Content!
+                            </div>
+                        )
+                    }/>
+            <br/>
+
+            <Button label={"Open Popup"} type={"primary"} height={3} width={15}
+                    onClick={() =>
+                        showModal("popup",
+                            <div>
+                                Ich bin ein Popup Content!
                             </div>
                         )
                     }/>
