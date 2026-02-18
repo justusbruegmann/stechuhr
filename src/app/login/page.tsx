@@ -1,6 +1,7 @@
 'use client'
 
 import Button from "@/components/layout/Button";
+import Card from "@/components/layout/Card";
 
 import Image from "next/image";
 
@@ -9,7 +10,7 @@ import styles from "./Login.module.css"
 export default function Page() {
     return (
         <div className={`${styles.container}`}>
-            <div className={`${styles["login-page"]}`}>
+            <Card height={"50vh"} width={"20vw"} shadow={true} styleOverrides={{flexDirection: 'column'}}>
                 <div className={`${styles["login-center"]}`}>
 
                     <Image
@@ -22,14 +23,14 @@ export default function Page() {
                     />
                     Login
                 </div>
-                <input type="text" id="usernameInput" className={`${styles["login-input"]}`} placeholder="Username"/>
+                <input type="text" id="usernameInput" className={`${styles["login-input"]}`} placeholder="  Username"/>
                 <input type="password" id="passwordInput" className={`${styles["login-input"]}`}
-                       placeholder="Password"/>
+                       placeholder="  Password"/>
                 <Button style={{margin: '.75rem'}} label={"Login"} type={"accent"} height={2.5} width={"calc(100%-1rem)"}
                         onClick={() => {
                             alert("Login")
                         }}/>
-            </div>
+            </Card>
         </div>
     );
 }
