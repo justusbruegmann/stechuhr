@@ -18,42 +18,44 @@
 
 .popup-container {
     position: fixed;
-    top: 0;
-    right: 0;
-    width: 35vw;
-    min-width: 300px;
-    height: 100vh;
+    top: 50vh;
+    left: 50vw;
+    width: 20rem;
+    min-width: 150px;
+    height: 20vh;
+    min-height: 100px;
     background: white;
     display: flex;
     flex-direction: column;
     padding: 1rem;
 
-    /* Slide-in animation */
-    transform: translateX(100%); /* start off-screen */
-    animation: slide-in var(--popup-animation-duration) forwards ease-out;
+    /* Pop-in animation */
+    animation: pop-in var(--popup-animation-duration) forwards ease-out;
 }
 
-.popup-container.slide-out {
+
+.popup-container.pop-out {
     /* Slide-out animation */
-    animation: slide-out var(--popup-animation-duration) forwards ease-out;
+    animation: pop-out var(--popup-animation-duration) forwards ease-out;
 }
 
 /* Keyframes for sliding from right */
-@keyframes slide-in {
+@keyframes pop-in {
     from {
-        transform: translateX(100%);
+        transform: translate(-50%, -50%) scale(0.5);
+    ;
     }
     to {
-        transform: translateX(0);
+        transform: translate(-50%, -50%) scale(1);
     }
 }
 
-@keyframes slide-out {
+@keyframes pop-out {
     from {
-        transform: translateX(0);
+        transform: translate(-50%, -50%) scale(1);
     }
     to {
-        transform: translateX(100%);
+        transform: translate(-50%, -50%) scale(0.5);
     }
 }
 
