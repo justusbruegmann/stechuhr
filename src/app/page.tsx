@@ -10,7 +10,7 @@ export default function Home() {
         <br/>
         <Image
           className={styles.logo}
-          src={`/next.svg`}
+          src={`${process.env.BASE_PATH}/next.svg`}
           alt="Next.js logo"
           width={180}
           height={38}

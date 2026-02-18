@@ -13,7 +13,7 @@ export default function Page() {
                 <div className={`${styles["login-center"]}`}>
 
                     <Image
-                        src={`/person_icon.svg`}
+                        src={`${process.env.BASE_PATH}/person_icon.svg`}
                         alt="person_icon"
                         width={48}
                         height={48}
