@@ -15,12 +15,12 @@
 }
 
 .button-success {
-    background: #1ca232;
-    color: black;
+    background: #02b31f;
+    color: white;
 }
 
 .button-error {
-    background: #d34545;
+    background: #fd0202;
     color: white;
 }
 
