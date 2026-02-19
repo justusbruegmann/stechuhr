@@ -88,11 +88,15 @@ export default function Kalender() {
                     <div className={styles.kalender_header_text}>{aktJahr}</div>
                     <div className={styles.kalender_header_text}>{aktTag.toLocaleDateString("de-DE", { month: "long" })}</div>
                 </div>
+                <hr className={styles.linie} />
+                <br />
 
                 <div className={styles.kalender_wochentage_grid}>
                     {wochentage.map((wochentag, index) => (
                         <div key={index} className={styles.kalender_wochentag}>{wochentag}</div>
                     ))}
+                </div>
+                <div className={styles.kalender_grid}>
                     {tageArray.map((tag, index) => (
                         <div key={index} className={styles.kalender_tag}>
                             {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
