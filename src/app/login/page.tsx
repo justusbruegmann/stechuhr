@@ -4,7 +4,7 @@ import Button from "@/components/layout/Button";
 import Card from "@/components/layout/Card";
 import Image from "next/image";
 import styles from "./Login.module.css"
-import {useState} from "react";
+import {useState, useEffect} from "react";
 
 export default function Page() {
     const [username, setUsername] = useState<string>("");
