@@ -4,7 +4,8 @@ import styles from "./kalender.module.css"
 
 export default function Kalender() {
     // --- Kalender --- 
-    const aktTag = new Date(2021, 7, 1);
+    const heute = new Date();
+    const aktTag = new Date();
     const aktMonat = aktTag.getMonth();
     const aktJahr = aktTag.getFullYear();
 
@@ -84,9 +85,9 @@ export default function Kalender() {
     return (
         <Card width={"40vw"} height={"90vh"}>
             <div className={styles.kalender_container}>
-                <div className={styles.kalender_header}>
-                    <div className={styles.kalender_header_text}>{aktJahr}</div>
-                    <div className={styles.kalender_header_text}>{aktTag.toLocaleDateString("de-DE", { month: "long" })}</div>
+                <div className={styles.kalender_zeitraum}>
+                    <div className={styles.kalender_zeitraum_text}>{aktJahr}</div>
+                    <div className={styles.kalender_zeitraum_text}>{aktTag.toLocaleDateString("de-DE", { month: "long" })}</div>
                 </div>
                 <hr className={styles.linie} />
                 <br />
@@ -97,11 +98,18 @@ export default function Kalender() {
                     ))}
                 </div>
                 <div className={styles.kalender_grid}>
-                    {tageArray.map((tag, index) => (
-                        <div key={index} className={styles.kalender_tag}>
-                            {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
-                        </div>
-                    ))}
+                    {tageArray.map((tag, index) => {
+                        if (tag === heute.getDate() && aktMonat === heute.getMonth() && aktJahr === heute.getFullYear()) {
+                            return (<div key={index} className={styles.kalender_heute}>
+                                {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
+                            </div>);
+                        }
+                        return (
+                            <div key={index} className={styles.kalender_tag}>
+                                {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
+                            </div>
+                        );
+                    })}
                 </div>
 
                 <br />
