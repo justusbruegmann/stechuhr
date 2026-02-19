@@ -40,7 +40,7 @@ export default function Page() {
                        onChange={(e) => setUsername(e.target.value)}/>
                 <input type="password" id="passwordInput" className={`${styles["login-input"]}`}
                        placeholder="  Password" onChange={(e) => setPassword(e.target.value)}/>
-                {!validInputs && <p className={styles.invalidUsername}>Nutzername und Passwort sind ungültig </p>}
+                {!validInputs && <p className={styles.invalidUsername}>Nutzername und Passwort sind ungültig</p>}
 
                 <Button style={{margin: '.75rem'}} label={"Login"} type={"accent"} height={2.5}
                         width={"calc(100% - 1rem)"}
