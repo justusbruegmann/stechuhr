@@ -36,7 +36,7 @@ export default function ModalProvider({children}: { children: ReactNode }) {
         <ModalContext.Provider value={value}>
             {children}
             {modals.map((modal, index) => {
-                const zIndex = 1000 + index;
+                const zIndex = 1000 + 10*index;
                 return modal.type === "sidepane" ? (
                     <Sidepane key={modal.id} onClose={() => hideModal(modal.id)} zIndex={zIndex}>
                         {modal.content}
