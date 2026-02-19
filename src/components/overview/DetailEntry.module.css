@@ -1,6 +1,16 @@
 .wrapper {
-    flex-direction: column;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.col-left {
+    flex-direction: row;
     gap: 0.5rem;
+}
+
+.col-right {
+    flex-direction: column;
 }
 
 .time-display {

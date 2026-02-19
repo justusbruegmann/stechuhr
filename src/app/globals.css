@@ -2,9 +2,12 @@
   --background: #ffffff;
   --foreground: #171717;
   --muted-foreground: #17171715;
-  --init-green: #2596be;
+  --init-green: #009d3c;
+  --init-green-rgb: 0, 157, 60;
   --sew-red: #de0000;
+  --sew-red-rgb: 222, 0, 0;
   --sick-blue: #005aff;
+  --sick-blue-rgb: 0, 90, 255;
 }
 /*
 @media (prefers-color-scheme: dark) {

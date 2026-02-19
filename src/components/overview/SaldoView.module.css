@@ -1,7 +1,7 @@
 .wrapper {
-    background-color: rgba(240, 128, 128, 0.2);
-    border: 1px solid lightcoral;
-    color: red;
+    background-color: rgba(var(--sew-red-rgb), 0.1);
+    border: 1px solid rgba(var(--sew-red-rgb), 0.4);
+    color: var(--sew-red);
     flex-direction: column;
 }
 
