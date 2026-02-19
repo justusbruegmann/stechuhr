@@ -10,10 +10,12 @@ interface CardProps {
     border?: boolean;
     borderRadius?: number | string;
     borderColor?: string;
+    className?: string;
     styleOverrides?: React.CSSProperties;
+    onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
-export default function Card({
+export default React.forwardRef<HTMLDivElement, CardProps>(function Card({
     children,
     width,
     height,
@@ -22,24 +24,35 @@ export default function Card({
     border,
     borderRadius,
     borderColor,
-    styleOverrides
-}: CardProps) {
+    className,
+    styleOverrides,
+    onClick,
+}: CardProps, ref) {
+    // Inline styles handle dynamic/prop-based values and have highest specificity
+    const inlineStyle: React.CSSProperties = {};
 
+    if (width !== undefined) inlineStyle.width = typeof width === 'number' ? `${width}rem` : width;
+    if (height !== undefined) inlineStyle.height = typeof height === 'number' ? `${height}rem` : height;
+    if (backgroundColor !== undefined) inlineStyle.backgroundColor = backgroundColor;
+    if (shadow) inlineStyle.boxShadow = "0 0 10px rgba(0,0,0,0.2)";
+    if (border) inlineStyle.border = "1px solid black";
+    if (borderRadius !== undefined) inlineStyle.borderRadius = typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius;
+    if (borderColor !== undefined) inlineStyle.borderColor = borderColor;
 
-    const computedStyle: React.CSSProperties = {};
-    if (width !== undefined) computedStyle.width = typeof width === 'number' ? `${width}rem` : width;
-    if (height !== undefined) computedStyle.height = typeof height === 'number' ? `${height}rem` : height;
-    if (backgroundColor !== undefined) computedStyle.backgroundColor = backgroundColor;
-    if (shadow) computedStyle.boxShadow = "0 0 10px rgba(0,0,0,0.2)";
-    if (border) computedStyle.border = "1px solid black";
-    if (borderRadius !== undefined) computedStyle.borderRadius = typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius;
-    if (borderColor !== undefined) computedStyle.borderColor = borderColor;
+    // Merge styles with styleOverrides having the highest priority
+    const finalStyle = { ...inlineStyle, ...styleOverrides };
 
-    const mergedStyle = {...computedStyle, ...styleOverrides}; // external style overrides computed
+    // Combine card base styles with external classNames (external classes have higher specificity through CSS cascade)
+    const classNameList = [styles["card-container"], className].filter(Boolean).join(" ");
 
     return (
-        <div className={styles["card-container"]} style={mergedStyle}>
+        <div
+            className={classNameList}
+            style={finalStyle}
+            onClick={onClick}
+            ref={ref}
+        >
             {children}
         </div>
     );
-}
+});

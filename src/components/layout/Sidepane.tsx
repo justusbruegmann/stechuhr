@@ -3,6 +3,7 @@
 import {createPortal} from "react-dom";
 import React, {useEffect, useRef, useState} from "react";
 import styles from './SidepaneOverlay.module.css';
+import Image from "next/image";
 
 interface SidepaneOverlayProps {
     children: React.ReactNode;
@@ -18,7 +19,7 @@ function parseCssTimeToMs(value: string): number {
     return Number.parseFloat(v);
 }
 
-export function SidepaneOverlay({children, onClose}: SidepaneOverlayProps) {
+export function Sidepane({children, onClose}: SidepaneOverlayProps) {
     const [portalRoot, setPortalRoot] = useState<HTMLDivElement | null>(null);
 
     const [isClosing, setIsClosing] = useState(false);
@@ -74,6 +75,15 @@ export function SidepaneOverlay({children, onClose}: SidepaneOverlayProps) {
             <div className={`${styles["sidepane-container"]} ${isClosing ? styles["slide-out"] : ""}`}
                  onClick={(e) => e.stopPropagation()}>
                 {children}
+            </div>
+            <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose}>
+                <Image
+                    src={`/arrow_menu_close.svg`}
+                    alt="Close sidepane"
+                    width={48}
+                    height={48}
+                    priority
+                />
             </div>
         </div>,
         portalRoot
