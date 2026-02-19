@@ -9,7 +9,7 @@ export default function Overview() {
 
 
     const day =
-        <div>
+        <div className={Styles["tab-content-area"]}>
             <h1>Tag</h1>
             <SaldoView />
             <br />
@@ -18,8 +18,14 @@ export default function Overview() {
             <DetailEntry />
 
         </div>
-    const week = <div>Woche</div>
-    const month = <div>Monat</div>
+    const week =
+    <div className={Styles["tab-content-area"]}>
+        Woche
+    </div>
+    const month =
+        <div className={Styles["tab-content-area"]}>
+            Monat
+        </div>
 
     const tabs = {
         "Tag": day,

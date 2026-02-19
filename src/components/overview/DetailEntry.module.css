@@ -2,15 +2,34 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    border: 1px solid #d0d0d0;
+    margin: 0.25rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    overflow: hidden;
+}
+
+.wrapper:hover {
+    background: #f8f8f8;
+}
+
+.wrapper:hover .edit-button {
+    width: 30px;
 }
 
 .col-left {
     flex-direction: row;
     gap: 0.5rem;
+    margin-top: auto;
+    margin-bottom: auto;
+    flex-grow: 1;
 }
 
 .col-right {
     flex-direction: column;
+    margin-top: auto;
+    margin-bottom: auto;
+    flex-grow: 1;
 }
 
 .time-display {
@@ -46,4 +65,19 @@
 .calendar-icon {
     margin-top: auto;
     margin-bottom: auto;
+}
+
+.edit-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 0;
+    margin: auto 0;
+    transition: width 0.3s ease;
+    flex-shrink: 0;
+}
+
+.edit-button-icon {
+    overflow: hidden;
 }

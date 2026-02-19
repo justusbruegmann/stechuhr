@@ -8,3 +8,8 @@
     margin-bottom: 3rem;
 }
 
+.tab-content-area {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
