@@ -1,0 +1,39 @@
+.wrapper {
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.time-display {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.information {
+    display: flex;
+    gap: 1rem;
+    color: gray;
+    font-size: 0.8em;
+}
+
+.start-time {
+    color: var(--init-green)
+}
+
+.end-time {
+    color: var(--sew-red)
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.date {
+    margin-left: 1rem;
+}
+
+.calendar-icon {
+    margin-top: auto;
+    margin-bottom: auto;
+}

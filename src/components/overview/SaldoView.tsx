@@ -6,7 +6,7 @@ import Card from "@/components/layout/Card";
 export default function SaldoView() {
 
     return (
-        <Card className={Styles["wrapper"]}>
+        <Card className={Styles["wrapper"]} shadow={false}>
             <p>Saldo heute</p>
             <h1 className="time-display">-8h 0m</h1>
             <div className={Styles["information"]}>

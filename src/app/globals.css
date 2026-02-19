@@ -2,6 +2,9 @@
   --background: #ffffff;
   --foreground: #171717;
   --muted-foreground: #17171715;
+  --init-green: #2596be;
+  --sew-red: #de0000;
+  --sick-blue: #005aff;
 }
 /*
 @media (prefers-color-scheme: dark) {
