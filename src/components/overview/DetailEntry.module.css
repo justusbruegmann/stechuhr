@@ -14,7 +14,14 @@
 }
 
 .wrapper:hover .edit-button {
-    width: 30px;
+    width: 2.5rem;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .col-left {
@@ -26,10 +33,12 @@
 }
 
 .col-right {
+    display: flex;
     flex-direction: column;
     margin-top: auto;
     margin-bottom: auto;
     flex-grow: 1;
+    align-items: end;
 }
 
 .time-display {
@@ -76,8 +85,17 @@
     margin: auto 0;
     transition: width 0.3s ease;
     flex-shrink: 0;
+    border-radius: 10px;
 }
 
 .edit-button-icon {
+    margin-left: 1rem;
     overflow: hidden;
+    color: blue;
+
+    border-radius: 10px;
 }
+
+/*.edit-button-icon:hover {*/
+/*    background: rgba(var(--sick-blue-rgb), 0.2)*/
+/*}*/

@@ -8,7 +8,7 @@ export default function DetailEntry() {
 
     return (
         <Card className={Styles["wrapper"]} shadow={false} >
-            <div>
+            <div className={Styles["main-content"]} >
                 <div className={Styles["col-left"]}>
                     <div className={Styles["row"]}>
                         <Image src="/calendar.svg" alt="" width={15} height={15} className={Styles["calendar-icon"]}/>
