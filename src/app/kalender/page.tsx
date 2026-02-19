@@ -27,6 +27,8 @@ export default function Kalender() {
         }
     }
 
+    // --- Wochentage --- 
+    const wochentage = ["Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa.", "So."];
 
     // --- Legende ---
     const symbole = [
@@ -77,20 +79,27 @@ export default function Kalender() {
     const legende1Symbole = symbole.slice(0, 4);
     const legende2Symbole = symbole.slice(4);
 
+
+    // --- UI ---
     return (
-        <Card width={"40vw"} /*height={"90vh"}*/ height={"80vh"}>
+        <Card width={"40vw"} height={"90vh"}>
             <div className={styles.kalender_container}>
                 <div className={styles.kalender_header}>
-                    <div className={styles.kalender_date}>{aktJahr}</div>
-                    <div className={styles.kalender_date}>{aktTag.toLocaleDateString("de-DE", { month: "long" })}</div>
+                    <div className={styles.kalender_header_text}>{aktJahr}</div>
+                    <div className={styles.kalender_header_text}>{aktTag.toLocaleDateString("de-DE", { month: "long" })}</div>
                 </div>
-                <div className={styles.kalender_grid}>
+
+                <div className={styles.kalender_wochentage_grid}>
+                    {wochentage.map((wochentag, index) => (
+                        <div key={index} className={styles.kalender_wochentag}>{wochentag}</div>
+                    ))}
                     {tageArray.map((tag, index) => (
-                        <div key={index} className={styles.kalender_day}>
-                            {tag && <div className={styles.datum}>{tag}</div>}
+                        <div key={index} className={styles.kalender_tag}>
+                            {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
                         </div>
                     ))}
                 </div>
+
                 <br />
                 <hr className={styles.linie} />
 
