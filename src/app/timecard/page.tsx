@@ -3,6 +3,7 @@
 import Button from "@/components/layout/Button";
 import Styles from "./timecard.module.css";
 import Card from "@/components/layout/Card";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 
 export default function Timecard() {
@@ -18,7 +19,8 @@ export default function Timecard() {
 
     return (
         <div className={`${Styles["background"]}`}>
-            <Card width={"20vw"} height={"75vh"} styleOverrides={{flexDirection: "column"}}>
+            <Card width={"20vw"} height={"80vh"} styleOverrides={{flexDirection: "column"}}>
+                <div className={Styles["clock"]}><Image src={"/clock.svg"} width={40} height={40} alt={"Uhr"}></Image></div>
                     <span className={`${Styles["timeStyle"]}`}>{time.toLocaleTimeString("de-DE", { hour12: false })}</span>
                     <span className={`${Styles["standardTextHeader"]}`}>{time.toLocaleDateString("de-DE",{
                                                                                                     weekday: "long", 
