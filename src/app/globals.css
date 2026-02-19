@@ -1,6 +1,13 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --background: #ffffff;
+    --foreground: #171717;
+    --muted-foreground: #17171715;
+    --init-green: #009d3c;
+    --init-green-rgb: 0, 157, 60;
+    --sew-red: #de0000;
+    --sew-red-rgb: 222, 0, 0;
+    --sick-blue: #005aff;
+    --sick-blue-rgb: 0, 90, 255;
 }
 /*
 @media (prefers-color-scheme: dark) {
@@ -12,28 +19,29 @@
 */
 html,
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    color: var(--foreground);
+    background: var(--background);
+    font-family: Arial, Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 * {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
+
 /*
 @media (prefers-color-scheme: dark) {
   html {
