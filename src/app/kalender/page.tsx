@@ -1,3 +1,6 @@
+"use client";
+import { useState } from "react";
+
 import Card from "@/components/layout/Card";
 
 import styles from "./kalender.module.css"
@@ -5,7 +8,7 @@ import styles from "./kalender.module.css"
 export default function Kalender() {
     // --- Kalender --- 
     const heute = new Date();
-    const aktTag = new Date(2021, 7, 1);
+    const [aktTag, setAktTag] = useState(new Date());
     const aktMonat = aktTag.getMonth();
     const aktJahr = aktTag.getFullYear();
 
@@ -81,13 +84,45 @@ export default function Kalender() {
     const legende2Symbole = symbole.slice(4);
 
 
+    // --- Funktionen ---
+    function handleMonatWechsel(richtung: "vor" | "zurueck") {
+        const neuesDatum = new Date(aktTag);
+
+        if (richtung === "vor") {
+            neuesDatum.setMonth(neuesDatum.getMonth() + 1);
+        } else {
+            neuesDatum.setMonth(neuesDatum.getMonth() - 1);
+        }
+
+        setAktTag(neuesDatum);
+    }
+    function handleHeute() {
+        setAktTag(new Date(heute.getFullYear(), heute.getMonth(), 1));
+    }
+
+
+
+
     // --- UI ---
     return (
         <Card width={"40vw"} height={"90vh"}>
             <div className={styles.kalender_container}>
-                <div className={styles.kalender_zeitraum}>
-                    <div className={styles.kalender_zeitraum_text}>{aktJahr}</div>
-                    <div className={styles.kalender_zeitraum_text}>{aktTag.toLocaleDateString("de-DE", { month: "long" })}</div>
+                <div className={styles.kalender_header}>
+                    <div className={styles.kalender_zeitraum}>
+                        <div className={styles.kalender_zeitraum_text}>{aktJahr}</div>
+                        <div className={styles.kalender_zeitraum_text}>{aktTag.toLocaleDateString("de-DE", { month: "long" })}</div>
+                    </div>
+                    <div className={styles.kalender_navigation_grid}>
+                        <button className={styles.kalender_reset_tag} onClick={() => handleHeute()}>
+                            Heute
+                        </button>
+                        <button className={styles.kalender_pfeil} onClick={() => handleMonatWechsel("zurueck")}>
+                            <img src="/Arrow_Back.svg" alt="" />
+                        </button>
+                        <button className={styles.kalender_pfeil} onClick={() => handleMonatWechsel("vor")}>
+                            <img src="/Arrow_Forward.svg" alt="" />
+                        </button>
+                    </div>
                 </div>
                 <hr className={styles.linie} />
                 <br />

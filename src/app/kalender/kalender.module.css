@@ -7,14 +7,23 @@
     align-items: center;
 }
 
+/* --- Kalender Header --- */
+.kalender_header {
+    display: flex;
+    flex-direction: row;
+    gap: 5.5cm;
+
+    align-items: center;
+    margin-bottom: 2cm;
+}
+
 /* --- Kalender Jahr/Monat --- */
 .kalender_zeitraum {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin-bottom: 2cm;
 
     width: 110px;
+    align-items: center;
 }
 
 .kalender_zeitraum_text {
@@ -23,17 +32,58 @@
     text-align: center;
 }
 
+/* --- Kalender Navigation --- */
+.kalender_navigation_grid {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+
+    align-items: center;
+}
+
+.kalender_pfeil {
+    border: none;
+    border-radius: 50%;
+    background-color: transparent;
+}
+
+.kalender_pfeil:hover {
+    cursor: pointer;
+    background-color: rgba(174, 174, 174, 0.4);
+}
+
+.kalender_reset_tag {
+    border: none;
+
+    width: 100px;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 2rem;
+    font-weight: bolder;
+
+    background-color: transparent;
+}
+
+.kalender_reset_tag:hover {
+    cursor: pointer;
+    border-radius: 18px;
+    background-color: rgba(174, 174, 174, 0.4);
+}
+
 /* --- Wochentage --- */
 .kalender_wochentage_grid {
     display: grid;
     grid-template-columns: repeat(7, 0.001fr);
     gap: 10px;
 }
+
 .kalender_wochentag {
     display: flex;
-    justify-content: center;
+
     width: 60px;
     height: 20px;
+    justify-content: center;
 }
 
 /* --- Kalender --- */
@@ -46,32 +96,36 @@
 
 .kalender_heute {
     display: flex;
-    justify-content: center;
+
     width: 60px;
     height: 70px;
+    justify-content: center;
+
     color: rgb(0, 72, 255);
-    border-radius: 18px;
+
     border: 2px solid rgb(0, 72, 255);
+    border-radius: 18px;
 }
 
 .kalender_heute:hover {
-    background-color: rgba(174, 174, 174, 0.4);
     cursor: pointer;
+    background-color: rgba(174, 174, 174, 0.4);
 }
 
 .kalender_tag {
     display: flex;
-    justify-content: center;
     width: 60px;
     height: 70px;
-    border-radius: 18px;
+    justify-content: center;
+
     border: 2px solid rgb(180, 173, 173);
+    border-radius: 18px;
 }
 
 .kalender_tag:hover {
-    background-color: rgba(174, 174, 174, 0.4);
-    border-color: black;
     cursor: pointer;
+    border-color: black;
+    background-color: rgba(174, 174, 174, 0.4);
 }
 
 .kalender_tag_text {
@@ -81,14 +135,17 @@
 .kalender_leer {
     width: 60px;
     height: 70px;
-    border-radius: 18px;
+
     border: 2px solid rgb(180, 173, 173);
+    border-radius: 18px;
+
     background-color: rgba(226, 226, 226, 0.5);
 }
 
 /* --- Trennlinie --- */
 .linie {
     width: 100%;
+
     border: none;
     border-top: 2px solid black;
 }
@@ -100,8 +157,8 @@
     grid-template-rows: auto;
     gap: 10px;
 
-    margin-top: 0.5rem;
     justify-content: center;
+    margin-top: 0.5rem;
 }
 
 .kalender_legende2 {
@@ -110,14 +167,16 @@
     grid-template-rows: auto;
     gap: 10px;
 
-    margin-top: 0.5rem;
     justify-content: center;
+    margin-top: 0.5rem;
 }
 
 .kalender_symbole {
     display: flex;
-    justify-content: center;
+
     width: 55px;
     height: 20px;
+    justify-content: center;
+
     border-radius: 18px;
 }
