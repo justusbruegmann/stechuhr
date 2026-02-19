@@ -3,6 +3,7 @@ import Card from "@/components/layout/Card";
 import styles from "./kalender.module.css"
 
 export default function Kalender() {
+    // --- Kalender --- 
     const aktTag = new Date(2021, 7, 1);
     const aktMonat = aktTag.getMonth();
     const aktJahr = aktTag.getFullYear();
@@ -26,8 +27,58 @@ export default function Kalender() {
         }
     }
 
+
+    // --- Legende ---
+    const symbole = [
+        {
+            text: "Krank",
+            color: "rgb(0, 37, 116)",
+            backgroundColor: "rgba(0, 81, 255, 0.5)",
+            borderColor: "rgb(0, 81, 255)"
+        },
+        {
+            text: "Urlaub",
+            color: "rgb(82, 0, 120)",
+            backgroundColor: "rgba(174, 0, 255, 0.5)",
+            borderColor: "rgb(174, 0, 255)"
+        },
+        {
+            text: "WE",
+            color: "rgb(126, 115, 0)",
+            backgroundColor: "rgba(255, 234, 0, 0.5)",
+            borderColor: "rgb(255, 234, 0)"
+        },
+        {
+            text: "FT",
+            color: "rgb(124, 0, 124)",
+            backgroundColor: "rgba(255, 0, 255, 0.5)",
+            borderColor: "rgb(255, 0, 255)"
+        },
+        {
+            text: "+8h",
+            color: "rgb(30, 114, 30)",
+            backgroundColor: "rgba(0, 255, 0, 0.5)",
+            borderColor: "rgb(0, 255, 0)"
+        },
+        {
+            text: "6-8h",
+            color: "rgb(130, 72, 0)",
+            backgroundColor: "rgba(255, 140, 0, 0.5)",
+            borderColor: "rgb(255, 140, 0)"
+        },
+        {
+            text: "<6h",
+            color: "rgb(128, 0, 0)",
+            backgroundColor: "rgba(255, 0, 0, 0.5)",
+            borderColor: "rgb(255, 0, 0)"
+        },
+    ];
+
+    const legende1Symbole = symbole.slice(0, 4);
+    const legende2Symbole = symbole.slice(4);
+
     return (
-        <Card width={"40vw"} height={"90vh"}>
+        <Card width={"40vw"} /*height={"90vh"}*/ height={"80vh"}>
             <div className={styles.kalender_container}>
                 <div className={styles.kalender_header}>
                     <div className={styles.kalender_date}>{aktJahr}</div>
@@ -43,15 +94,36 @@ export default function Kalender() {
                 <br />
                 <hr className={styles.linie} />
 
-                <div className={styles.kalender_legende}>
-                    <span className={styles.kalender_symbole}>+8h</span>
-                    <span className={styles.kalender_symbole}>6-8h</span>
-                    <span className={styles.kalender_symbole}>&lt;6h</span>
-                    <span className={styles.kalender_symbole}>Krank</span>
-                    <span className={styles.kalender_symbole}>Urlaub</span>
-                    <span className={styles.kalender_symbole}>WE</span>
-                    <span className={styles.kalender_symbole}>FT</span>
+                <div className={styles.kalender_legende1}>
+                    {legende1Symbole.map((symbol, index) => (
+                        <span
+                            key={index}
+                            className={styles.kalender_symbole}
+                            style={{
+                                color: symbol.color,
+                                backgroundColor: symbol.backgroundColor,
+                                border: `2px solid ${symbol.borderColor}`
+                            }}
+                        >
+                            {symbol.text}
+                        </span>
+                    ))}
+                </div>
 
+                <div className={styles.kalender_legende2}>
+                    {legende2Symbole.map((symbol, index) => (
+                        <span
+                            key={index}
+                            className={styles.kalender_symbole}
+                            style={{
+                                color: symbol.color,
+                                backgroundColor: symbol.backgroundColor,
+                                border: `2px solid ${symbol.borderColor}`
+                            }}
+                        >
+                            {symbol.text}
+                        </span>
+                    ))}
                 </div>
             </div>
         </Card>
