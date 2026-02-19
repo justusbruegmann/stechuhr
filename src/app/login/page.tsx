@@ -12,7 +12,7 @@ export default function Page() {
     const [validInputs, setValidInputs] = useState<boolean>(true);
 
     const login = () : void => {
-        if (username && password) {
+        if (username.trim() && password.trim()) {
             // Logic for BE login
             setValidInputs(true);
             console.log("logging in with" + username + " " + password);
