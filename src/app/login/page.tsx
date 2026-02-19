@@ -4,7 +4,7 @@ import Button from "@/components/layout/Button";
 import Card from "@/components/layout/Card";
 import Image from "next/image";
 import styles from "./Login.module.css"
-import {useState, useEffect} from "react";
+import {useState} from "react";
 
 export default function Page() {
     const [username, setUsername] = useState<string>("");
@@ -35,8 +35,8 @@ export default function Page() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    const login = (): void => {
-        if (username && password) {
+    const login = () : void => {
+        if (username.trim() && password.trim()) {
             // Logic for BE login
             setValidInputs(true);
             console.log("logging in with" + username + " " + password);
