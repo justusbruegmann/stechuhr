@@ -5,7 +5,7 @@ import styles from "./kalender.module.css"
 export default function Kalender() {
     // --- Kalender --- 
     const heute = new Date();
-    const aktTag = new Date();
+    const aktTag = new Date(2021, 7, 1);
     const aktMonat = aktTag.getMonth();
     const aktJahr = aktTag.getFullYear();
 
