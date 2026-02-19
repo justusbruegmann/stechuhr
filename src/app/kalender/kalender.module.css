@@ -15,19 +15,12 @@
     margin-bottom: 2cm;
 
     width: 110px;
-
-    border: 2px solid black;
-    border-radius: 18px;
 }
 
 .kalender_zeitraum_text {
     font-size: 1.5rem;
     font-weight: bolder;
     text-align: center;
-}
-.kalender_zeitraum:hover {
-    background-color: lightgray;
-    cursor: pointer;
 }
 
 /* --- Wochentage --- */
@@ -62,7 +55,7 @@
 }
 
 .kalender_heute:hover {
-    background-color: lightgray;
+    background-color: rgba(174, 174, 174, 0.4);
     cursor: pointer;
 }
 
@@ -76,12 +69,21 @@
 }
 
 .kalender_tag:hover {
-    background-color: lightgray;
+    background-color: rgba(174, 174, 174, 0.4);
+    border-color: black;
     cursor: pointer;
 }
 
 .kalender_tag_text {
     margin-top: 5px;
+}
+
+.kalender_leer {
+    width: 60px;
+    height: 70px;
+    border-radius: 18px;
+    border: 2px solid rgb(180, 173, 173);
+    background-color: rgba(226, 226, 226, 0.5);
 }
 
 /* --- Trennlinie --- */

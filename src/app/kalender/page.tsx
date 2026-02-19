@@ -104,6 +104,9 @@ export default function Kalender() {
                                 {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
                             </div>);
                         }
+                        if (tag === null) {
+                            return <div key={index} className={styles.kalender_leer}>{tag}</div>;
+                        }
                         return (
                             <div key={index} className={styles.kalender_tag}>
                                 {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
