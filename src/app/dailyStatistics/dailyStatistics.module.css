@@ -1,9 +1,10 @@
-.nachtragen-button{
-    background-color: var(--primary);
-    color: var(--background);
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
+.container-nachtragen {
+    display:flex;
     justify-content: center;
+}
+.container-popup-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
 }

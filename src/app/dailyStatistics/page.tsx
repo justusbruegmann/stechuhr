@@ -1,19 +1,46 @@
 "use client"
 
 import Button from "@/components/layout/Button";
-import { useSidepane } from "@/contexts/SidepaneContext";
+import { useModal } from "@/contexts/ModalContext";
 
 import styles from "./dailyStatistics.module.css"
 
 export default function DailyStatistics() {
-    const { showSidepane, hideSidepane } = useSidepane();
+    const { showModal, hideModal } = useModal();
+
+    const popupContent = (
+        <div>
+            <h2>Manueller Zeiteintrag</h2>
+            <br/>
+            <h3>für den 18.02.2026</h3>
+            <br/>
+            <hr/>
+            <br/>
+            <h3>Einstempelzeit:</h3>
+            <input type="time" required/>
+            <br/>
+            <h3>Ausstempelzeit:</h3>
+            <input type="time" required/>
+            <br/>
+            <div className={styles["container-popup-buttons"]}>
+            <Button label={"Abbrechen"} type={"primary"} height={2} width={5} onClick={hideModal}/>
+            <Button label={"Eintrag hinzufügen"} type={"accent"} height={2} width={8}/>
+            </div>
+        </div>
+    );
     return (
         <div className={`${styles.container}`}>
             <Button label={"18.02.2026"} type={"primary"} height={3} width={15}
                 onClick={() =>
-                    showSidepane(
+                    showModal("sidepane",
                         <div>
-
+                            <h2>Zeiteinträge für 18.02.2026</h2>
+                            <br/>
+                            <hr/>
+                            <br/>
+                            <div className={styles["container-nachtragen"]}>
+                                <Button label={"Manuell nachtragen"} type={"accent"} height={3} width={15} onClick={() => showModal("popup", popupContent)}/>
+                            </div>
                         </div>
                     )
                 } />
