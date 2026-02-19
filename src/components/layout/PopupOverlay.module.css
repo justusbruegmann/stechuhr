@@ -20,9 +20,9 @@
     position: fixed;
     top: 50vh;
     left: 50vw;
-    width: 40rem;
+    width: 30rem;
     min-width: 150px;
-    height: 60vh;
+    height: 55vh;
     min-height: 100px;
     background: white;
     display: flex;
@@ -54,6 +54,7 @@
     from {
         transform: translate(-50%, -50%) scale(0.5);
     }
+
     to {
         transform: translate(-50%, -50%) scale(1);
     }
@@ -63,6 +64,7 @@
     from {
         transform: translate(-50%, -50%) scale(1);
     }
+
     to {
         transform: translate(-50%, -50%) scale(0.5);
     }
@@ -72,6 +74,7 @@
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -81,6 +84,7 @@
     from {
         opacity: 1;
     }
+
     to {
         opacity: 0;
     }
