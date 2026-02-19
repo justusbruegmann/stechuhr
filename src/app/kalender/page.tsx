@@ -1,7 +1,9 @@
+import Card from "@/components/layout/Card";
+
 import styles from "./kalender.module.css"
 
 export default function Kalender() {
-    const aktTag = new Date();
+    const aktTag = new Date(2021, 7, 1);
     const aktMonat = aktTag.getMonth();
     const aktJahr = aktTag.getFullYear();
 
@@ -25,12 +27,33 @@ export default function Kalender() {
     }
 
     return (
-        <div className={styles.kalender_grid}>
-            {tageArray.map((tag, index) => (
-                <div key={index} className={styles.kalender_day}>
-                    {tag && <div className={styles.datum}>{tag}</div>}
+        <Card width={"40vw"} height={"90vh"}>
+            <div className={styles.kalender_container}>
+                <div className={styles.kalender_header}>
+                    <div className={styles.kalender_date}>{aktJahr}</div>
+                    <div className={styles.kalender_date}>{aktTag.toLocaleDateString("de-DE", { month: "long" })}</div>
                 </div>
-            ))}
-        </div>
+                <div className={styles.kalender_grid}>
+                    {tageArray.map((tag, index) => (
+                        <div key={index} className={styles.kalender_day}>
+                            {tag && <div className={styles.datum}>{tag}</div>}
+                        </div>
+                    ))}
+                </div>
+                <br />
+                <hr className={styles.linie} />
+
+                <div className={styles.kalender_legende}>
+                    <span className={styles.kalender_symbole}>+8h</span>
+                    <span className={styles.kalender_symbole}>6-8h</span>
+                    <span className={styles.kalender_symbole}>&lt;6h</span>
+                    <span className={styles.kalender_symbole}>Krank</span>
+                    <span className={styles.kalender_symbole}>Urlaub</span>
+                    <span className={styles.kalender_symbole}>WE</span>
+                    <span className={styles.kalender_symbole}>FT</span>
+
+                </div>
+            </div>
+        </Card>
     );
 } 

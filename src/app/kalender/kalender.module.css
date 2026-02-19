@@ -1,3 +1,25 @@
+.kalender_container {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    align-items: center;
+}
+
+.kalender_header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.kalender_date {
+    font-size: 1.5rem;
+    font-weight: bolder;
+    text-align: center;
+}
+
+
 .kalender_grid {
     display: grid;
     grid-template-columns: repeat(7, 0.001fr);
@@ -5,17 +27,15 @@
     gap: 10px;
 
     padding-top: 2cm;
-    padding-left: 12.5cm; 
 }
 
 .kalender_day {
     display: flex;
     justify-content: center;
-    /*align-items: center;*/
+    width: 60px;
+    height: 70px;
     border-radius: 18px;
-    width: 75px;
-    height: 100px;
-    border: 2px solid black;
+    border: 2px solid rgb(180, 173, 173);
 }
 
 .kalender_day:hover {
@@ -24,5 +44,30 @@
 }
 
 .datum {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
+}
+
+
+.linie {
+    width: 100%;
+    border: none;
+    border-top: 2px solid black;
+}
+
+
+.kalender_legende {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 2fr;
+    gap: 10px;
+
+    margin-top: 0.5rem;
+}
+.kalender_symbole{
+    display: flex;
+    justify-content: center;
+    width: 55px;
+    height: 20px;
+    border-radius: 18px;
+    border: 2px solid rgb(180, 173, 173);
 }

@@ -15,12 +15,21 @@
 }
 
 .button-success {
+<<<<<<< HEAD:src/components/Button.module.css
     background: #18dc39;
     color: black;
 }
 
 .button-error {
     background: #d60909;
+=======
+    background: #02b31f;
+    color: white;
+}
+
+.button-error {
+    background: #fd0202;
+>>>>>>> origin/main:src/components/layout/Button.module.css
     color: white;
 }
 
