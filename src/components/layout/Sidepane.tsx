@@ -78,7 +78,7 @@ export function Sidepane({children, onClose}: SidepaneOverlayProps) {
             </div>
             <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose}>
                 <Image
-                    src={`/arrow_menu_close.svg`}
+                    src={`${process.env.BASE_PATH}/arrow_menu_close.svg`}
                     alt="Close sidepane"
                     width={48}
                     height={48}
