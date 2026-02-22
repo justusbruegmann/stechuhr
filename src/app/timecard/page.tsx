@@ -8,6 +8,9 @@ import { useState, useEffect } from "react";
 
 export default function Timecard() {
     const [time, setTime] = useState(new Date());
+    const [clicked, setClicked] = useState(true);
+    const working = "Im Dienst";
+    const notWorking = "Nicht im Dienst";
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -30,13 +33,13 @@ export default function Timecard() {
                                                                                                 })}</span>
                 <div className={`${Styles["statusDiv"]}`}>
                     <span className={`${Styles["standardTextHeader"]}`}>Status</span>
-                    <span className={`${Styles["standardTextBody"]}`}>Nicht im Dienst</span>
+                    <span className={`${Styles["standardTextBody"]}`}>{clicked ? notWorking : working}</span>
                 </div>
                 <div className={`${Styles["workTimeDiv"]}`}>
                     <span className={`${Styles["workTimeTextHeader"]}`}>Heute gearbeitet</span>
                     <span className={`${Styles["workTimeTextBody"]}`}>0h 0m</span>
                 </div>
-                <Button label={"Einstempeln"} type={"success"} height={2.5} width={"100%"}></Button>
+                <Button onClick={() => setClicked(!clicked)} label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked? "success" : "error"} height={2.5} width={"100%"}></Button>
                 <hr className={Styles["gap"]}></hr>
                 <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"} className={Styles["gap"]}></Button>
             </Card>

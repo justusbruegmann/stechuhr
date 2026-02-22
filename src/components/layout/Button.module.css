@@ -10,17 +10,17 @@
 }
 
 .button-accent {
-    background: #005aff;
+    background: var(--sick-blue);
     color: white;
 }
 
 .button-success {
-    background: #02b31f;
+    background: var(--init-green);
     color: white;
 }
 
 .button-error {
-    background: #fd0202;
+    background: var(--sew-red);
     color: white;
 }
 
