@@ -1,6 +1,6 @@
 
 .button-normal {
-    background: white;
+    background: var(--background);
 }
 
 .button-normal:hover {
@@ -10,18 +10,18 @@
 }
 
 .button-accent {
-    background: #005aff;
-    color: white;
+    background: var(--sick-blue);
+    color: var(--background);
 }
 
 .button-success {
-    background: #02b31f;
-    color: white;
+    background: var(--init-green);
+    color: var(--background);
 }
 
 .button-error {
-    background: #fd0202;
-    color: white;
+    background: var(--sew-red);
+    color: var(--background);
 }
 
 

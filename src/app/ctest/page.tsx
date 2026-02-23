@@ -2,6 +2,8 @@
 
 import Button from "@/components/layout/Button";
 import { useModal } from "@/contexts/ModalContext";
+import Overview from "@/components/overview/Overview";
+
 
 export default function Ctest() {
 
@@ -16,12 +18,18 @@ export default function Ctest() {
             <Button label={"test"} type={"success"} height={5} width={10}/>
             <Button label={<h1 style={{color: '#000'}}> Test</h1>} type={"error"} height={5} width={10}/>
             <br/>
-            <Button label={"Open Sidepane"} type={"primary"} height={3} width={15}
+            <Button label={"Overview"} type={"primary"} height={3} width={15}
                     onClick={() =>
                         showModal("sidepane",
-                            <div>
-                                Ich bin ein Content!
-                            </div>
+                            <Overview />
+                        )
+                    }/>
+            <br/>
+
+            <Button label={"Open empty sidepane"} type={"primary"} height={3} width={15}
+                    onClick={() =>
+                        showModal("sidepane",
+                            <></>
                         )
                     }/>
             <br/>

@@ -1,0 +1,101 @@
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border: 1px solid #d0d0d0;
+    margin: 0.25rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    overflow: hidden;
+}
+
+.wrapper:hover {
+    background: #f8f8f8;
+}
+
+.wrapper:hover .edit-button {
+    width: 2.5rem;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.col-left {
+    flex-direction: row;
+    gap: 0.5rem;
+    margin-top: auto;
+    margin-bottom: auto;
+    flex-grow: 1;
+}
+
+.col-right {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+    margin-bottom: auto;
+    flex-grow: 1;
+    align-items: end;
+}
+
+.time-display {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.information {
+    display: flex;
+    gap: 1rem;
+    color: gray;
+    font-size: 0.8em;
+}
+
+.start-time {
+    color: var(--init-green)
+}
+
+.end-time {
+    color: var(--sew-red)
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.date {
+    margin-left: 1rem;
+}
+
+.calendar-icon {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.edit-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 0;
+    margin: auto 0;
+    transition: width 0.3s ease;
+    flex-shrink: 0;
+    border-radius: 10px;
+}
+
+.edit-button-icon {
+    margin-left: 1rem;
+    overflow: hidden;
+    color: blue;
+
+    border-radius: 10px;
+}
+
+/*.edit-button-icon:hover {*/
+/*    background: rgba(var(--sick-blue-rgb), 0.2)*/
+/*}*/
