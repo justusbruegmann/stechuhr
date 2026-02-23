@@ -14,7 +14,7 @@
     gap: 5.5cm;
 
     align-items: center;
-    margin-bottom: 2cm;
+    margin-bottom: 0.2cm;
 }
 
 /* --- Kalender Jahr/Monat --- */
@@ -99,7 +99,7 @@
     grid-template-rows: 30px 1fr;
 
     width: 60px;
-    height: 70px;
+    height: 90px;
     align-items: center;
     justify-content: center;
 
@@ -119,7 +119,7 @@
     grid-template-rows: 30px 1fr;
 
     width: 60px;
-    height: 70px;
+    height: 90px;
     align-items: center;
     justify-content: center;
 
@@ -136,13 +136,20 @@
 .kalender_tag_text {
     display: flex;
 
-    height: 10px;  
+    height: 10px;
     justify-content: center;
+}
+
+.kalender_tag_symbole_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
 }
 
 .kalender_leer {
     width: 60px;
-    height: 70px;
+    height: 90px;
 
     border: 2px solid rgb(180, 173, 173);
     border-radius: 18px;

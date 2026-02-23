@@ -109,7 +109,7 @@ export default function Kalender() {
 
     // --- UI ---
     return (
-        <Card width={"40vw"} height={"90vh"}>
+        <Card width={"40vw"} height={"95vh"}>
             <div className={styles.kalender_container}>
                 <div className={styles.kalender_header}>
                     <div className={styles.kalender_zeitraum}>
@@ -150,38 +150,40 @@ export default function Kalender() {
                         return (
                             <div key={index} className={styles.kalender_tag}>
                                 {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
-                                {index % 7 === 5 || index % 7 === 6 ? (
-                                    <span
-                                        className={styles.kalender_symbole}
-                                        style={{
-                                            color: symbole[2].color,
-                                            backgroundColor: symbole[2].backgroundColor,
-                                            border: `2px solid ${symbole[2].borderColor}`
-                                        }}
-                                    >
-                                        {symbole[2].text}
-                                    </span>
-                                ) : null}
-                                {(() => {
-                                    const feiertag = hd.isHoliday(new Date(aktJahr, aktMonat, tag));
+                                <div className={styles.kalender_tag_symbole_container}>
+                                    {index % 7 === 5 || index % 7 === 6 ? (
+                                        <span
+                                            className={styles.kalender_symbole}
+                                            style={{
+                                                color: symbole[2].color,
+                                                backgroundColor: symbole[2].backgroundColor,
+                                                border: `2px solid ${symbole[2].borderColor}`
+                                            }}
+                                        >
+                                            {symbole[2].text}
+                                        </span>
+                                    ) : null}
 
-                                    if (feiertag && feiertag.some(f => f.type === "public")) {
-                                        return (
-                                            <span
-                                                className={styles.kalender_symbole}
-                                                style={{
-                                                    color: symbole[3].color,
-                                                    backgroundColor: symbole[3].backgroundColor,
-                                                    border: `2px solid ${symbole[3].borderColor}`
-                                                }}
-                                            >
-                                                {symbole[3].text}
-                                            </span>
-                                        );
-                                    }
+                                    {(() => {
+                                        const feiertag = hd.isHoliday(new Date(aktJahr, aktMonat, tag));
 
-                                    return null;
-                                })()}
+                                        if (feiertag && feiertag.some(f => f.type === "public")) {
+                                            return (
+                                                <span
+                                                    className={styles.kalender_symbole}
+                                                    style={{
+                                                        color: symbole[3].color,
+                                                        backgroundColor: symbole[3].backgroundColor,
+                                                        border: `2px solid ${symbole[3].borderColor}`
+                                                    }}
+                                                >
+                                                    {symbole[3].text}
+                                                </span>
+                                            );
+                                        }
+                                        return null;
+                                    })()}
+                                </div>
                             </div>
                         );
                     })}
