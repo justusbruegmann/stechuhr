@@ -6,7 +6,8 @@ export default interface TimeEntry {
      * The endTime must not be set, if it represents a working period that is still ongoing.
      */
 
+    id: string;
     userId: string;
     startTime: string;
-    endTime: string | null;
+    endTime?: string;
 }
