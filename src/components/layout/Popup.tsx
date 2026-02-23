@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
 import {createPortal} from "react-dom";
 import React, {useEffect, useRef, useState} from "react";
-import styles from './PopupOverlay.module.css';
+import styles from './Popup.module.css';
 import Card from "@/components/layout/Card";
 
 interface PopupProps {

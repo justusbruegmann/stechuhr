@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import Styles from "./Overview.module.css";
 import Tabs from "@/components/layout/Tabs";

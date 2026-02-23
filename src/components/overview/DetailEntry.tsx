@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import Styles from "./DetailEntry.module.css";
 import Card from "@/components/layout/Card";

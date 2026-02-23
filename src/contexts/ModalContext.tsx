@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {createContext, ReactNode, useContext, useState, useCallback} from "react";
 import {Sidepane} from "@/components/layout/Sidepane";
