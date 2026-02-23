@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Holidays from 'date-holidays';
 
 import Card from "@/components/layout/Card";
 
@@ -34,6 +35,9 @@ export default function Kalender() {
     // --- Wochentage --- 
     const wochentage = ["Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa.", "So."];
 
+    // --- Feiertage ---
+    const hd = new Holidays('DE', 'BW');
+
     // --- Legende ---
     const symbole = [
         {
@@ -50,7 +54,7 @@ export default function Kalender() {
         },
         {
             text: "WE",
-            color: "rgb(126, 115, 0)",
+            color: "rgb(99, 90, 0)",
             backgroundColor: "rgba(255, 234, 0, 0.5)",
             borderColor: "rgb(255, 234, 0)"
         },
@@ -134,17 +138,50 @@ export default function Kalender() {
                 </div>
                 <div className={styles.kalender_grid}>
                     {tageArray.map((tag, index) => {
-                        if (tag === heute.getDate() && aktMonat === heute.getMonth() && aktJahr === heute.getFullYear()) {
-                            return (<div key={index} className={styles.kalender_heute}>
-                                {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
-                            </div>);
-                        }
                         if (tag === null) {
                             return <div key={index} className={styles.kalender_leer}>{tag}</div>;
+                        }
+                        if (tag === heute.getDate() && aktMonat === heute.getMonth() && aktJahr === heute.getFullYear()) {
+                            return (
+                                <div key={index} className={styles.kalender_heute}>
+                                    {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
+                                </div>);
                         }
                         return (
                             <div key={index} className={styles.kalender_tag}>
                                 {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
+                                {index % 7 === 5 || index % 7 === 6 ? (
+                                    <span
+                                        className={styles.kalender_symbole}
+                                        style={{
+                                            color: symbole[2].color,
+                                            backgroundColor: symbole[2].backgroundColor,
+                                            border: `2px solid ${symbole[2].borderColor}`
+                                        }}
+                                    >
+                                        {symbole[2].text}
+                                    </span>
+                                ) : null}
+                                {(() => {
+                                    const feiertag = hd.isHoliday(new Date(aktJahr, aktMonat, tag));
+
+                                    if (feiertag && feiertag.some(f => f.type === "public")) {
+                                        return (
+                                            <span
+                                                className={styles.kalender_symbole}
+                                                style={{
+                                                    color: symbole[3].color,
+                                                    backgroundColor: symbole[3].backgroundColor,
+                                                    border: `2px solid ${symbole[3].borderColor}`
+                                                }}
+                                            >
+                                                {symbole[3].text}
+                                            </span>
+                                        );
+                                    }
+
+                                    return null;
+                                })()}
                             </div>
                         );
                     })}

@@ -95,10 +95,12 @@
 }
 
 .kalender_heute {
-    display: flex;
+    display: grid;
+    grid-template-rows: 30px 1fr;
 
     width: 60px;
     height: 70px;
+    align-items: center;
     justify-content: center;
 
     color: rgb(0, 72, 255);
@@ -113,9 +115,12 @@
 }
 
 .kalender_tag {
-    display: flex;
+    display: grid;
+    grid-template-rows: 30px 1fr;
+
     width: 60px;
     height: 70px;
+    align-items: center;
     justify-content: center;
 
     border: 2px solid rgb(180, 173, 173);
@@ -129,7 +134,10 @@
 }
 
 .kalender_tag_text {
-    margin-top: 5px;
+    display: flex;
+
+    height: 10px;  
+    justify-content: center;
 }
 
 .kalender_leer {
