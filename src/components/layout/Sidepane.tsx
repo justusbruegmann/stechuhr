@@ -8,6 +8,7 @@ import Image from "next/image";
 interface SidepaneOverlayProps {
     children: React.ReactNode;
     onClose: () => void;
+    zIndex: number;
 }
 
 function parseCssTimeToMs(value: string): number {
@@ -19,7 +20,7 @@ function parseCssTimeToMs(value: string): number {
     return Number.parseFloat(v);
 }
 
-export function Sidepane({children, onClose}: SidepaneOverlayProps) {
+export function Sidepane({children, onClose, zIndex}: SidepaneOverlayProps) {
     const [portalRoot, setPortalRoot] = useState<HTMLDivElement | null>(null);
 
     const [isClosing, setIsClosing] = useState(false);
@@ -71,12 +72,12 @@ export function Sidepane({children, onClose}: SidepaneOverlayProps) {
 
     return createPortal(
         <div className={`${styles["overlay-background"]} ${isClosing ? styles["fade-out"] : ""}`} onClick={handleClose}
-             ref={overlayRef}>
+             ref={overlayRef} style={{zIndex: zIndex}}>
             <div className={`${styles["sidepane-container"]} ${isClosing ? styles["slide-out"] : ""}`}
                  onClick={(e) => e.stopPropagation()}>
                 {children}
             </div>
-            <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose}>
+            <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose} style={{zIndex: zIndex+1}}>
                 <Image
                     // hacky workaround, because this icon is the only one that locally won't load
                     src={"arrow_menu_close.svg"}

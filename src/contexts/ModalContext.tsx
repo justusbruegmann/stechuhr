@@ -35,17 +35,18 @@ export default function ModalProvider({children}: { children: ReactNode }) {
     return (
         <ModalContext.Provider value={value}>
             {children}
-            {modals.map(modal =>
-                modal.type === "sidepane" ? (
-                    <Sidepane key={modal.id} onClose={() => hideModal(modal.id)}>
+            {modals.map((modal, index) => {
+                const zIndex = 1000 + 10*index;
+                return modal.type === "sidepane" ? (
+                    <Sidepane key={modal.id} onClose={() => hideModal(modal.id)} zIndex={zIndex}>
                         {modal.content}
                     </Sidepane>
                 ) : (
-                    <Popup key={modal.id} onClose={() => hideModal(modal.id)}>
+                    <Popup key={modal.id} onClose={() => hideModal(modal.id)} zIndex={zIndex}>
                         {modal.content}
                     </Popup>
-                )
-            )}
+                );
+            })}
         </ModalContext.Provider>
     );
 }

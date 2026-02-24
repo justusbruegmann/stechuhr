@@ -8,6 +8,7 @@ import Card from "@/components/layout/Card";
 interface PopupProps {
     children: React.ReactNode;
     onClose: () => void;
+    zIndex: number;
 }
 
 function parseCssTimeToMs(value: string): number {
@@ -19,7 +20,7 @@ function parseCssTimeToMs(value: string): number {
     return Number.parseFloat(v);
 }
 
-export function Popup({children, onClose}: PopupProps) {
+export function Popup({children, onClose, zIndex}: PopupProps) {
     const [portalRoot, setPortalRoot] = useState<HTMLDivElement | null>(null);
 
     const [isClosing, setIsClosing] = useState(false);
@@ -69,7 +70,7 @@ export function Popup({children, onClose}: PopupProps) {
 
     if (!portalRoot) return null;
 
-    const styleOverrides = {padding: '0px', margin: '.5rem', boxShadow: 'none'};
+    const styleOverrides = {padding: '0px', margin: '.5rem', boxShadow: 'none', zIndex: zIndex+1};
 
     return createPortal(
         <div className={`${styles["overlay-background"]} ${isClosing ? styles["fade-out"] : ""}`} onClick={handleClose}

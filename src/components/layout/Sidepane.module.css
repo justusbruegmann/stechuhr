@@ -4,7 +4,6 @@
     position: fixed;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.6);
-    z-index: 100000;
     display: flex;
 
     /* Fade-in animation */
@@ -44,7 +43,6 @@
     top: 50vh;
     right: max(35vw, 300px);
     transform: translateY(-50%);
-    z-index: 100001; /* above the sidepane */
     display: flex;
     cursor: pointer;
     justify-content: center;
