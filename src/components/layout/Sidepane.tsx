@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
 import {createPortal} from "react-dom";
 import React, {useEffect, useRef, useState} from "react";
-import styles from './SidepaneOverlay.module.css';
+import styles from './Sidepane.module.css';
 import Image from "next/image";
 
 interface SidepaneOverlayProps {
@@ -77,10 +77,12 @@ export function Sidepane({children, onClose, zIndex}: SidepaneOverlayProps) {
                  onClick={(e) => e.stopPropagation()}>
                 {children}
             </div>
-            <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose} style={{zIndex: zIndex+1}}>
+            <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose}
+                 style={{zIndex: zIndex + 1}}>
                 <Image
-                    src={`/arrow_menu_close.svg`}
-                    alt="Close sidepane"
+                    // hacky workaround, because this icon is the only one that locally won't load
+                    src={"arrow_menu_close.svg"}
+                    alt=">"
                     width={48}
                     height={48}
                     priority
