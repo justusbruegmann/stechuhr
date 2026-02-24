@@ -2,12 +2,12 @@
 
 import Button from "@/components/layout/Button";
 
-export default function Ctest() {
+export default function Manage() {
 
 
     return (
         <>
-            <h1>Test</h1>
+            <h1>Users Management</h1>
         </>
     );
 }
