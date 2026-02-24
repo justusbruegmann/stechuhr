@@ -44,38 +44,58 @@ export default function Overview() {
         }
     ]
 
-    function renderDetailEntries(timeEntries: TimeEntry[]): React.ReactNode {
-        return <>
-            {timeEntries.map((entry, index) => (
-                <DetailEntry
-                    key={entry.id ?? index}   // Prefer a stable unique id if available
-                    timeEntry={entry}
-                />
-            ))}
-        </>;
+
+
+    const timeEntries: Record<string, TimeEntry[]> = {
+        "day": testTimeEntries,
+        "week": testTimeEntries,
+        "month": testTimeEntries
+    };
+
+
+    function generate_tab_content(timespan: "day" | "week" | "month"): React.ReactNode {
+        let title: string;
+
+        switch (timespan) {
+            case "day": {
+                title = "Tag";
+                break;
+            }
+            case "week": {
+                title = "Woche";
+                break;
+            }
+            case "month": {
+                title = "Monat";
+                break;
+            }
+            default: {
+                title = "Unbekannt";
+                break;
+            }
+        }
+
+
+        return (
+            <div className={Styles["tab-content-area"]}>
+                <h1>{title}</h1>
+                <SaldoView timespan={timespan} timeEntries={timeEntries[timespan]}/>
+                <br/>
+
+                {timeEntries[timespan].map((entry) => (
+                    <DetailEntry
+                        key={entry.id}
+                        timeEntry={entry}
+                    />
+                ))}
+            </div>
+        );
     }
 
-    const day = (
-        <div className={Styles["tab-content-area"]}>
-            <h1>Tag</h1>
-            <SaldoView/>
-            <br/>
-            {renderDetailEntries(testTimeEntries)}
-        </div>
-    );
-    const week =
-        <div className={Styles["tab-content-area"]}>
-            Woche
-        </div>
-    const month =
-        <div className={Styles["tab-content-area"]}>
-            Monat
-        </div>
-
     const tabs = {
-        "Tag": day,
-        "Woche": week,
-        "Monat": month
+        "Tag": generate_tab_content("day"),
+        "Woche": generate_tab_content("week"),
+        "Monat": generate_tab_content("month")
     }
 
     return (
@@ -84,7 +104,6 @@ export default function Overview() {
             <p className={`${Styles["subtitle"]}`}>Saldo und Buchungen für Tag / Woche / Monat</p>
 
             <Tabs tabs={tabs}/>
-
         </>
     );
 }

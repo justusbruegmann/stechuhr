@@ -5,7 +5,7 @@ import Styles from "./DetailEntry.module.css";
 import Card from "@/components/layout/Card";
 import Image from "next/image";
 import TimeEntry from "@/types/TimeEntry";
-import {formatDate, formatDuration, formatTime} from "@/utils/DateUtils";
+import {formatDate, formatDateTime, formatDuration} from "@/utils/TimeUtils";
 
 
 type Props = {
@@ -17,9 +17,6 @@ export default function DetailEntry({timeEntry}: Props) {
 
     const startTime = new Date(timeEntry.startTime)
     const endTime: Date | null = timeEntry.endTime ? new Date(timeEntry.endTime) : null
-
-
-
 
 
     return (
@@ -35,14 +32,14 @@ export default function DetailEntry({timeEntry}: Props) {
                     <div className={Styles["information"]}>
                         <div className={Styles["row"]}>Anfang: &nbsp;
                             <div className={Styles["start-time"]}>
-                                {formatTime(startTime)}
+                                {formatDateTime(startTime)}
                             </div>
                         </div>
 
                         {endTime &&
                             <div className={Styles["row"]}>Ende: &nbsp;
                                 <div className={Styles["end-time"]}>
-                                    {formatTime(endTime)}
+                                    {formatDateTime(endTime)}
                                 </div>
                             </div>
                         }

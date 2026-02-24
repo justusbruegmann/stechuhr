@@ -79,7 +79,7 @@ export function Sidepane({children, onClose}: SidepaneOverlayProps) {
             <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose}>
                 <Image
                     // hacky workaround, because this icon is the only one that locally won't load
-                    src={`${process.env.BASE_PATH || ''}/arrow_menu_close.svg`}
+                    src={"arrow_menu_close.svg"}
                     alt=">"
                     width={48}
                     height={48}
