@@ -37,7 +37,7 @@ export default function Button({
 
     return (
         <div className={styles.wrapper} style={mergedStyle}>
-            <button className={mergedClassName} style={{ height: '100%', width: '100%' }} onClick={onClick}>
+            <button className={mergedClassName} style={{height: '100%', width: '100%'}} onClick={onClick}>
                 {label}
             </button>
         </div>

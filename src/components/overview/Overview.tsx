@@ -45,7 +45,6 @@ export default function Overview() {
     ]
 
 
-
     const timeEntries: Record<string, TimeEntry[]> = {
         "day": testTimeEntries,
         "week": testTimeEntries,

@@ -77,7 +77,8 @@ export function Sidepane({children, onClose, zIndex}: SidepaneOverlayProps) {
                  onClick={(e) => e.stopPropagation()}>
                 {children}
             </div>
-            <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose} style={{zIndex: zIndex+1}}>
+            <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose}
+                 style={{zIndex: zIndex + 1}}>
                 <Image
                     // hacky workaround, because this icon is the only one that locally won't load
                     src={"arrow_menu_close.svg"}

@@ -29,7 +29,8 @@ export default function SaldoView({
     const saldo = totalWorkedTime - requiredWorkTime;
 
     return (
-        <Card className={`${Styles["wrapper"]} ${saldo >= 0 ? Styles["positive-saldo"] : Styles["negative-saldo"]}`} shadow={false}>
+        <Card className={`${Styles["wrapper"]} ${saldo >= 0 ? Styles["positive-saldo"] : Styles["negative-saldo"]}`}
+              shadow={false}>
             <p>Saldo {timespan == "day" ? "heute" : timespan == "week" ? "diese Woche" : "diesen Monat"}</p>
             <h1 className={Styles["time-display"]}>
                 {saldo < 0 ? `- ${formatMsTime(-saldo)}` : `+ ${formatMsTime(saldo)}`}

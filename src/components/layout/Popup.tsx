@@ -70,13 +70,13 @@ export function Popup({children, onClose, zIndex}: PopupProps) {
 
     if (!portalRoot) return null;
 
-    const styleOverrides = {padding: '0px', margin: '.5rem', boxShadow: 'none', zIndex: zIndex+1};
+    const styleOverrides = {padding: '0px', margin: '.5rem', boxShadow: 'none', zIndex: zIndex + 1};
 
     return createPortal(
         <div className={`${styles["overlay-background"]} ${isClosing ? styles["fade-out"] : ""}`} onClick={handleClose}
              ref={overlayRef}>
-            <Card className={`${styles["popup-container"]} ${isClosing ? styles["pop-out"] : ""}` }
-                 onClick={(e) => e.stopPropagation()}>
+            <Card className={`${styles["popup-container"]} ${isClosing ? styles["pop-out"] : ""}`}
+                  onClick={(e) => e.stopPropagation()}>
                 <Card className={`${styles["close-button"]}`} styleOverrides={styleOverrides} onClick={handleClose}>
                     ×
                 </Card>
