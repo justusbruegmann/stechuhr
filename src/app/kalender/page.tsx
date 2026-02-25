@@ -42,9 +42,9 @@ export default function Kalender() {
     const symbole = [
         {
             text: "Krank",
-            color: "rgb(0, 37, 116)",
-            backgroundColor: "rgba(0, 81, 255, 0.5)",
-            borderColor: "rgb(0, 81, 255)"
+            color: "rgb(99, 90, 0)",
+            backgroundColor: "rgba(255, 234, 0, 0.5)",
+            borderColor: "rgb(255, 234, 0)"
         },
         {
             text: "Urlaub",
@@ -54,9 +54,9 @@ export default function Kalender() {
         },
         {
             text: "WE",
-            color: "rgb(99, 90, 0)",
-            backgroundColor: "rgba(255, 234, 0, 0.5)",
-            borderColor: "rgb(255, 234, 0)"
+            color: "rgb(0, 37, 116)",
+            backgroundColor: "rgba(0, 81, 255, 0.5)",
+            borderColor: "rgb(0, 81, 255)"
         },
         {
             text: "FT",
@@ -65,7 +65,7 @@ export default function Kalender() {
             borderColor: "rgb(255, 0, 255)"
         },
         {
-            text: "+8h",
+            text: ">8h",
             color: "rgb(30, 114, 30)",
             backgroundColor: "rgba(0, 255, 0, 0.5)",
             borderColor: "rgb(0, 255, 0)"
@@ -102,6 +102,76 @@ export default function Kalender() {
     }
     function handleHeute() {
         setAktTag(new Date(heute.getFullYear(), heute.getMonth(), 1));
+    }
+
+    function handleEintraege(index: number, tag: number) {
+        const eintraege = [];
+
+        // Wochenende
+        if (index % 7 === 5 || index % 7 === 6) {
+            eintraege.push(
+                <span
+                    className={styles.kalender_symbole}
+                    style={{
+                        color: symbole[2].color,
+                        backgroundColor: symbole[2].backgroundColor,
+                        border: `2px solid ${symbole[2].borderColor}`
+                    }}
+                >
+                    {symbole[2].text}
+                </span>
+            );
+        }
+
+        // Feiertag
+        const feiertag = hd.isHoliday(new Date(aktJahr, aktMonat, tag));
+
+        if (feiertag && feiertag.some(f => f.type === "public")) {
+            eintraege.push(
+                <span
+                    className={styles.kalender_symbole}
+                    style={{
+                        color: symbole[3].color,
+                        backgroundColor: symbole[3].backgroundColor,
+                        border: `2px solid ${symbole[3].borderColor}`
+                    }}
+                >
+                    {symbole[3].text}
+                </span>
+            );
+        }
+
+        // Arbeitszeit
+        const arbeitszeit = -1;
+        let symbolIndex: number = 0;
+
+        switch (true) {
+            case arbeitszeit >= 8:
+                symbolIndex = 4;
+                break;
+            case arbeitszeit >= 6:
+                symbolIndex = 5;
+                break;
+            case arbeitszeit < 6:
+                symbolIndex = 6;
+                break;
+        }
+
+        if (arbeitszeit !== -1) {
+            eintraege.push(
+                <span
+                    className={styles.kalender_symbole}
+                    style={{
+                        color: symbole[symbolIndex].color,
+                        backgroundColor: symbole[symbolIndex].backgroundColor,
+                        border: `2px solid ${symbole[symbolIndex].borderColor}`
+                    }}
+                >
+                    {symbole[symbolIndex].text}
+                </span>
+            );
+        }
+        return eintraege;
     }
 
 
@@ -145,44 +215,17 @@ export default function Kalender() {
                             return (
                                 <div key={index} className={styles.kalender_heute}>
                                     {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
-                                </div>);
+                                    <div className={styles.kalender_tag_symbole_container}>
+                                        {handleEintraege(index, tag)}
+                                    </div>
+                                </div>
+                            );
                         }
                         return (
                             <div key={index} className={styles.kalender_tag}>
                                 {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
                                 <div className={styles.kalender_tag_symbole_container}>
-                                    {index % 7 === 5 || index % 7 === 6 ? (
-                                        <span
-                                            className={styles.kalender_symbole}
-                                            style={{
-                                                color: symbole[2].color,
-                                                backgroundColor: symbole[2].backgroundColor,
-                                                border: `2px solid ${symbole[2].borderColor}`
-                                            }}
-                                        >
-                                            {symbole[2].text}
-                                        </span>
-                                    ) : null}
-
-                                    {(() => {
-                                        const feiertag = hd.isHoliday(new Date(aktJahr, aktMonat, tag));
-
-                                        if (feiertag && feiertag.some(f => f.type === "public")) {
-                                            return (
-                                                <span
-                                                    className={styles.kalender_symbole}
-                                                    style={{
-                                                        color: symbole[3].color,
-                                                        backgroundColor: symbole[3].backgroundColor,
-                                                        border: `2px solid ${symbole[3].borderColor}`
-                                                    }}
-                                                >
-                                                    {symbole[3].text}
-                                                </span>
-                                            );
-                                        }
-                                        return null;
-                                    })()}
+                                    {handleEintraege(index, tag)}
                                 </div>
                             </div>
                         );
