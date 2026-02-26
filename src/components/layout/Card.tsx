@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import styles from './Card.module.css';
 
@@ -16,18 +18,18 @@ interface CardProps {
 }
 
 export default React.forwardRef<HTMLDivElement, CardProps>(function Card({
-    children,
-    width,
-    height,
-    backgroundColor,
-    shadow = true,
-    border,
-    borderRadius,
-    borderColor,
-    className,
-    styleOverrides,
-    onClick,
-}: CardProps, ref) {
+                                                                             children,
+                                                                             width,
+                                                                             height,
+                                                                             backgroundColor,
+                                                                             shadow = true,
+                                                                             border,
+                                                                             borderRadius,
+                                                                             borderColor,
+                                                                             className,
+                                                                             styleOverrides,
+                                                                             onClick,
+                                                                         }: CardProps, ref) {
     // Inline styles handle dynamic/prop-based values and have highest specificity
     const inlineStyle: React.CSSProperties = {};
 
@@ -40,7 +42,7 @@ export default React.forwardRef<HTMLDivElement, CardProps>(function Card({
     if (borderColor !== undefined) inlineStyle.borderColor = borderColor;
 
     // Merge styles with styleOverrides having the highest priority
-    const finalStyle = { ...inlineStyle, ...styleOverrides };
+    const finalStyle = {...inlineStyle, ...styleOverrides};
 
     // Combine card base styles with external classNames (external classes have higher specificity through CSS cascade)
     const classNameList = [styles["card-container"], className].filter(Boolean).join(" ");

@@ -7,7 +7,7 @@ This repository is a template with a working GitHub action for the build and Git
 
 ## How to use this template
 
-After creating a repo with this template, deploy works automatically with each push to github pages. The template is deployed to https://justusbruegmann.github.io/stechuhr/
+After creating a repo with this template, deploy works automatically with each push to github pages. The template is deployed to https://how2centeradiv.dev
 
 ### Todo:
 

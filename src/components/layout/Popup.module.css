@@ -4,7 +4,6 @@
     position: fixed;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.6);
-    z-index: 2147483647;
     display: flex;
 
     /* Fade-in animation */
@@ -20,10 +19,6 @@
     position: fixed;
     top: 50vh;
     left: 50vw;
-    width: 30rem;
-    min-width: 150px;
-    height: 55vh;
-    min-height: 100px;
     background: white;
     display: flex;
     flex-direction: column;

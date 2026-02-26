@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
 import {createPortal} from "react-dom";
 import React, {useEffect, useRef, useState} from "react";
-import styles from './SidepaneOverlay.module.css';
+import styles from './Sidepane.module.css';
 import Image from "next/image";
 
 interface SidepaneOverlayProps {
     children: React.ReactNode;
     onClose: () => void;
+    zIndex: number;
 }
 
 function parseCssTimeToMs(value: string): number {
@@ -19,7 +20,7 @@ function parseCssTimeToMs(value: string): number {
     return Number.parseFloat(v);
 }
 
-export function Sidepane({children, onClose}: SidepaneOverlayProps) {
+export function Sidepane({children, onClose, zIndex}: SidepaneOverlayProps) {
     const [portalRoot, setPortalRoot] = useState<HTMLDivElement | null>(null);
 
     const [isClosing, setIsClosing] = useState(false);
@@ -71,15 +72,17 @@ export function Sidepane({children, onClose}: SidepaneOverlayProps) {
 
     return createPortal(
         <div className={`${styles["overlay-background"]} ${isClosing ? styles["fade-out"] : ""}`} onClick={handleClose}
-             ref={overlayRef}>
+             ref={overlayRef} style={{zIndex: zIndex}}>
             <div className={`${styles["sidepane-container"]} ${isClosing ? styles["slide-out"] : ""}`}
                  onClick={(e) => e.stopPropagation()}>
                 {children}
             </div>
-            <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose}>
+            <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose}
+                 style={{zIndex: zIndex + 1}}>
                 <Image
-                    src={`/arrow_menu_close.svg`}
-                    alt="Close sidepane"
+                    // hacky workaround, because this icon is the only one that locally won't load
+                    src={"arrow_menu_close.svg"}
+                    alt=">"
                     width={48}
                     height={48}
                     priority

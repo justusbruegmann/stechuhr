@@ -1,0 +1,32 @@
+.wrapper {
+
+    flex-direction: column;
+    margin-bottom: 2rem;
+}
+
+.time-display {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 0.25em;
+    margin-bottom: 0.5em;
+}
+
+.positive-saldo {
+    background-color: rgba(var(--init-green-rgb), 0.1);
+    border: 1px solid rgba(var(--init-green-rgb), 0.4);
+    color: var(--init-green);
+}
+
+.negative-saldo {
+    background-color: rgba(var(--sew-red-rgb), 0.1);
+    border: 1px solid rgba(var(--sew-red-rgb), 0.4);
+    color: var(--sew-red);
+}
+
+.information {
+    display: flex;
+    gap: 1rem;
+    color: gray;
+    font-size: 0.8em;
+}
+

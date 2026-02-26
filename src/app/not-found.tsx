@@ -11,7 +11,7 @@ export default function NotFound() {
                 <div className={`${styles["not-found-center"]}`}>
                     <h1 className={`${styles["not-found-title"]}`}>404</h1>
                     <Image
-                        src={`${process.env.BASE_PATH}/error_icon.svg`}
+                        src={`/error_icon.svg`}
                         alt="Page not found icon"
                         width={48}
                         height={48}
