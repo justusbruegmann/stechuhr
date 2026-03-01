@@ -11,6 +11,7 @@ export default function Timecard() {
     const [clicked, setClicked] = useState(true);
     const working = "Im Dienst";
     const notWorking = "Nicht im Dienst";
+    const [inOrOut, setInOrOut] = useState(true);
 
     useEffect(() => {
         setTime(new Date());
@@ -20,6 +21,14 @@ export default function Timecard() {
 
         return () => clearInterval(interval);
     }, []);
+
+    
+    function returnTime() {
+        setInOrOut(!inOrOut);
+        const buttnClickedTime = new Date();
+        const action = inOrOut ? "Eingestochen: " : "Ausgestochen: ";
+        console.log(action+buttnClickedTime);
+    }
 
     return (
         <div className={`${Styles["background"]}`}>
@@ -50,9 +59,4 @@ export default function Timecard() {
             </Card>
         </div>
     );
-}
-
-function returnTime() {
-    console.log("test");
-    //console.log(time.toLocaleTimeString("de-DE",{hour12: false}));
 }
