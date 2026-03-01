@@ -7,12 +7,13 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 
 export default function Timecard() {
-    const [time, setTime] = useState(new Date());
+    const [time, setTime] = useState<Date | null>(null);
     const [clicked, setClicked] = useState(true);
     const working = "Im Dienst";
     const notWorking = "Nicht im Dienst";
 
     useEffect(() => {
+        setTime(new Date());
         const interval = setInterval(() => {
             setTime(new Date());
         }, 1000);
@@ -24,13 +25,17 @@ export default function Timecard() {
         <div className={`${Styles["background"]}`}>
             <Card width={"20vw"} height={"80vh"} styleOverrides={{flexDirection: "column"}}>
                 <div className={Styles["clock"]}><Image src={"/clock.svg"} width={40} height={40} alt={"Uhr"}></Image></div>
-                    <span className={`${Styles["timeStyle"]}`}>{time.toLocaleTimeString("de-DE", { hour12: false })}</span>
-                    <span className={`${Styles["standardTextHeader"]}`}>{time.toLocaleDateString("de-DE",{
-                                                                                                    weekday: "long", 
-                                                                                                    day: "numeric", 
-                                                                                                    month: "long", 
-                                                                                                    year: "numeric"
-                                                                                                })}</span>
+                    <span className={`${Styles["timeStyle"]}`}>
+                        {time ? time.toLocaleTimeString("de-DE", { hour12: false }) : "--:--:--"}
+                    </span>
+                    <span className={`${Styles["standardTextHeader"]}`}>
+                        {time ? time.toLocaleDateString("de-DE",{
+                                                            weekday: "long", 
+                                                            day: "numeric", 
+                                                            month: "long", 
+                                                            year: "numeric"
+                                                         }) : "..."}
+                    </span>
                 <div className={`${Styles["statusDiv"]}`}>
                     <span className={`${Styles["standardTextHeader"]}`}>Status</span>
                     <span className={`${Styles["standardTextBody"]}`}>{clicked ? notWorking : working}</span>
@@ -39,10 +44,15 @@ export default function Timecard() {
                     <span className={`${Styles["workTimeTextHeader"]}`}>Heute gearbeitet</span>
                     <span className={`${Styles["workTimeTextBody"]}`}>0h 0m</span>
                 </div>
-                <Button onClick={() => setClicked(!clicked)} label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked? "success" : "error"} height={2.5} width={"100%"}></Button>
+                <Button onClick={() => {setClicked(!clicked); returnTime();}} label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked? "success" : "error"} height={2.5} width={"100%"}></Button>
                 <hr className={Styles["gap"]}></hr>
                 <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"} className={Styles["gap"]}></Button>
             </Card>
         </div>
     );
-}   
+}
+
+function returnTime() {
+    console.log("test");
+    //console.log(time.toLocaleTimeString("de-DE",{hour12: false}));
+}
