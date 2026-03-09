@@ -8,23 +8,26 @@ import TimeEntry from "@/types/TimeEntry";
 import styles from "./ManualEntryPopup.module.css";
 
 type Props = {
-  
+  date: Date;
   onClose: () => void;
   onCreate: (entry: TimeEntry) => void;
 };
 
-export default function ManualEntryPopup({ onClose, onCreate }: Props) {
+export default function ManualEntryPopup({ date, onClose, onCreate }: Props) {
   const { hideModal } = useModal();
 
   const [fromTime, setFromTime] = useState("");
   const [toTime, setToTime] = useState("");
 
   function saveButton() {
+    const [fromHours, fromMinutes] = fromTime.split(":").map(Number);
+    const [toHours, toMinutes] = toTime.split(":").map(Number);
+
     const entry: TimeEntry = {
       id: crypto.randomUUID(),
       userId: "456",
-      startTime: fromTime,
-      endTime: toTime,
+      startTime: new Date(date.setHours(fromHours, fromMinutes)).toISOString(),
+      endTime: new Date(date.setHours(toHours, toMinutes)).toISOString(),
     };
 
     console.log("Created entry:", entry);
