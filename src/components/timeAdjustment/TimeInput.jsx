@@ -7,8 +7,7 @@ export default function TimeInput({ label, onChange, required }) {
 
             <div className={styles["input-wrapper"]}>
                 <input
-                    type="text"
-                    placeholder="HH:MM"
+                    type="time"
                     onChange={onChange}
                     required={required}
                     className={styles["time-input"]}
