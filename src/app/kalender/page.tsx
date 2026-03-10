@@ -143,7 +143,7 @@ export default function Kalender() {
 
         // Arbeitszeit
         const arbeitszeit = -1;
-        let symbolIndex: number = 0;
+        let symbolIndex: number = -1;
 
         switch (true) {
             case arbeitszeit >= 8:
@@ -167,7 +167,7 @@ export default function Kalender() {
                         border: `2px solid ${symbole[symbolIndex].borderColor}`
                     }}
                 >
-                    {symbole[symbolIndex].text}
+                    {arbeitszeit + "h"}
                 </span>
             );
         }
