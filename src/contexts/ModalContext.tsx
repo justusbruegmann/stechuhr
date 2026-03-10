@@ -29,7 +29,13 @@ export default function ModalProvider({children}: { children: ReactNode }) {
 
     const triggerClose = useCallback((id: string) => {
         const handleClose = handleCloseRefs.current.get(id);
-        handleClose?.();
+        if (handleClose) {
+            handleClose();
+        } else {
+            // Fallback if no close handler is registered
+            handleCloseRefs.current.delete(id);
+            setModals(prevModals => prevModals.filter(modal => modal.id !== id));
+        }
     }, []);
 
     const showModal = useCallback((type: "sidepane" | "popup", content: ReactNode): { id: string; close: () => void } => {
