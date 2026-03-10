@@ -11,10 +11,10 @@
 .kalender_header {
     display: flex;
     flex-direction: row;
-    gap: 5.5cm;
+    gap: 14rem;
 
     align-items: center;
-    margin-bottom: 0.2cm;
+    margin-bottom: 0.5rem;
 }
 
 /* --- Kalender Jahr/Monat --- */
@@ -22,7 +22,7 @@
     display: flex;
     flex-direction: column;
 
-    width: 110px;
+    width: 5.5rem;
     align-items: center;
 }
 
@@ -36,7 +36,7 @@
 .kalender_navigation_grid {
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    gap: 0.6rem;
 
     align-items: center;
 }
@@ -55,7 +55,7 @@
 .kalender_reset_tag {
     border: none;
 
-    width: 100px;
+    width: 6rem;
     align-items: center;
     justify-content: center;
 
@@ -67,46 +67,46 @@
 
 .kalender_reset_tag:hover {
     cursor: pointer;
-    border-radius: 18px;
+    border-radius: 1rem;
     background-color: rgba(174, 174, 174, 0.4);
 }
 
 /* --- Wochentage --- */
 .kalender_wochentage_grid {
     display: grid;
-    grid-template-columns: repeat(7, 0.001fr);
-    gap: 10px;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.6rem;
 }
 
 .kalender_wochentag {
     display: flex;
 
-    width: 60px;
-    height: 20px;
+    width: 3.75rem;
+    height: 1.25rem;
     justify-content: center;
 }
 
 /* --- Kalender --- */
 .kalender_grid {
     display: grid;
-    grid-template-columns: repeat(7, 0.001fr);
-    grid-template-rows: repeat(6, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, auto);
+    gap: 0.6rem;
 }
 
 .kalender_heute {
     display: grid;
-    grid-template-rows: 30px 1fr;
+    grid-template-rows: 2rem 1fr;
 
-    width: 60px;
-    height: 90px;
+    width: 3.75rem;
+    height: 5.6rem;
     align-items: center;
     justify-content: center;
 
     color: rgb(0, 72, 255);
 
     border: 2px solid rgb(0, 72, 255);
-    border-radius: 18px;
+    border-radius: 1rem;
 }
 
 .kalender_heute:hover {
@@ -116,15 +116,15 @@
 
 .kalender_tag {
     display: grid;
-    grid-template-rows: 30px 1fr;
+    grid-template-rows: 2rem 1fr;
 
-    width: 60px;
-    height: 90px;
+    width: 3.75rem;
+    height: 5.6rem;
     align-items: center;
     justify-content: center;
 
     border: 2px solid rgb(180, 173, 173);
-    border-radius: 18px;
+    border-radius: 1rem;
 }
 
 .kalender_tag:hover {
@@ -136,7 +136,7 @@
 .kalender_tag_text {
     display: flex;
 
-    height: 10px;
+    height: 0.6rem;
     justify-content: center;
 }
 
@@ -144,15 +144,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
+    gap: 0.15rem;
 }
 
 .kalender_leer {
-    width: 60px;
-    height: 90px;
+    width: 3.75rem;
+    height: 5.6rem;
 
     border: 2px solid rgb(180, 173, 173);
-    border-radius: 18px;
+    border-radius: 1rem;
 
     background-color: rgba(226, 226, 226, 0.5);
 }
@@ -169,8 +169,7 @@
 .kalender_legende1 {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: auto;
-    gap: 10px;
+    gap: 0.6rem;
 
     justify-content: center;
     margin-top: 0.5rem;
@@ -179,8 +178,7 @@
 .kalender_legende2 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto;
-    gap: 10px;
+    gap: 0.6rem;
 
     justify-content: center;
     margin-top: 0.5rem;
@@ -189,9 +187,9 @@
 .kalender_symbole {
     display: flex;
 
-    width: 55px;
-    height: 20px;
+    width: 3.4rem;
+    height: 1.25rem;
     justify-content: center;
 
-    border-radius: 18px;
+    border-radius: 1rem;
 }
