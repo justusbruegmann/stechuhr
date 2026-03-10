@@ -9,6 +9,7 @@ interface SidepaneOverlayProps {
     children: React.ReactNode;
     onClose: () => void;
     zIndex: number;
+    onRegisterClose?: (fn: () => void) => void;
 }
 
 function parseCssTimeToMs(value: string): number {
@@ -20,7 +21,7 @@ function parseCssTimeToMs(value: string): number {
     return Number.parseFloat(v);
 }
 
-export function Sidepane({children, onClose, zIndex}: SidepaneOverlayProps) {
+export function Sidepane({children, onClose, zIndex, onRegisterClose}: SidepaneOverlayProps) {
     const [portalRoot, setPortalRoot] = useState<HTMLDivElement | null>(null);
 
     const [isClosing, setIsClosing] = useState(false);
@@ -30,6 +31,11 @@ export function Sidepane({children, onClose, zIndex}: SidepaneOverlayProps) {
     const handleClose = () => {
         setIsClosing(true); // start slide-out animation
     };
+
+    // Register handleClose callback with parent context
+    useEffect(() => {
+        onRegisterClose?.(handleClose);
+    }, [onRegisterClose, handleClose]);
 
     // Read the CSS variable once the overlay element exists in the DOM
     useEffect(() => {
