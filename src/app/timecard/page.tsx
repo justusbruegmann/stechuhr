@@ -25,9 +25,9 @@ export default function Timecard() {
     
     function returnTime() {
         setInOrOut(!inOrOut);
-        const buttnClickedTime = new Date();
+        const buttonClickedTime = new Date();
         const action = inOrOut ? "Eingestochen: " : "Ausgestochen: ";
-        console.log(action+buttnClickedTime);
+        console.log(action + buttonClickedTime);
     }
 
     return (
