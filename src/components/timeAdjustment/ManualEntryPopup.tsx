@@ -19,20 +19,35 @@ export default function ManualEntryPopup({ date, onClose, onCreate }: Props) {
   const [fromTime, setFromTime] = useState("");
   const [toTime, setToTime] = useState("");
 
-  function saveButton() {
+  const [isChecked, setIsChecked] = useState(true);
+
+  function checkTimeFormat(time: string) {
+    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    return timeRegex.test(time);
+  }
+
+  function saveButton(isToTimeRequired: boolean = true) {
+
     const [fromHours, fromMinutes] = fromTime.split(":").map(Number);
-    const [toHours, toMinutes] = toTime.split(":").map(Number);
 
-    const entry: TimeEntry = {
-      id: crypto.randomUUID(),
-      userId: "456",
-      startTime: new Date(date.setHours(fromHours, fromMinutes)).toISOString(),
-      endTime: new Date(date.setHours(toHours, toMinutes)).toISOString(),
-    };
+    if (isToTimeRequired) {
+      const [toHours, toMinutes] = toTime.split(":").map(Number);
 
-    console.log("Created entry:", entry);
-
-    onCreate(entry);
+      const entry: TimeEntry = {
+        id: crypto.randomUUID(),
+        userId: "456",
+        startTime: new Date(date.setHours(fromHours, fromMinutes)).toISOString(),
+        endTime: new Date(date.setHours(toHours, toMinutes)).toISOString()
+      };
+      onCreate(entry);
+    } else {
+      const entry: TimeEntry = {
+        id: crypto.randomUUID(),
+        userId: "456",
+        startTime: new Date(date.setHours(fromHours, fromMinutes)).toISOString()
+      };
+      onCreate(entry);
+    }
   }
 
   return (
@@ -41,18 +56,31 @@ export default function ManualEntryPopup({ date, onClose, onCreate }: Props) {
 
       <br />
 
+      <label className={styles["labels"]}>Einstempelzeit</label>
+
       <TimeInput
-        label="Einstempelzeit"
         onChange={(e) => setFromTime(e.target.value)}
-        required = {true}
+        required={true}
+        visible={true}
       />
 
       <br />
 
+      <input
+        type="checkbox"
+        id="addEndTime"
+        className={styles["checkbox"]}
+        checked={isChecked}
+        onChange={() => isChecked ? setIsChecked(false) : setIsChecked(true)
+        }
+      />
+
+      <label htmlFor="addEndTime" className={styles["labels"]}>Austempelzeit hinzufügen</label>
+
       <TimeInput
-        label="Ausstempelzeit"
         onChange={(e) => setToTime(e.target.value)}
-        required = {true}
+        required={true}
+        visible={isChecked}
       />
 
       <br />
@@ -63,7 +91,7 @@ export default function ManualEntryPopup({ date, onClose, onCreate }: Props) {
           type="primary"
           height={2.5}
           width={6}
-          onClick={() => {onClose()}}
+          onClick={() => { onClose() }}
         />
 
         <Button
@@ -72,9 +100,27 @@ export default function ManualEntryPopup({ date, onClose, onCreate }: Props) {
           height={2.5}
           width={9}
           onClick={() => {
-            saveButton();
-            onClose();
-          }}
+            if (isChecked) {
+              if (checkTimeFormat(fromTime) && checkTimeFormat(toTime)) {
+                if (fromTime < toTime) {
+                  saveButton();
+                  onClose();
+                } else {
+                  alert("Die Einstempelzeit muss vor der Austempelzeit liegen.");
+                }
+              } else {
+                alert("Bitte beide Zeiten in korrektem Format eingeben.");
+              }
+            } else {
+              if (checkTimeFormat(fromTime)) {
+                saveButton(false);
+                onClose();
+              } else {
+                alert("Bitte die Einstempelzeit in korrektem Format eingeben.");
+              }
+            }
+          }
+          }
         />
       </div>
     </div>
