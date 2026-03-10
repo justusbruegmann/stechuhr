@@ -1,6 +1,6 @@
 'use client';
 
-import {createContext, ReactNode, useContext, useState, useCallback} from "react";
+import {createContext, ReactNode, useCallback, useContext, useState} from "react";
 import {Sidepane} from "@/components/layout/Sidepane";
 import {Popup} from "@/components/layout/Popup";
 
@@ -12,7 +12,7 @@ interface Modal {
 
 interface ModalContextType {
     showModal: (type: "sidepane" | "popup", content: ReactNode) => string;
-    hideModal: (id: string) => void;
+    hideModal: (id?: string) => void;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -26,8 +26,13 @@ export default function ModalProvider({children}: { children: ReactNode }) {
         return id;
     }, []);
 
-    const hideModal = useCallback((id: string) => {
-        setModals(prevModals => prevModals.filter(modal => modal.id !== id));
+    const hideModal = useCallback((id?: string) => {
+        if (id === undefined) {
+            // Close the last modal if no id is provided
+            setModals(prevModals => prevModals.slice(0, -1));
+        } else {
+            setModals(prevModals => prevModals.filter(modal => modal.id !== id));
+        }
     }, []);
 
     const value = { showModal, hideModal };

@@ -44,7 +44,7 @@ export default function ManualEntryPopup({ date, onClose, onCreate }: Props) {
       <TimeInput
         label="Einstempelzeit"
         onChange={(e) => setFromTime(e.target.value)}
-        required
+        required = {true}
       />
 
       <br />
@@ -52,7 +52,7 @@ export default function ManualEntryPopup({ date, onClose, onCreate }: Props) {
       <TimeInput
         label="Ausstempelzeit"
         onChange={(e) => setToTime(e.target.value)}
-        required
+        required = {true}
       />
 
       <br />
@@ -63,7 +63,7 @@ export default function ManualEntryPopup({ date, onClose, onCreate }: Props) {
           type="primary"
           height={2.5}
           width={6}
-          onClick={() => {onClose}}
+          onClick={() => {onClose()}}
         />
 
         <Button
