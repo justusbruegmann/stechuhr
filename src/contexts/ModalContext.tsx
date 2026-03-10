@@ -35,15 +35,16 @@ export default function ModalProvider({children}: { children: ReactNode }) {
     const showModal = useCallback((type: "sidepane" | "popup", content: ReactNode): { id: string; close: () => void } => {
         const id = `modal-${Date.now()}-${Math.random()}`;
 
-        setModals(prevModals => [...prevModals, {
-            id,
-            type,
-            content,
-            onClose: () => {
-                handleCloseRefs.current.delete(id);
-                setModals(prevModals => prevModals.filter(modal => modal.id !== id));
-            }
-        }]);
+        const onClose = () => {
+            handleCloseRefs.current.delete(id);
+            setModals(prevModals => prevModals.filter(modal => modal.id !== id));
+        };
+
+        // Register a default close handler so triggerClose works even before the
+        // modal component mounts and calls onRegisterClose with its animated version.
+        handleCloseRefs.current.set(id, onClose);
+
+        setModals(prevModals => [...prevModals, {id, type, content, onClose}]);
 
         return {
             id,
