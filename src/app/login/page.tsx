@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import Button from "@/components/layout/Button";
 import Card from "@/components/layout/Card";
@@ -50,7 +50,7 @@ export default function Page() {
             <Card height={"50vh"} width={width} shadow={true} styleOverrides={{flexDirection: 'column'}}>
                 <div className={`${styles["login-center"]}`}>
                     <Image
-                        src={`${process.env.BASE_PATH}/person_icon.svg`}
+                        src={`/person_icon.svg`}
                         alt="person_icon"
                         width={48}
                         height={48}

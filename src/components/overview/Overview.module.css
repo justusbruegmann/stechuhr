@@ -1,0 +1,15 @@
+.title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.subtitle {
+    font-size: 1rem;
+    margin-bottom: 3rem;
+}
+
+.tab-content-area {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}

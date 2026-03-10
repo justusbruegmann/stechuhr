@@ -1,4 +1,5 @@
-// src/components/Button.tsx
+'use client';
+
 import * as React from 'react';
 import styles from './Button.module.css';
 
@@ -36,7 +37,7 @@ export default function Button({
 
     return (
         <div className={styles.wrapper} style={mergedStyle}>
-            <button className={mergedClassName} style={{ height: '100%', width: '100%' }} onClick={onClick}>
+            <button className={mergedClassName} style={{height: '100%', width: '100%'}} onClick={onClick}>
                 {label}
             </button>
         </div>
