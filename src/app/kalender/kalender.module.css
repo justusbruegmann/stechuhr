@@ -1,0 +1,28 @@
+.kalender_grid {
+    display: grid;
+    grid-template-columns: repeat(7, 0.001fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 10px;
+
+    padding-top: 2cm;
+    padding-left: 12.5cm; 
+}
+
+.kalender_day {
+    display: flex;
+    justify-content: center;
+    /*align-items: center;*/
+    border-radius: 18px;
+    width: 75px;
+    height: 100px;
+    border: 2px solid black;
+}
+
+.kalender_day:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+.datum {
+    font-size: 1.5rem;
+}
