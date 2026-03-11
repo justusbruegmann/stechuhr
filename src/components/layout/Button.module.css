@@ -17,6 +17,7 @@
 .button-success {
     background: var(--init-green);
     color: var(--background);
+
 }
 
 .button-error {

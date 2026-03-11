@@ -1,14 +1,15 @@
-"use client";
+'use client';
 
 import {createPortal} from "react-dom";
 import React, {useEffect, useRef, useState} from "react";
-import styles from './SidepaneOverlay.module.css';
+import styles from './Sidepane.module.css';
 import Image from "next/image";
 
 interface SidepaneOverlayProps {
     children: React.ReactNode;
     onClose: () => void;
     zIndex: number;
+    onRegisterClose?: (fn: () => void) => void;
 }
 
 function parseCssTimeToMs(value: string): number {
@@ -20,7 +21,7 @@ function parseCssTimeToMs(value: string): number {
     return Number.parseFloat(v);
 }
 
-export function Sidepane({children, onClose, zIndex}: SidepaneOverlayProps) {
+export function Sidepane({children, onClose, zIndex, onRegisterClose}: SidepaneOverlayProps) {
     const [portalRoot, setPortalRoot] = useState<HTMLDivElement | null>(null);
 
     const [isClosing, setIsClosing] = useState(false);
@@ -30,6 +31,11 @@ export function Sidepane({children, onClose, zIndex}: SidepaneOverlayProps) {
     const handleClose = () => {
         setIsClosing(true); // start slide-out animation
     };
+
+    // Register handleClose callback with parent context
+    useEffect(() => {
+        onRegisterClose?.(handleClose);
+    }, [onRegisterClose, handleClose]);
 
     // Read the CSS variable once the overlay element exists in the DOM
     useEffect(() => {
@@ -77,10 +83,12 @@ export function Sidepane({children, onClose, zIndex}: SidepaneOverlayProps) {
                  onClick={(e) => e.stopPropagation()}>
                 {children}
             </div>
-            <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose} style={{zIndex: zIndex+1}}>
+            <div className={`${styles["close-button"]}  ${isClosing ? styles["slide-out"] : ""}`} onClick={handleClose}
+                 style={{zIndex: zIndex + 1}}>
                 <Image
-                    src={`/arrow_menu_close.svg`}
-                    alt="Close sidepane"
+                    // hacky workaround, because this icon is the only one that locally won't load
+                    src={"arrow_menu_close.svg"}
+                    alt=">"
                     width={48}
                     height={48}
                     priority

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import Button from "@/components/layout/Button";
 import { useModal } from "@/contexts/ModalContext";

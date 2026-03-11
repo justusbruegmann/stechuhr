@@ -1,14 +1,15 @@
-"use client";
+'use client';
 
 import {createPortal} from "react-dom";
 import React, {useEffect, useRef, useState} from "react";
-import styles from './PopupOverlay.module.css';
+import styles from './Popup.module.css';
 import Card from "@/components/layout/Card";
 
 interface PopupProps {
     children: React.ReactNode;
     onClose: () => void;
     zIndex: number;
+    onRegisterClose?: (fn: () => void) => void;
 }
 
 function parseCssTimeToMs(value: string): number {
@@ -20,7 +21,7 @@ function parseCssTimeToMs(value: string): number {
     return Number.parseFloat(v);
 }
 
-export function Popup({children, onClose, zIndex}: PopupProps) {
+export function Popup({children, onClose, zIndex, onRegisterClose}: PopupProps) {
     const [portalRoot, setPortalRoot] = useState<HTMLDivElement | null>(null);
 
     const [isClosing, setIsClosing] = useState(false);
@@ -30,6 +31,11 @@ export function Popup({children, onClose, zIndex}: PopupProps) {
     const handleClose = () => {
         setIsClosing(true); // start slide-out animation
     };
+
+    // Register handleClose callback with parent context
+    useEffect(() => {
+        onRegisterClose?.(handleClose);
+    }, [onRegisterClose, handleClose]);
 
     // Read the CSS variable once the overlay element exists in the DOM
     useEffect(() => {
@@ -70,13 +76,13 @@ export function Popup({children, onClose, zIndex}: PopupProps) {
 
     if (!portalRoot) return null;
 
-    const styleOverrides = {padding: '0px', margin: '.5rem', boxShadow: 'none', zIndex: zIndex+1};
+    const styleOverrides = {padding: '0px', margin: '.5rem', boxShadow: 'none', zIndex: zIndex + 1};
 
     return createPortal(
         <div className={`${styles["overlay-background"]} ${isClosing ? styles["fade-out"] : ""}`} onClick={handleClose}
-             ref={overlayRef}>
-            <Card className={`${styles["popup-container"]} ${isClosing ? styles["pop-out"] : ""}` }
-                 onClick={(e) => e.stopPropagation()}>
+             ref={overlayRef} style={{zIndex: zIndex}}>
+            <Card className={`${styles["popup-container"]} ${isClosing ? styles["pop-out"] : ""}`}
+                  onClick={(e) => e.stopPropagation()}>
                 <Card className={`${styles["close-button"]}`} styleOverrides={styleOverrides} onClick={handleClose}>
                     ×
                 </Card>
