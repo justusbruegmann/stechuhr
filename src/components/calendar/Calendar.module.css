@@ -4,8 +4,6 @@
     grid-template-rows: repeat(6, 1fr);
     gap: 10px;
 
-    padding-top: 2cm;
-    padding-left: 12.5cm; 
 }
 
 .kalender_day {

@@ -1,10 +1,10 @@
 "use client";
 
 import Button from "@/components/layout/Button";
-import Styles from "./timecard.module.css";
+import Styles from "./Timecard.module.css";
 import Card from "@/components/layout/Card";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import {useEffect, useState} from "react";
 
 export default function Timecard() {
     const [time, setTime] = useState<Date | null>(null);
@@ -31,7 +31,7 @@ export default function Timecard() {
     }
 
     return (
-        <div className={`${Styles["background"]}`}>
+        // <div className={`${Styles["background"]}`}>
             <Card width={"20vw"} height={"80vh"} styleOverrides={{flexDirection: "column"}}>
                 <div className={Styles["clock"]}><Image src={"/clock.svg"} width={40} height={40} alt={"Uhr"}></Image></div>
                     <span className={`${Styles["timeStyle"]}`}>
@@ -57,6 +57,6 @@ export default function Timecard() {
                 <hr className={Styles["gap"]}></hr>
                 <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"} className={Styles["gap"]}></Button>
             </Card>
-        </div>
+        // </div>
     );
 }

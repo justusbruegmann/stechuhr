@@ -1,6 +1,6 @@
-import styles from "./kalender.module.css"
+import styles from "./Calendar.module.css"
 
-export default function Kalender() {
+export default function Calendar() {
     const aktTag = new Date();
     const aktMonat = aktTag.getMonth();
     const aktJahr = aktTag.getFullYear();
