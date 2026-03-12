@@ -51,12 +51,14 @@ export default function ManualEntryPopup({ date, onClose, onCreate }: Props) {
   }
 
   return (
-    <div>
+    <div className={styles["container"]}>
       <h2>Manueller Zeiteintrag</h2>
 
       <br />
-
+      <div className={styles["container-einstempelzeit"]}>
+      <img src="/clock.svg" alt="Clock Icon" className={styles["clock-icon"]} />
       <label className={styles["labels"]}>Einstempelzeit</label>
+      </div>
 
       <TimeInput
         onChange={(e) => setFromTime(e.target.value)}
