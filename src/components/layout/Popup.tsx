@@ -9,6 +9,7 @@ interface PopupProps {
     children: React.ReactNode;
     onClose: () => void;
     zIndex: number;
+    onRegisterClose?: (fn: () => void) => void;
 }
 
 function parseCssTimeToMs(value: string): number {
@@ -20,7 +21,7 @@ function parseCssTimeToMs(value: string): number {
     return Number.parseFloat(v);
 }
 
-export function Popup({children, onClose, zIndex}: PopupProps) {
+export function Popup({children, onClose, zIndex, onRegisterClose}: PopupProps) {
     const [portalRoot, setPortalRoot] = useState<HTMLDivElement | null>(null);
 
     const [isClosing, setIsClosing] = useState(false);
@@ -30,6 +31,11 @@ export function Popup({children, onClose, zIndex}: PopupProps) {
     const handleClose = () => {
         setIsClosing(true); // start slide-out animation
     };
+
+    // Register handleClose callback with parent context
+    useEffect(() => {
+        onRegisterClose?.(handleClose);
+    }, [onRegisterClose, handleClose]);
 
     // Read the CSS variable once the overlay element exists in the DOM
     useEffect(() => {
