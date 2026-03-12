@@ -1,18 +1,20 @@
 'use client';
 
-import {createContext, ReactNode, useCallback, useContext, useRef, useState} from "react";
+import {createContext, ReactNode, useCallback, useContext, useRef, useState, ComponentType} from "react";
 import {Sidepane} from "@/components/layout/Sidepane";
 import {Popup} from "@/components/layout/Popup";
+
+type ModalContent = ReactNode | ComponentType<object>;
 
 interface Modal {
     id: string;
     type: "sidepane" | "popup";
-    content: ReactNode;
+    content: ModalContent;
     onClose: () => void;
 }
 
 interface ModalContextType {
-    showModal: (type: "sidepane" | "popup", content: ReactNode) => { id: string; close: () => void };
+    showModal: (type: "sidepane" | "popup", content: ModalContent) => { id: string; close: () => void };
     hideModal: (id?: string) => void;
 }
 
@@ -38,7 +40,7 @@ export default function ModalProvider({children}: { children: ReactNode }) {
         }
     }, []);
 
-    const showModal = useCallback((type: "sidepane" | "popup", content: ReactNode): { id: string; close: () => void } => {
+    const showModal = useCallback((type: "sidepane" | "popup", content: ModalContent): { id: string; close: () => void } => {
         const id = `modal-${Date.now()}-${Math.random()}`;
 
         setModals(prevModals => [...prevModals, {
@@ -67,6 +69,9 @@ export default function ModalProvider({children}: { children: ReactNode }) {
     const renderModal = (modal: Modal, index: number) => {
         const zIndex = 1000 + 10 * index;
         const Component = modal.type === "sidepane" ? Sidepane : Popup;
+        
+        // Dynamically render content: if it's a component type, instantiate it; otherwise use as-is
+        const renderedContent = typeof modal.content === 'function' ? <modal.content /> : modal.content;
 
         return (
             <CurrentModalContext.Provider
@@ -78,7 +83,7 @@ export default function ModalProvider({children}: { children: ReactNode }) {
                     zIndex={zIndex}
                     onRegisterClose={(fn) => handleCloseRefs.current.set(modal.id, fn)}
                 >
-                    {modal.content}
+                    {renderedContent}
                 </Component>
             </CurrentModalContext.Provider>
         );
