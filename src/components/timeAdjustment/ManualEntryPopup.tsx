@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import TimeInput from "@/components/timeAdjustment/TimeInput";
 import Button from "@/components/layout/Button";
-import { useModal } from "@/contexts/ModalContext";
+import { useCurrentModal, useModal } from "@/contexts/ModalContext";
 import TimeEntry from "@/types/TimeEntry";
 import styles from "./ManualEntryPopup.module.css";
 
@@ -13,8 +13,10 @@ type Props = {
   onCreate: (entry: TimeEntry) => void;
 };
 
-export default function ManualEntryPopup({ date, onClose, onCreate }: Props) {
+export default function ManualEntryPopup({ date, onCreate }: Props) {
   const { hideModal } = useModal();
+
+  const {close} = useCurrentModal();
 
   const [fromTime, setFromTime] = useState("");
   const [toTime, setToTime] = useState("");
@@ -93,7 +95,7 @@ export default function ManualEntryPopup({ date, onClose, onCreate }: Props) {
           type="primary"
           height={2.5}
           width={6}
-          onClick={() => { onClose() }}
+          onClick={() => { close() }}
         />
 
         <Button
@@ -106,7 +108,7 @@ export default function ManualEntryPopup({ date, onClose, onCreate }: Props) {
               if (checkTimeFormat(fromTime) && checkTimeFormat(toTime)) {
                 if (fromTime < toTime) {
                   saveButton();
-                  onClose();
+                  close();
                 } else {
                   alert("Die Einstempelzeit muss vor der Austempelzeit liegen.");
                 }
@@ -116,7 +118,7 @@ export default function ManualEntryPopup({ date, onClose, onCreate }: Props) {
             } else {
               if (checkTimeFormat(fromTime)) {
                 saveButton(false);
-                onClose();
+                close();
               } else {
                 alert("Bitte die Einstempelzeit in korrektem Format eingeben.");
               }
