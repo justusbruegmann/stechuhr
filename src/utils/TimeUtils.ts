@@ -8,7 +8,7 @@ export function formatDate(date: Date): string {
 export function formatDateTime(date: Date): string {
     return `${date.getHours()}:${date.getMinutes().toString().padStart(2, "0")}`;
 }
-//asd
+
 
 export function formatMsTime(ms: number): string {
     const totalSeconds = Math.floor(ms / 1000);
