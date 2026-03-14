@@ -1,7 +1,7 @@
 [![Build Frontend](https://github.com/justusbruegmann/stechuhr/actions/workflows/build-frontend.yml/badge.svg)](https://github.com/justusbruegmann/stechuhr/actions/workflows/build-frontend.yml)
 [![Publish Frontend](https://github.com/justusbruegmann/stechuhr/actions/workflows/publish-frontend.yml/badge.svg)](https://github.com/justusbruegmann/stechuhr/actions/workflows/publish-frontend.yml)
 
-# Template_Next
+# Stechuhr
 
 This repository is a template with a working GitHub action for the build and GitHub pages.
 
