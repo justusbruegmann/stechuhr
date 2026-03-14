@@ -22,10 +22,10 @@ export default function Dashboard() {
     return (
         <>
             <div className={styles.wrapper}>
+                <div className={styles.headerBar}>
+                    <Header/>
+                </div>
                 <div className={styles.viewArea}>
-                    <div className={styles.headerBar}>
-                        <Header/>
-                    </div>
 
                     <Timecard openOverview={openOverviewModal}/>
 

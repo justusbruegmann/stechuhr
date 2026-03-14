@@ -37,8 +37,7 @@ export default function Timecard({openOverview}: PopupProps) {
     }
 
     return (
-        // <div className={`${Styles["background"]}`}>
-        <Card width={"20vw"} height={"100%"} styleOverrides={{flexDirection: "column"}}>
+        <Card width={"22vw"} styleOverrides={{flexDirection: "column", padding: "1.5rem"}}>
             <div className={Styles["clock"]}><Image src={"/clock.svg"} width={40} height={40} alt={"Uhr"}></Image></div>
             <span className={`${Styles["timeStyle"]}`}>
                         {time ? time.toLocaleTimeString("de-DE", {hour12: false}) : "--:--:--"}
@@ -65,9 +64,8 @@ export default function Timecard({openOverview}: PopupProps) {
             }} label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked ? "success" : "error"} height={2.5}
                     width={"100%"}></Button>
             <hr className={Styles["gap"]}></hr>
-            <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"} className={Styles["gap"]}
+            <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"}
                     onClick={() => openOverview()}></Button>
         </Card>
-        // </div>
     );
 }
