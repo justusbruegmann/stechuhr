@@ -1,0 +1,32 @@
+.container {
+    padding: 10px;
+}
+
+.container-einstempelzeit {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.clock-icon {
+    height: 17px;
+    width: 17px;
+    margin-right: 5px;
+}
+.labels {
+    font-weight: 600;
+    font-size: 16px;
+    color: #2f2e2e;
+}
+
+.checkbox {
+    transform: scale(1.2);
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.container-popup-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 5px;
+}
