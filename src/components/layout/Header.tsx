@@ -1,6 +1,6 @@
 'use client';
 // src/components/Button.tsx
-import * as React from 'react';
+import React from 'react';
 import styles from './Header.module.css';
 import Button from "@/components/layout/Button";
 import {useRouter} from "next/navigation";
@@ -8,7 +8,11 @@ import Image from "next/image";
 
 export default function Header() {
     const router = useRouter();
-    const [userRole, setUserRole] = React.useState<string | null>(localStorage.getItem("role") || null);
+    const [userRole, setUserRole] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        setUserRole(localStorage.getItem("role"));
+    }, []);
     const logout = () => {
         // Logout Logik
         router.push("/login");
