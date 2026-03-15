@@ -3,7 +3,7 @@
 
 # Stechuhr
 
-This repository is a template with a working GitHub action for the build and GitHub pages.
+This repository is a template with a working GitHub action for the build and Vercel.
 
 ## How to use this template
 
