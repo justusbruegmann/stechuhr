@@ -60,7 +60,7 @@ export default function Dashboard() {
                 <Header/>
             </div>
             <div className={styles.viewArea}>
-                <Timecard openOverview={openOverviewModal}/>
+                <Timecard openOverview={openOverviewModal} addEntry={addEntryForDate}/>
 
                 <div className={styles.calendarWrapper}>
                     <Calendar showDailyDetails={showDailyDetails}/>

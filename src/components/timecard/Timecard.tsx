@@ -5,14 +5,16 @@ import Styles from "./Timecard.module.css";
 import Card from "@/components/layout/Card";
 import Image from "next/image";
 import React, {useEffect, useState} from "react";
+import TimeEntry from "@/types/TimeEntry";
 
 
 interface PopupProps {
     openOverview: () => void;
+    addEntry: (date: Date, entry: TimeEntry) => void;
 }
 
 
-export default function Timecard({openOverview}: PopupProps) {
+export default function Timecard({openOverview, addEntry}: PopupProps) {
     const [time, setTime] = useState<Date | null>(null);
     const [clicked, setClicked] = useState(true);
     const working = "Im Dienst";
@@ -28,12 +30,29 @@ export default function Timecard({openOverview}: PopupProps) {
         return () => clearInterval(interval);
     }, []);
 
+    const [startTime, setStartTime] = useState<Date | null>(null);
+
 
     function returnTime() {
         setInOrOut(!inOrOut);
         const buttonClickedTime = new Date();
         const action = inOrOut ? "Eingestochen: " : "Ausgestochen: ";
         console.log(action + buttonClickedTime);
+
+        if (!startTime) {
+            setStartTime(buttonClickedTime);
+        } else {
+            if (!startTime) throw new Error("startTime is null");
+
+            addEntry(buttonClickedTime, {
+                id: crypto.randomUUID(),
+                userId: "123",
+                startTime: startTime?.toISOString(),
+                endTime: buttonClickedTime.toISOString()
+            })
+
+            setStartTime(null);
+        }
     }
 
     return (
