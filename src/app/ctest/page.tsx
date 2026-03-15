@@ -1,8 +1,9 @@
 'use client';
 
 import Button from "@/components/layout/Button";
-import { useModal } from "@/contexts/ModalContext";
+import {useModal} from "@/contexts/ModalContext";
 import Overview from "@/components/overview/Overview";
+import TestComponent from "@/app/ctest/TestComponent";
 
 
 export default function Ctest() {
@@ -29,7 +30,7 @@ export default function Ctest() {
             <Button label={"Open empty sidepane"} type={"primary"} height={3} width={15}
                     onClick={() =>
                         showModal("sidepane",
-                            <></>
+                            <TestComponent />
                         )
                     }/>
             <br/>
@@ -37,9 +38,7 @@ export default function Ctest() {
             <Button label={"Open Popup"} type={"primary"} height={3} width={15}
                     onClick={() =>
                         showModal("popup",
-                            <div>
-                                Ich bin ein Popup Content!
-                            </div>
+                            <TestComponent />
                         )
                     }/>
             <br/>

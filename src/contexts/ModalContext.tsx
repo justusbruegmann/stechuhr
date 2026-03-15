@@ -1,20 +1,20 @@
 'use client';
 
-import {createContext, ReactNode, useCallback, useContext, useRef, useState, ComponentType} from "react";
+import {createContext, ReactNode, useCallback, useContext, useState} from "react";
 import {Sidepane} from "@/components/layout/Sidepane";
 import {Popup} from "@/components/layout/Popup";
-
-type ModalContent = ReactNode | ComponentType<object>;
 
 interface Modal {
     id: string;
     type: "sidepane" | "popup";
-    content: ModalContent;
+    content: ReactNode;
     onClose: () => void;
+    onRegisterClose: (fn: () => void) => void;
 }
 
 interface ModalContextType {
-    showModal: (type: "sidepane" | "popup", content: ModalContent) => { id: string; close: () => void };
+    showModal: (type: "sidepane" | "popup", content: ReactNode, contentDeps?: any[]) => { id: string; close: () => void };
+    updateModalContent: (id: string, content: ReactNode) => void;
     hideModal: (id?: string) => void;
 }
 
@@ -27,72 +27,59 @@ const CurrentModalContext = createContext<CurrentModalContextType | undefined>(u
 
 export default function ModalProvider({children}: { children: ReactNode }) {
     const [modals, setModals] = useState<Modal[]>([]);
-    const handleCloseRefs = useRef<Map<string, () => void>>(new Map());
 
-    const triggerClose = useCallback((id: string) => {
-        const handleClose = handleCloseRefs.current.get(id);
-        if (handleClose) {
-            handleClose();
-        } else {
-            // Fallback if no close handler is registered
-            handleCloseRefs.current.delete(id);
-            setModals(prevModals => prevModals.filter(modal => modal.id !== id));
-        }
+    const hideModalById = useCallback((id: string) => {
+        setModals(prevModals => prevModals.filter(modal => modal.id !== id));
     }, []);
 
-    const showModal = useCallback((type: "sidepane" | "popup", content: ModalContent): { id: string; close: () => void } => {
+    const showModal = useCallback((type: "sidepane" | "popup", content: ReactNode): { id: string; close: () => void } => {
         const id = `modal-${Date.now()}-${Math.random()}`;
 
         setModals(prevModals => [...prevModals, {
             id,
             type,
             content,
-            onClose: () => {
-                handleCloseRefs.current.delete(id);
-                setModals(prevModals => prevModals.filter(modal => modal.id !== id));
-            }
+            onClose: () => hideModalById(id),
+            onRegisterClose: () => {},
         }]);
 
-        return {
-            id,
-            close: () => triggerClose(id)
-        };
-    }, [triggerClose]);
+        return { id, close: () => hideModalById(id) };
+    }, [hideModalById]);
+
+    const updateModalContent = useCallback((id: string, content: ReactNode) => {
+        setModals(prevModals =>
+            prevModals.map(modal => modal.id === id ? { ...modal, content } : modal)
+        );
+    }, []);
 
     const hideModal = useCallback((id?: string) => {
-        const targetId = id === undefined ? modals[modals.length - 1]?.id : id;
-        targetId && triggerClose(targetId);
-    }, [modals, triggerClose]);
-
-    const value = { showModal, hideModal };
-
-    const renderModal = (modal: Modal, index: number) => {
-        const zIndex = 1000 + 10 * index;
-        const Component = modal.type === "sidepane" ? Sidepane : Popup;
-        
-        // Dynamically render content: if it's a component type, instantiate it; otherwise use as-is
-        const renderedContent = typeof modal.content === 'function' ? <modal.content /> : modal.content;
-
-        return (
-            <CurrentModalContext.Provider
-                key={modal.id}
-                value={{ close: () => triggerClose(modal.id) }}
-            >
-                <Component
-                    onClose={modal.onClose}
-                    zIndex={zIndex}
-                    onRegisterClose={(fn) => handleCloseRefs.current.set(modal.id, fn)}
-                >
-                    {renderedContent}
-                </Component>
-            </CurrentModalContext.Provider>
-        );
-    };
+        setModals(prevModals => {
+            const targetId = id ?? prevModals[prevModals.length - 1]?.id;
+            return targetId ? prevModals.filter(m => m.id !== targetId) : prevModals;
+        });
+    }, []);
 
     return (
-        <ModalContext.Provider value={value}>
+        <ModalContext.Provider value={{showModal, hideModal, updateModalContent}}>
             {children}
-            {modals.map(renderModal)}
+            {modals.map((modal, index) => {
+                const Component = modal.type === "sidepane" ? Sidepane : Popup;
+
+                return (
+                    <CurrentModalContext.Provider
+                        key={modal.id}
+                        value={{close: () => hideModalById(modal.id)}}
+                    >
+                        <Component
+                            onClose={modal.onClose}
+                            zIndex={1000 + 10 * index}
+                            onRegisterClose={modal.onRegisterClose}
+                        >
+                            {modal.content}
+                        </Component>
+                    </CurrentModalContext.Provider>
+                );
+            })}
         </ModalContext.Provider>
     );
 }
@@ -112,5 +99,3 @@ export function useCurrentModal() {
     }
     return context;
 }
-
-

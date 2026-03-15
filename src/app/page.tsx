@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <h1> Ich bin eine funktionierende Stechuhr!</h1>
+        <h1> Ich bin keine funktionierende Stechuhr!</h1>
         <br/>
         <br/>
         <Image

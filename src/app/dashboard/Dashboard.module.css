@@ -1,0 +1,31 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    align-items: center;
+    justify-content: space-around;
+    background-color: rgba(230, 235, 245, 0.5);
+}
+
+.headerBar {
+    width: 100vw;
+    overflow: hidden;
+    height: 10vh;
+    min-height: 70px;
+}
+
+.viewArea {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.calendarWrapper {
+    width: 40%;
+    height: 100%;
+    /*overflow: hidden;*/
+}
