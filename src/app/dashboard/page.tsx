@@ -15,6 +15,12 @@ import DailyDetailsPane from "@/components/timeAdjustment/DailyDetailsPane";
 export default function Dashboard() {
 
     const {showModal, updateModalContent} = useModal();
+
+    /**
+     * The dailyEntries state is used as a central state to store a relevant section of all logged time entries for the frontend.
+     * It is structured as a map where the key is the date string (Date.toDateString())
+     * and the value is an array of TimeEntry objects.
+     */
     const [dailyEntries, setDailyEntries] = useState<Record<string, TimeEntry[]>>({});
 
     const dailyDetailsModalRef = useRef<{ id: string; date: Date } | null>(null);
@@ -45,7 +51,7 @@ export default function Dashboard() {
     }, [dailyEntries, updateModalContent]);
 
     const openOverviewModal = () => {
-        showModal("sidepane", <Overview/>)
+        showModal("sidepane", <Overview entries={dailyEntries}/>)
     }
 
     const showDailyDetails = useCallback((datum: Date) => {
