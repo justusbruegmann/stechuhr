@@ -1,10 +1,3 @@
-.headerBar {
-    width: 100vw;
-    overflow: hidden;
-    height: 10vh;
-    min-height: 70px;
-}
-
 .wrapper {
     display: flex;
     flex-direction: column;
@@ -15,6 +8,13 @@
     background-color: rgba(230, 235, 245, 0.5);
 }
 
+.headerBar {
+    width: 100vw;
+    overflow: hidden;
+    height: 10vh;
+    min-height: 70px;
+}
+
 .viewArea {
     width: 100%;
     height: 100%;
@@ -23,6 +23,7 @@
     align-items: center;
     justify-content: space-around;
 }
+
 .calendarWrapper {
     width: 40%;
     height: 100%;
