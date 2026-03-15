@@ -1,0 +1,16 @@
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    border: 1px solid #ccc;
+}
+
+.item {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    border-right: 1px solid #eee;
+}
+
+.item:last-child {
+    border-right: none;
+}
