@@ -44,7 +44,7 @@ export function getTimeEntriesByTimespan(
 
             case 'week': {
                 const dayOfWeek = today.getDay();
-                // Convert Sunday (0) to 6, so Monday is 1 and Sunday is 7
+                // Convert Sunday (0) to 6, so Monday is the start of the week instead of the predefined sunday = 0
                 const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
                 const startOfWeek = new Date(today);
                 startOfWeek.setDate(today.getDate() - daysToMonday);
