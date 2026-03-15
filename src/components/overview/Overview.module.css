@@ -8,6 +8,10 @@
     margin-bottom: 3rem;
 }
 
+.separator {
+    margin-bottom: 1rem;
+}
+
 .tab-content-area {
     display: flex;
     flex-direction: column;

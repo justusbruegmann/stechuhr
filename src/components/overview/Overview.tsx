@@ -6,49 +6,54 @@ import Tabs from "@/components/layout/Tabs";
 import SaldoView from "@/components/overview/SaldoView";
 import DetailEntry from "@/components/overview/DetailEntry";
 import TimeEntry from "@/types/TimeEntry";
+import {getTimeEntriesByTimespan} from "@/utils/TimeUtils";
 
 
-export default function Overview() {
+interface Props {
+    entries: Record<string, TimeEntry[]>;
+}
+
+export default function Overview({ entries }: Props) {
 
 
-    // Hacky function to create test entries. ToDo: Delete
-    // @ts-ignore
-    Date.prototype.addHours = function (h) {
-        this.setTime(this.getTime() + (h * 60 * 60 * 1000));
-        return this;
-    }
-
-    const testTimeEntries = [
-        {
-            id: "1",
-            // @ts-ignore
-            startTime: (new Date().addHours(-5)).toISOString(),
-            endTime: new Date().toISOString(),
-            userId: 'test'
-        },
-        {
-            id: "2",
-            // @ts-ignore
-            startTime: (new Date().addHours(0.33)).toISOString(),
-            // @ts-ignore
-            endTime: (new Date().addHours(2)).toISOString(),
-            userId: 'test'
-        },
-        {
-            id: "3",
-            // @ts-ignore
-            startTime: (new Date().addHours(2.4)).toISOString(),
-            // @ts-ignore
-            endTime: (new Date().addHours(5)).toISOString(),
-            userId: 'test'
-        }
-    ]
+    // // Hacky function to create test entries. ToDo: Delete
+    // // @ts-ignore
+    // Date.prototype.addHours = function (h) {
+    //     this.setTime(this.getTime() + (h * 60 * 60 * 1000));
+    //     return this;
+    // }
+    //
+    // const testTimeEntries = [
+    //     {
+    //         id: "1",
+    //         // @ts-ignore
+    //         startTime: (new Date().addHours(-5)).toISOString(),
+    //         endTime: new Date().toISOString(),
+    //         userId: 'test'
+    //     },
+    //     {
+    //         id: "2",
+    //         // @ts-ignore
+    //         startTime: (new Date().addHours(0.33)).toISOString(),
+    //         // @ts-ignore
+    //         endTime: (new Date().addHours(2)).toISOString(),
+    //         userId: 'test'
+    //     },
+    //     {
+    //         id: "3",
+    //         // @ts-ignore
+    //         startTime: (new Date().addHours(2.4)).toISOString(),
+    //         // @ts-ignore
+    //         endTime: (new Date().addHours(5)).toISOString(),
+    //         userId: 'test'
+    //     }
+    // ]
 
 
     const timeEntries: Record<string, TimeEntry[]> = {
-        "day": testTimeEntries,
-        "week": testTimeEntries,
-        "month": testTimeEntries
+        "day": getTimeEntriesByTimespan(entries, "day"),
+        "week": getTimeEntriesByTimespan(entries, "week"),
+        "month": getTimeEntriesByTimespan(entries, "month")
     };
 
 
@@ -100,6 +105,7 @@ export default function Overview() {
     return (
         <>
             <h3 className={`${Styles["title"]}`}>Übersicht</h3>
+            <hr className={`${Styles["separator"]}`}/>
             <p className={`${Styles["subtitle"]}`}>Saldo und Buchungen für Tag / Woche / Monat</p>
 
             <Tabs tabs={tabs}/>

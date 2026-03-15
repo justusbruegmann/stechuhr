@@ -26,6 +26,6 @@
 
 .calendarWrapper {
     width: 40%;
-    height: 100%;
-    /*overflow: hidden;*/
+    height: 90%;
+    min-width: 550px;
 }

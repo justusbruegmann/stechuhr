@@ -45,7 +45,7 @@ export default function Dashboard() {
     }, [dailyEntries, updateModalContent]);
 
     const openOverviewModal = () => {
-        showModal("sidepane", <Overview/>)
+        showModal("sidepane", <Overview entries={dailyEntries}/>)
     }
 
     const showDailyDetails = useCallback((datum: Date) => {
