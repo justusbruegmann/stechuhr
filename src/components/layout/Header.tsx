@@ -16,6 +16,7 @@ export default function Header() {
     const logout = () => {
         // Logout Logik
         router.push("/login");
+        localStorage.removeItem("role");
     }
 
     const adminView = () => {
