@@ -1,0 +1,17 @@
+.rows {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.inputs {
+    margin: .5rem;
+    height: 2rem;
+    width: 20vw;
+}
+
+.inputs Button {
+    margin: .4rem !important;
+    height: 2rem;
+    width: 20vw;
+}

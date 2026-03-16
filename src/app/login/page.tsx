@@ -6,8 +6,10 @@ import {useModal} from "@/contexts/ModalContext"
 import Image from "next/image";
 import styles from "./Login.module.css"
 import {useState, useEffect} from "react";
+import {useRouter} from "next/navigation";
 
 export default function Page() {
+    const router = useRouter();
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [validInputs, setValidInputs] = useState<boolean>(true);
@@ -43,7 +45,7 @@ export default function Page() {
             // Logic for BE login
             setValidInputs(true);
             if (username.trim() === "123" && password.trim() === "123") {
-               const {close} = showModal("popup",
+                const {close} = showModal("popup",
                     <div>
                         <h3>Password ändern</h3>
                         <br/>
@@ -61,11 +63,16 @@ export default function Page() {
                                         //TODO: if Backend exist make a function
                                         alert("change password");
                                         close()
+                                        localStorage.setItem("role", "user");
+
                                     }}/>
-                                        </div>
-                                        </div>
-                                        )
-                                    }
+                        </div>
+                    </div>
+                )
+            } else if (username.trim() === "1234" && password.trim() === "1234") {
+                localStorage.setItem("role", "admin");
+                router.push("/dashboard");
+            }
             console.log("logging in with" + username + " " + password);
         } else {
             setValidInputs(false);
