@@ -58,6 +58,7 @@ export default function Dashboard() {
             date={datum}
             entries={dailyEntries[datum.toDateString()] || []}
             onAddEntry={(entry: TimeEntry) => addEntryForDate(datum, entry)}
+            deleteEntry={deleteEntry}
         />
     );
 
