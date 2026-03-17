@@ -1,5 +1,5 @@
 'use client';
-
+//needed for merge
 import styles from "./Dashboard.module.css"
 
 import Header from "@/components/layout/Header";
@@ -23,7 +23,11 @@ export default function Dashboard() {
      */
     const [dailyEntries, setDailyEntries] = useState<Record<string, TimeEntry[]>>({});
 
-    const dailyDetailsModalRef = useRef<{ id: string; date: Date } | null>(null);
+    const currentlyOpenModal = useRef<
+        { id: string; type: "OverviewModal" } |
+        { id: string; type: "DailyDetails"; date: Date } |
+        null
+    >(null);
 
     const addEntryForDate = (datum: Date, entry: TimeEntry) => {
         setDailyEntries((prev) => ({
@@ -32,31 +36,58 @@ export default function Dashboard() {
         }));
     };
 
+    const deleteEntry = (id: string) => {
+        console.log(id);
+
+        setDailyEntries((prev) =>
+            Object.fromEntries(
+                Object.entries(prev).map(([date, entries]) => [
+                    date,
+                    entries.filter((entry) => entry.id !== id)
+                ])
+            )
+        );
+    }
+
+    const createOverviewContent = () => (
+        <Overview entries={dailyEntries} deleteEntry={deleteEntry}/>
+    );
+
     const createDailyDetailsContent = (datum: Date) => (
         <DailyDetailsPane
             date={datum}
             entries={dailyEntries[datum.toDateString()] || []}
             onAddEntry={(entry: TimeEntry) => addEntryForDate(datum, entry)}
+            deleteEntry={deleteEntry}
         />
     );
 
     // Update modal content when dailyEntries change
     useEffect(() => {
-        if (dailyDetailsModalRef.current) {
-            updateModalContent(
-                dailyDetailsModalRef.current.id,
-                createDailyDetailsContent(dailyDetailsModalRef.current.date)
-            );
+        if (currentlyOpenModal.current) {
+            if (currentlyOpenModal.current.type === "DailyDetails") {
+                console.log("Trying to update daily details")
+                updateModalContent(
+                    currentlyOpenModal.current.id,
+                    createDailyDetailsContent(currentlyOpenModal.current.date)
+                );
+            } else if (currentlyOpenModal.current.type === "OverviewModal") {
+                updateModalContent(
+                    currentlyOpenModal.current.id,
+                    createOverviewContent()
+                );
+            }
         }
     }, [dailyEntries, updateModalContent]);
 
-    const openOverviewModal = () => {
-        showModal("sidepane", <Overview entries={dailyEntries}/>)
-    }
+    const openOverviewModal = useCallback(() => {
+        const {id} = showModal("sidepane", <Overview entries={dailyEntries} deleteEntry={deleteEntry}/>)
+        currentlyOpenModal.current = {id, type: "OverviewModal"};
+    }, [dailyEntries, showModal, addEntryForDate]);
 
     const showDailyDetails = useCallback((datum: Date) => {
-        const { id } = showModal("sidepane", createDailyDetailsContent(datum));
-        dailyDetailsModalRef.current = { id, date: datum };
+        const {id} = showModal("sidepane", createDailyDetailsContent(datum));
+        currentlyOpenModal.current = {id, type: "DailyDetails", date: datum};
     }, [dailyEntries, showModal, addEntryForDate]);
 
 
