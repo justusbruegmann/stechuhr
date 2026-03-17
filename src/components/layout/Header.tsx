@@ -6,7 +6,11 @@ import Button from "@/components/layout/Button";
 import {useRouter} from "next/navigation";
 import Image from "next/image";
 
-export default function Header() {
+type Headerprops = {
+    name: string;
+}
+
+export default function Header({name}: Headerprops) {
     const router = useRouter();
     const [userRole, setUserRole] = React.useState<string | null>(null);
 
@@ -20,14 +24,19 @@ export default function Header() {
     }
 
     const adminView = () => {
-        router.push("/login/manage");
+        if (name === "admin") {
+            router.push("/dashboard");
+        } else {
+            router.push("/login/manage");
+        }
     }
 
 
     return (
         <>
             <div className={styles['background']}>
-                <Button label={"Logout"} type={"primary"} height={2} width={6} onClick={() => logout()}/>
+                <Button label={"Logout"} type={"primary"} height={2} width={6}
+                        onClick={() => logout()}/>
                 <Image
                     src={`/person_icon.svg`}
                     alt="person_icon"
@@ -37,7 +46,8 @@ export default function Header() {
                     priority
                 />
                 {userRole === "admin" &&
-                    <Button label={"Admin ansicht"} type={"primary"} height={2} width={6} onClick={() => adminView()}/>
+                    <Button label={name === "admin" ? "Dashboard" : "Admin ansicht"} type={"primary"} height={2}
+                            width={6} onClick={() => adminView()}/>
                 }
             </div>
             <hr className={styles["hr-color"]}></hr>

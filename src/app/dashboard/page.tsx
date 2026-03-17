@@ -63,7 +63,7 @@ export default function Dashboard() {
     return (
         <div className={styles.wrapper}>
             <div className={styles.headerBar}>
-                <Header/>
+                <Header name={"dashboard"}/>
             </div>
             <div className={styles.viewArea}>
                 <Timecard openOverview={openOverviewModal} addEntry={addEntryForDate}/>

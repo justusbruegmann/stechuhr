@@ -64,7 +64,7 @@ export default function Page() {
                                         alert("change password");
                                         close()
                                         localStorage.setItem("role", "user");
-
+                                        router.push("/dashboard")
                                     }}/>
                         </div>
                     </div>
