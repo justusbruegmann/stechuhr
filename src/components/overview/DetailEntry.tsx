@@ -10,10 +10,11 @@ import {formatDate, formatDateTime, formatDuration} from "@/utils/TimeUtils";
 
 type Props = {
     timeEntry: TimeEntry;
+    deleteFunc?: () => void;
 }
 
 
-export default function DetailEntry({timeEntry}: Props) {
+export default function DetailEntry({timeEntry, deleteFunc}: Props) {
 
     const startTime = new Date(timeEntry.startTime)
     const endTime: Date | null = timeEntry.endTime ? new Date(timeEntry.endTime) : null
@@ -56,8 +57,8 @@ export default function DetailEntry({timeEntry}: Props) {
                 </div>
             </div>
 
-            <div className={Styles["edit-button"]} onClick={() => alert("Edit")}>
-                <Image src="/edit.svg" alt="" width={30} height={30} className={Styles["edit-button-icon"]}/>
+            <div className={Styles["edit-button"]} onClick={deleteFunc}>
+                <Image src="/delete.svg" alt="" width={30} height={30} className={Styles["edit-button-icon"]}/>
             </div>
         </Card>
     );

@@ -9,13 +9,13 @@ import TimeEntry from "@/types/TimeEntry";
 import {getTimeEntriesByTimespan} from "@/utils/TimeUtils";
 
 
-
 interface Props {
     entries: Record<string, TimeEntry[]>;
+    deleteEntry: (id: string) => void;
 }
 
 
-export default function Overview({entries}: Props) {
+export default function Overview({entries, deleteEntry}: Props) {
 
     const timeEntries: Record<string, TimeEntry[]> = {
         "day": getTimeEntriesByTimespan(entries, "day"),
@@ -41,6 +41,9 @@ export default function Overview({entries}: Props) {
                     <DetailEntry
                         key={entry.id}
                         timeEntry={entry}
+                        deleteFunc={() => {
+                            deleteEntry(entry.id)
+                        }}
                     />
                 ))}
             </div>
