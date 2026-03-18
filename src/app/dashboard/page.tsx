@@ -1,6 +1,6 @@
 'use client';
 import styles from "./Dashboard.module.css"
-
+//needed to merge
 import Header from "@/components/layout/Header";
 import Timecard from "@/components/timecard/Timecard";
 import Calendar from "@/components/calendar/Calendar";
