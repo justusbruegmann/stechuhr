@@ -1,5 +1,4 @@
 'use client';
-//needed for merge
 import styles from "./Dashboard.module.css"
 
 import Header from "@/components/layout/Header";
@@ -100,7 +99,7 @@ export default function Dashboard() {
                 <Timecard openOverview={openOverviewModal} addEntry={addEntryForDate}/>
 
                 <div className={styles.calendarWrapper}>
-                    <Calendar showDailyDetails={showDailyDetails}/>
+                    <Calendar showDailyDetails={showDailyDetails} timeEntries={dailyEntries}/>
                 </div>
             </div>
         </div>

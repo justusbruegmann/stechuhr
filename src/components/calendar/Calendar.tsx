@@ -4,236 +4,235 @@ import Card from "@/components/layout/Card";
 import styles from "./Calendar.module.css"
 import {useState} from "react";
 import Holidays from 'date-holidays';
+import TimeEntry from "@/types/TimeEntry";
 
 
 type Props = {
     showDailyDetails: (date: Date) => void;
+    timeEntries: Record<string, TimeEntry[]>
 }
 
 
-export default function Kalender({showDailyDetails}: Props) {
+export default function Kalender({showDailyDetails, timeEntries}: Props) {
+
     // --- Kalender ---
-    const heute = new Date();
-    const [aktTag, setAktTag] = useState(new Date());
-    const aktMonat = aktTag.getMonth();
-    const aktJahr = aktTag.getFullYear();
+    const timeEntryList = Object.values(timeEntries).flat();
 
-    const tageAktMonat = new Date(aktJahr, aktMonat + 1, 0).getDate();
+    const today = new Date();
+    const [currentDay, setCurrentDay] = useState(new Date());
+    const currentMonth = currentDay.getMonth();
+    const currentYear = currentDay.getFullYear();
 
-    let eTagMonat = new Date(aktJahr, aktMonat, 1).getDay();
-    eTagMonat = (eTagMonat + 6) % 7;
+    const daysCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-    const tageArray = [];
-    for (let i = 0; i < eTagMonat; i++) {
-        tageArray.push(null);
+    let firstDayMonth = new Date(currentYear, currentMonth, 1).getDay();
+    firstDayMonth = (firstDayMonth + 6) % 7;
+
+    const daysArray = [];
+    for (let i = 0; i < firstDayMonth; i++) {
+        daysArray.push(null);
     }
-    for (let tag = 1; tag <= tageAktMonat; tag++) {
-        tageArray.push(tag);
+    for (let day = 1; day <= daysCurrentMonth; day++) {
+        daysArray.push(day);
     }
-    const restTageMonat = tageArray.length % 7;
-    if (restTageMonat !== 0) {
-        for (let i = restTageMonat; i < 7; i++) {
-            tageArray.push(null);
+
+    const remainingDaysMonth = daysArray.length % 7;
+    if (remainingDaysMonth !== 0) {
+        for (let i = remainingDaysMonth; i < 7; i++) {
+            daysArray.push(null);
         }
     }
 
+
     // --- Wochentage ---
-    const wochentage = ["Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa.", "So."];
+    const weekdays = ["Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa.", "So."];
 
     // --- Feiertage ---
-    const hd = new Holidays('DE', 'BW');
+    const holidays = new Holidays('DE', 'BW');
 
     // --- Legende ---
-    const symbole = [
-        {
-            text: "Krank",
-            color: "rgb(99, 90, 0)",
-            backgroundColor: "rgba(255, 234, 0, 0.5)",
-            borderColor: "rgb(255, 234, 0)"
-        },
-        {
-            text: "Urlaub",
-            color: "rgb(82, 0, 120)",
-            backgroundColor: "rgba(174, 0, 255, 0.5)",
-            borderColor: "rgb(174, 0, 255)"
-        },
-        {
-            text: "WE",
-            color: "rgb(0, 37, 116)",
-            backgroundColor: "rgba(0, 81, 255, 0.5)",
-            borderColor: "rgb(0, 81, 255)"
-        },
-        {
-            text: "FT",
-            color: "rgb(124, 0, 124)",
-            backgroundColor: "rgba(255, 0, 255, 0.5)",
-            borderColor: "rgb(255, 0, 255)"
-        },
-        {
-            text: ">8h",
-            color: "rgb(30, 114, 30)",
-            backgroundColor: "rgba(0, 255, 0, 0.5)",
-            borderColor: "rgb(0, 255, 0)"
-        },
-        {
-            text: "6-8h",
-            color: "rgb(130, 72, 0)",
-            backgroundColor: "rgba(255, 140, 0, 0.5)",
-            borderColor: "rgb(255, 140, 0)"
-        },
-        {
-            text: "<6h",
-            color: "rgb(128, 0, 0)",
-            backgroundColor: "rgba(255, 0, 0, 0.5)",
-            borderColor: "rgb(255, 0, 0)"
-        },
-    ];
+    const symbols = [
+        ["Krank", "rgb(99, 90, 0)", "rgba(255, 234, 0, 0.5)", "rgb(200, 180, 0)"],
+        ["Urlaub", "rgb(82, 0, 120)", "rgba(174, 0, 255, 0.5)", "rgb(120, 0, 200)"],
+        ["WE", "rgb(0, 37, 116)", "rgba(0, 81, 255, 0.5)", "rgb(0, 37, 200)"],
+        ["FT", "rgb(124, 0, 124)", "rgba(255, 0, 255, 0.5)", "rgb(180, 0, 180)"],
+        [">8h", "rgb(30, 114, 30)", "rgba(0, 255, 0, 0.5)", "rgb(0, 150, 0)"],
+        ["6-8h", "rgb(130, 72, 0)", "rgba(255, 140, 0, 0.5)", "rgb(200, 120, 0)"],
+        ["<6h", "rgb(128, 0, 0)", "rgba(255, 0, 0, 0.5)", "rgb(200, 0, 0)"]
+    ].map(([text, color, backgroundColor, borderColor]) => ({text, color, backgroundColor, borderColor}));
 
-    const legende1Symbole = symbole.slice(0, 4);
-    const legende2Symbole = symbole.slice(4);
+    const legend1Symbols = symbols.slice(0, 4);
+    const legend2Symbols = symbols.slice(4);
 
 
     // --- Funktionen ---
-    function handleMonatWechsel(richtung: "vor" | "zurueck") {
-        const neuesDatum = new Date(aktTag);
+    function handleMonthChange(direction: "forward" | "back") {
+        const newDate = new Date(currentDay);
 
-        if (richtung === "vor") {
-            neuesDatum.setMonth(neuesDatum.getMonth() + 1);
+        if (direction === "forward") {
+            newDate.setMonth(newDate.getMonth() + 1);
         } else {
-            neuesDatum.setMonth(neuesDatum.getMonth() - 1);
+            newDate.setMonth(newDate.getMonth() - 1);
         }
 
-        setAktTag(neuesDatum);
+        setCurrentDay(newDate);
     }
 
-    function handleHeute() {
-        setAktTag(new Date(heute.getFullYear(), heute.getMonth(), 1));
+    function handleToday() {
+        setCurrentDay(new Date(today.getFullYear(), today.getMonth(), 1));
     }
 
-    function handleEintraege(index: number, tag: number) {
-        const eintraege = [];
+    function handleWorkingHours(day: number) {
+        const dayEntries = timeEntryList.filter((entry: any) => {
+            const entryDate = new Date(entry.startTime);
+
+            return entryDate.getFullYear() === currentYear &&
+                entryDate.getMonth() === currentMonth &&
+                entryDate.getDate() === day;
+        });
+
+        let totalHours = 0;
+
+        for (const entry of dayEntries) {
+            if (!entry.endTime) continue;
+
+            const startTime = new Date(entry.startTime);
+            const endTime = new Date(entry.endTime);
+
+            const diff = endTime.getTime() - startTime.getTime();
+
+            totalHours += diff / (1000 * 60 * 60);
+        }
+
+        if (totalHours === 0) return -1;
+
+        return Math.round(totalHours * 10) / 10;
+    }
+
+    function handleEntries(index: number, day: number) {
+        const entries = [];
 
         // Wochenende
         if (index % 7 === 5 || index % 7 === 6) {
-            eintraege.push(
+            entries.push(
                 <span
-                    className={styles.kalender_symbole}
+                    className={styles.calendar_symbols}
                     style={{
-                        color: symbole[2].color,
-                        backgroundColor: symbole[2].backgroundColor,
-                        border: `2px solid ${symbole[2].borderColor}`
+                        color: symbols[2].color,
+                        backgroundColor: symbols[2].backgroundColor,
+                        border: `2px solid ${symbols[2].borderColor}`
                     }}
                 >
-                    {symbole[2].text}
+                    {symbols[2].text}
                 </span>
             );
         }
 
         // Feiertag
-        const feiertag = hd.isHoliday(new Date(aktJahr, aktMonat, tag));
+        const holiday = holidays.isHoliday(new Date(currentYear, currentMonth, day));
 
-        if (feiertag && feiertag.some(f => f.type === "public")) {
-            eintraege.push(
+        if (holiday && holiday.some(f => f.type === "public")) {
+            entries.push(
                 <span
-                    className={styles.kalender_symbole}
+                    className={styles.calendar_symbols}
                     style={{
-                        color: symbole[3].color,
-                        backgroundColor: symbole[3].backgroundColor,
-                        border: `2px solid ${symbole[3].borderColor}`
+                        color: symbols[3].color,
+                        backgroundColor: symbols[3].backgroundColor,
+                        border: `2px solid ${symbols[3].borderColor}`
                     }}
                 >
-                    {symbole[3].text}
+                    {symbols[3].text}
                 </span>
             );
         }
 
         // Arbeitszeit
-        const arbeitszeit = -1;
+        const workHours = handleWorkingHours(day);
         let symbolIndex: number = -1;
 
         switch (true) {
-            case arbeitszeit >= 8:
+            case workHours >= 8:
                 symbolIndex = 4;
                 break;
-            case arbeitszeit >= 6:
+            case workHours >= 6:
                 symbolIndex = 5;
                 break;
-            case arbeitszeit < 6:
+            case workHours < 6:
                 symbolIndex = 6;
                 break;
         }
 
-        if (arbeitszeit !== -1) {
-            eintraege.push(
+        if (workHours !== -1) {
+            entries.push(
                 <span
-                    className={styles.kalender_symbole}
+                    className={styles.calendar_symbols}
                     style={{
-                        color: symbole[symbolIndex].color,
-                        backgroundColor: symbole[symbolIndex].backgroundColor,
-                        border: `2px solid ${symbole[symbolIndex].borderColor}`
+                        color: symbols[symbolIndex].color,
+                        backgroundColor: symbols[symbolIndex].backgroundColor,
+                        border: `2px solid ${symbols[symbolIndex].borderColor}`
                     }}
                 >
-                    {arbeitszeit + "h"}
+                    {workHours + "h"}
                 </span>
             );
         }
-        return eintraege;
+        return entries;
     }
 
 
     // --- UI ---
     return (
         <Card>
-            <div className={styles.kalender_container}>
-                <div className={styles.kalender_header}>
-                    <div className={styles.kalender_zeitraum}>
-                        <div className={styles.kalender_zeitraum_text}>{aktJahr}</div>
+            <div className={styles.calendar_container}>
+                <div className={styles.calendar_header}>
+                    <div className={styles.calendar_period}>
+                        <div className={styles.calendar_period_text}>{currentYear}</div>
                         <div
-                            className={styles.kalender_zeitraum_text}>{aktTag.toLocaleDateString("de-DE", {month: "long"})}</div>
+                            className={styles.calendar_period_text}>{currentDay.toLocaleDateString("de-DE", {month: "long"})}</div>
                     </div>
-                    <div className={styles.kalender_navigation_grid}>
-                        <button className={styles.kalender_reset_tag} onClick={() => handleHeute()}>
+                    <div className={styles.calendar_navigation_grid}>
+                        <button className={styles.calendar_reset_day} onClick={() => handleToday()}>
                             Heute
                         </button>
-                        <button className={styles.kalender_pfeil} onClick={() => handleMonatWechsel("zurueck")}>
+                        <button className={styles.calendar_arrow} onClick={() => handleMonthChange("back")}>
                             <img src="/Arrow_Back.svg" alt=""/>
                         </button>
-                        <button className={styles.kalender_pfeil} onClick={() => handleMonatWechsel("vor")}>
+                        <button className={styles.calendar_arrow} onClick={() => handleMonthChange("forward")}>
                             <img src="/Arrow_Forward.svg" alt=""/>
                         </button>
                     </div>
                 </div>
-                <hr className={styles.linie}/>
+                <hr className={styles.line}/>
                 <br/>
 
-                <div className={styles.kalender_wochentage_grid}>
-                    {wochentage.map((wochentag, index) => (
-                        <div key={index} className={styles.kalender_wochentag}>{wochentag}</div>
+                <div className={styles.calendar_weekdays_grid}>
+                    {weekdays.map((weekday, index) => (
+                        <div key={index} className={styles.calendar_weekday}>{weekday}</div>
                     ))}
                 </div>
-                <div className={styles.kalender_grid}>
-                    {tageArray.map((tag, index) => {
-                        if (tag === null) {
-                            return <div key={index} className={styles.kalender_leer}>{tag}</div>;
-                        }
-                        if (tag === heute.getDate() && aktMonat === heute.getMonth() && aktJahr === heute.getFullYear()) {
-                            return (
-                                <div key={index} className={styles.kalender_heute}
-                                     onClick={() => showDailyDetails(new Date(aktJahr, aktMonat, tag))}>
-                                    {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
-                                    <div className={styles.kalender_tag_symbole_container}>
 
-                                        {handleEintraege(index, tag)}
+                <div className={styles.calendar_grid}>
+                    {daysArray.map((day, index) => {
+                        if (day === null) {
+                            return <div key={index} className={styles.calendar_empty}>{day}</div>;
+                        }
+                        if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+                            return (
+                                <div key={index} className={styles.calendar_today}
+                                     onClick={() => showDailyDetails(new Date(currentYear, currentMonth, day))}>
+                                    {day && <div className={styles.calendar_day_text}>{day}</div>}
+                                    <div className={styles.calendar_day_symbols_container}>
+                                        {handleEntries(index, day)}
                                     </div>
                                 </div>
                             );
                         }
                         return (
-                            <div key={index} className={styles.kalender_tag}
-                                 onClick={() => showDailyDetails(new Date(aktJahr, aktMonat, tag))}>
-                                {tag && <div className={styles.kalender_tag_text}>{tag}</div>}
-                                <div className={styles.kalender_tag_symbole_container}>
-                                    {handleEintraege(index, tag)}
+                            <div key={index} className={styles.calendar_day}
+                                 onClick={() => showDailyDetails(new Date(currentYear, currentMonth, day))}>
+                                {day && <div className={styles.calendar_day_text}>{day}</div>}
+                                <div className={styles.calendar_day_symbols_container}>
+                                    {handleEntries(index, day)}
                                 </div>
                             </div>
                         );
@@ -241,13 +240,13 @@ export default function Kalender({showDailyDetails}: Props) {
                 </div>
 
                 <br/>
-                <hr className={styles.linie}/>
+                <hr className={styles.line}/>
 
-                <div className={styles.kalender_legende1}>
-                    {legende1Symbole.map((symbol, index) => (
+                <div className={styles.calendar_legend1}>
+                    {legend1Symbols.map((symbol, index) => (
                         <span
                             key={index}
-                            className={styles.kalender_symbole}
+                            className={styles.calendar_symbols}
                             style={{
                                 color: symbol.color,
                                 backgroundColor: symbol.backgroundColor,
@@ -259,11 +258,11 @@ export default function Kalender({showDailyDetails}: Props) {
                     ))}
                 </div>
 
-                <div className={styles.kalender_legende2}>
-                    {legende2Symbole.map((symbol, index) => (
+                <div className={styles.calendar_legend2}>
+                    {legend2Symbols.map((symbol, index) => (
                         <span
                             key={index}
-                            className={styles.kalender_symbole}
+                            className={styles.calendar_symbols}
                             style={{
                                 color: symbol.color,
                                 backgroundColor: symbol.backgroundColor,
