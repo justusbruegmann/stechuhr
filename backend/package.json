@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "0.0.1",
+  "description": "Backend for Stechuhr",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "app": "npx tsc && node dist/app.js",
+    "start": "npx tsc && node dist/app.js",
+    "dev": "npx tsc && node dist/app.js"
+  },
+  "author": "Justus Bruegmann & Sebastian Anhalt & Felix Hagino & Mika Siegrist & Aaron Bradley",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
+    "express": "^5.2.1",
+    "postgres": "^3.4.9"
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.5",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.0",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^6.0.3"
+  }
+}
