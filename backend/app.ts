@@ -31,9 +31,15 @@ const port = process.env.PORT || 3500;
 
 app.use(express.json());
 
+//Router imports
+import userMangement from "./route/userManagement";
+import auth from "./route/auth"
+
+app.use("/users", userMangement);
+app.use("/auth", auth);
 
 app.get("/", (req, res) => {
-    res.send("Sebbi Stinkt")
+    res.send("hello world");
 })
 
 app.listen(port, () => {

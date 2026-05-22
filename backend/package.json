@@ -12,6 +12,7 @@
   "author": "Justus Bruegmann & Sebastian Anhalt & Felix Hagino & Mika Siegrist & Aaron Bradley",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.5",
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/node": "^25.6.0",
     "drizzle-kit": "^0.31.10",
