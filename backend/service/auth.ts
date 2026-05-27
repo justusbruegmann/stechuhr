@@ -21,24 +21,24 @@ export async function auth(username?: string, password?: string, token?: string,
             if (session.token) {
                 const isValid: boolean = await verifyPassword(token, session.token);
                 if (isValid) {
-                    return {"succes": true, "role": user.role, "message": "Authentication successfully"};
+                    return {"succes": true, "role": user.role, "message": "Authentication successfully", "userId": userId};
                 }
             }
         }
         return {"succes": false, "role": user.role, "message": "Unauthorized"};
     } else if (password && username) {
         const user = await getUserFromUserName(username);
-        if (!user || user.length === 0) {
+        if (!user) {
             return {"succes": false, "message": "Invalid username"};
         }
-        if (user[0].isotp) {
-            return {"succes": false, "message": "user has one time password"};
+        if (user.isotp) {
+            return {"succes": false, "message": "user has one time password", "userId": user.id};
         }
-        if (user[0].pw) {
-            const isValid: boolean = await verifyPassword(password, user[0].pw);
+        if (user.pw) {
+            const isValid: boolean = await verifyPassword(password, user.pw);
             if (isValid) {
-                const session = await sessionCreate(user[0].id);
-                return {"succes": true, "role": user[0].role, "message": "Authentication successfully", "sessionToken": session, "userId": user[0].id};
+                const session = await sessionCreate(user.id);
+                return {"succes": true, "role": user.role, "message": "Authentication successfully", "sessionToken": session, "userId": user.id};
             }
         }
 

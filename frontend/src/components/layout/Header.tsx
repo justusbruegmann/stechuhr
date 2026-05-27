@@ -20,7 +20,7 @@ export default function Header({name}: Headerprops) {
     const logout = () => {
         // Logout Logik
         router.push("/login");
-        localStorage.removeItem("role");
+        localStorage.clear();
     }
 
     const adminView = () => {

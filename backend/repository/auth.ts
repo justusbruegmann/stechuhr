@@ -23,3 +23,8 @@ export async function deleteOldSession() {
     const deleted = await db.delete(sessions).where(gt(sessions.expiresat, now));
     return deleted;
 }
+
+export async function deleteSessionsOfUser(userId: number) {
+    const deleted = await db.delete(sessions).where(eq(sessions.userid,userId));
+    return deleted;
+}
