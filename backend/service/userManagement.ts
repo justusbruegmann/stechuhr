@@ -1,14 +1,26 @@
-import {createUser, changeOTP, getHash, getUsers, deleteUser} from "../repository/userManagement";
-import {generateRandomString} from "../utils/utils";
+import {createUser, changeOTP, getHash, getUsers, deleteUser, getManagers, getManagerById, getUserFromUserName} from "../repository/userManagement";
+import {generateRandomString, isValidPassword} from "../utils/utils";
 import {verifyPassword} from "../utils/hashing";
 
 export async function userCreation(username:string, role: string, managerId:number) {
-    //TODO: check for managerid
-    //TODO: Throw errror if username is taken
     try {
-        const password = generateRandomString(16);
-        const user = await createUser(username,role,managerId,password);
-        return user;
+        //check if managerId is a manager
+        const manager = await getManagerById(managerId);
+        console.log(manager)
+        if (!manager?.role || manager.role !== "manager") {
+            return "manager does not exist";
+        }
+        const usernameCheck = await getUserFromUserName(username)
+        if (usernameCheck) {
+            return "username exists";
+        }
+        //only allow user ceration of role exist
+        if (role === "manager" || role === "admin" || role === "user") {
+            const password = generateRandomString(16);
+            const user = await createUser(username.toLowerCase(),role,managerId,password);
+            return user;
+        }
+        return "role does not exist";
     } catch (e) {
         console.error(e);
         throw e;
@@ -17,6 +29,10 @@ export async function userCreation(username:string, role: string, managerId:numb
 
 export async function OTPChange(userId:number,newPwd:string){
     try {
+        const isValid = isValidPassword(newPwd);
+        if (!isValid) {
+            return "invalid password";
+        }
        const change :any = await changeOTP(userId,newPwd);
        return change;
     } catch (e) {
@@ -55,5 +71,10 @@ export async function usersGet(limit :number , offset :number) {
 
 export async function userDelete(userId:number){
     const result = await deleteUser(userId);
+    return result;
+}
+
+export async function managerGet() {
+    const result = await getManagers();
     return result;
 }

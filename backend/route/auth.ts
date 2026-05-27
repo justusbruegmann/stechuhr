@@ -13,13 +13,14 @@ router.get('/', async (req, res) => {
             return res.status(404).send("Not Found");
         }
         if (authUser?.succes) {
-            return res.status(200).send({"role": authUser.role});
+            console.log(authUser.succes);
+            return res.status(200).json({"role": authUser.role, "id": authUser.userId, "test":"test"});
         } else {
             if (authUser.message === "Unauthorized") {
                 return res.status(401).send("not_authorized");
             } else if (authUser.message === "has one time password") {
                 // for the identification that there is an otp
-                return res.status(485).send("Has onetime password");
+                return res.status(485).json({"message":"Has onetime password", "userId": authUser.userId});
             } else {
                 return res.status(401).send("Not authorized IDK");
             }
@@ -44,9 +45,9 @@ router.get('/', async (req, res) => {
             if (authUser.message === "Invalid username") {
                 return res.status(401).send("not_authorized");
             }
-            if (authUser.message === "") {
+            if (authUser.message === "user has one time password") {
                 // for the identification that there is an otp
-                return res.status(485).send("Has onetime password");
+                return res.status(485).json({"message":"Has onetime password", "userId": authUser.userId});
             }
         }
     }
