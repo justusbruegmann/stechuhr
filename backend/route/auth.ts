@@ -3,7 +3,7 @@ import {auth} from "../service/auth";
 
 const router = Router();
 
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
     const body: any = req.body;
     let token: string | undefined = req.headers.authorization;
     let userId: number | undefined = Number(req.headers.userid);
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
         }
         if (authUser?.succes) {
             console.log(authUser.succes);
-            return res.status(200).json({"role": authUser.role, "id": authUser.userId, "test":"test"});
+            return res.status(200).json({"role": authUser.role, "id": authUser.userId});
         } else {
             if (authUser.message === "Unauthorized") {
                 return res.status(401).send("not_authorized");
@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
     }
 
     if (!body) {
-        return res.status(400).send("Not Found");
+        return res.status(400).send("Not Found Body");
     }
     if (body.username && body.password) {
         const authUser = await auth(body.username, body.password, undefined, undefined);
@@ -36,7 +36,7 @@ router.get('/', async (req, res) => {
             return res.status(404).send("Not Found");
         }
         if (authUser?.succes) {
-            return res.status(200).send({
+            return res.status(200).json({
                 "id": authUser.userId,
                 "session": authUser.sessionToken,
                 "role": authUser.role

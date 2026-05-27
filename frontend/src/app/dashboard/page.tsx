@@ -9,11 +9,15 @@ import Overview from "@/components/overview/Overview";
 import {useCallback, useEffect, useRef, useState} from "react";
 import TimeEntry from "@/types/TimeEntry";
 import DailyDetailsPane from "@/components/timeAdjustment/DailyDetailsPane";
+import {useRouter} from "next/navigation";
+
+import {loginToken} from "@/scripts/auth";
 
 
 export default function Dashboard() {
 
     const {showModal, updateModalContent} = useModal();
+    const router = useRouter();
 
     /**
      * The dailyEntries state is used as a central state to store a relevant section of all logged time entries for the frontend.
@@ -34,6 +38,30 @@ export default function Dashboard() {
             [datum.toDateString()]: [...(prev[datum.toDateString()] || []), entry]
         }));
     };
+
+    async function authCheck() {
+        const token = localStorage.getItem("token")
+        const userid = localStorage.getItem("userid")
+
+        if (!token || !userid) {
+            router.push("/login")
+            return
+        }
+
+        const login = await loginToken(token, userid);
+
+        if (!login || login === 401 || login === 485 || login === 400) {
+            router.push("/login")
+            return;
+        }
+
+        localStorage.setItem("role", login.role);
+    }
+
+    useEffect( () => {
+        authCheck().then(r => console.log("Logged in"));
+    }, [router])
+
 
     const deleteEntry = (id: string) => {
         console.log(id);

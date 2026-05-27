@@ -5,14 +5,19 @@ import Card from "@/components/layout/Card";
 import {useModal} from "@/contexts/ModalContext"
 import Image from "next/image";
 import styles from "./Login.module.css"
+import {PasswordChangeModal} from "@/components/login/PasswordChangeModal";
 import {useState, useEffect} from "react";
 import {useRouter} from "next/navigation";
+import {loginUsername} from "@/scripts/auth";
 
-export default function Page() {
+
+
+export default function Page(){
     const router = useRouter();
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [validInputs, setValidInputs] = useState<boolean>(true);
+
     const [width, setWidth] = useState("20vw");
     const {showModal} = useModal();
 
@@ -40,40 +45,42 @@ export default function Page() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    const login = (): void => {
+    const login = async () => {
         if (username.trim() && password.trim()) {
             // Logic for BE login
-            setValidInputs(true);
-            if (username.trim() === "123" && password.trim() === "123") {
-                const {close} = showModal("popup",
-                    <div>
-                        <h3>Password ändern</h3>
-                        <br/>
-                        <br/>
-                        <p className={styles["center-text"]}>Bitte ändern Sie ihr Passwort</p>
-                        <p className={styles["center-text"]}>Bitte nutzen Sie Groß/Kleinbuchstaben, Zahlen und
-                            Sonderzeichen</p>
-                        <div className={styles["password-change"]}>
-                            <input type="password" className={`${styles["login-input"]} ${styles["login-size"]}`}
-                                   placeholder="Passwort"/>
-                            <input type="password" className={`${styles["login-input"]} ${styles["login-size"]}`}
-                                   placeholder="Passwort wiederholen"/>
-                            <Button type={"accent"} label={"Fertig"} width={"calc(100% - 1rem)"} height={2}
-                                    onClick={() => {
-                                        //TODO: if Backend exist make a function
-                                        alert("change password");
-                                        close()
-                                        localStorage.setItem("role", "user");
-                                        router.push("/dashboard")
-                                    }}/>
-                        </div>
-                    </div>
-                )
-            } else if (username.trim() === "1234" && password.trim() === "1234") {
-                localStorage.setItem("role", "admin");
-                router.push("/dashboard");
+            let result: any;
+            try {
+                result = await loginUsername(username.trim(), password.trim());
+            } catch (e) {
+                console.error(e);
             }
-            console.log("logging in with" + username + " " + password);
+            setValidInputs(true);
+            if (result === 401 || result === 400 || !result) {
+                setValidInputs(false);
+                return;
+            }
+            if (result?.status === 485) {
+                const {close} = showModal("popup",
+                    <PasswordChangeModal
+                        password={password}
+                        userId={result.response.userId}
+                        // einfach eine Function dem child übergeben
+                        onSuccess={() => {
+                            close();
+                            router.push("/login");
+                        }}
+                    />
+                );
+
+            } else {
+                // valid login
+                localStorage.setItem("role", result.role);
+                localStorage.setItem("userid", result.id);
+                localStorage.setItem("token", result.session);
+                router.push("/dashboard")
+            }
+
+
         } else {
             setValidInputs(false);
         }

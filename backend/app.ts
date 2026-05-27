@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from "express";
 const app = express();
+import cors from "cors";
 
 import {drizzle} from  'drizzle-orm/postgres-js'
 // @ts-ignore
@@ -30,6 +31,11 @@ export const db = drizzle(client);
 const port = process.env.PORT || 3500;
 
 app.use(express.json());
+
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+}));
 
 //Router imports
 import userMangement from "./route/userManagement";
