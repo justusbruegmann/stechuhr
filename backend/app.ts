@@ -32,9 +32,27 @@ const port = process.env.PORT || 3500;
 
 app.use(express.json());
 
+const allowedOrigins = [
+    "http://localhost:3000", // for development
+    "https://how2centeradiv.dev", // for productipo
+];
+
 app.use(cors({
-    origin: "http://localhost:3000",
-    credentials: true
+    origin: (origin, callback) => {
+        // allow non-browser requests like Postman/server-to-server
+        if (!origin) return callback(null, true);
+
+        const isAllowed =
+            allowedOrigins.includes(origin) ||
+            /^https:\/\/.*\.vercel\.app$/.test(origin); // to allow all vercel domains for preview testing
+
+        if (isAllowed) {
+            return callback(null, true);
+        }
+
+        return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
 }));
 
 //Router imports

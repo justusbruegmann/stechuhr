@@ -1,4 +1,3 @@
-
 const BASE_URL: string | undefined = process.env.NEXT_PUBLIC_BACKEND_URL;
 if (!BASE_URL) {
     throw new Error("no BASE_URL provided");
@@ -47,7 +46,7 @@ export async function getUsers(token: string, userId: number) {
     }
 }
 
-export async function deleteUser(token: string, userIdOfAdmin: number,userid: number ) {
+export async function deleteUser(token: string, userIdOfAdmin: number, userid: number) {
     const url = `${BASE_URL}/users/${userid}`;
     const headers = {
         "content-type": "application/json",
@@ -80,5 +79,44 @@ export async function getManagers(token: string, userId: number) {
     if (response.status === 200) {
         return await response.json();
     }
+}
 
+export async function updateRole(userId: number, role: string, tokenOfAdmin: string, useridOfAdmin: number) {
+    const url = `${BASE_URL}/users/user/role/${userId}`;
+    const headers = {
+        "content-type": "application/json",
+        "Authorization": tokenOfAdmin,
+        "userid": `${useridOfAdmin}`
+    }
+    const body = {
+        "role": role.toLowerCase(),
+    }
+    const result: Response = await fetch(url, {method: "put", body: JSON.stringify(body), headers: headers});
+    if (result.status === 204) {
+        return 204;
+    } else if (result.status === 401) {
+        return 401
+    } else {
+        return 400
+    }
+}
+
+export async function updateManager(userId: number, managerId: number, tokenOfAdmin: string, useridOfAdmin: number) {
+    const url = `${BASE_URL}/users/user/manager/${userId}`;
+    const headers = {
+        "content-type": "application/json",
+        "Authorization": tokenOfAdmin,
+        "userid": `${useridOfAdmin}`
+    }
+    const body = {
+        "managerid": managerId,
+    }
+    const result = await fetch(url, {method: "put", body: JSON.stringify(body), headers: headers});
+    if (result.status === 204) {
+        return 204;
+    } else if (result.status === 401) {
+        return 401
+    } else {
+        return 400
+    }
 }

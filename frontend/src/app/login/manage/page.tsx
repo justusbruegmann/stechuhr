@@ -129,7 +129,7 @@ export default function Manage() {
                 <div className={styles["rows"]}>
                     <UserItemHeader/>
                     {users.map((user) => (
-                        <UserItem key={user.id} user={user} onDeleteAction={deleteUserFrontend} />
+                        <UserItem key={user.id} user={user} onDeleteAction={deleteUserFrontend} loadUsersAction={loadUsers} />
                     ))}                </div>
             </div>
         </>
