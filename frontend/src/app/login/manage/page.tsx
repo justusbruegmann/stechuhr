@@ -1,8 +1,8 @@
 'use client'
 import styles from "./manage.module.css";
-import type User from "@/types/User";
+import User from "@/types/User";
 
-import React from "react"
+import React, {useEffect} from "react"
 
 import Button from "@/components/layout/Button";
 import Header from "@/components/layout/Header";
@@ -12,17 +12,34 @@ import Image from "next/image";
 import {useModal} from "@/contexts/ModalContext";
 import CopyToClipboard from "@/components/usermanagement/CopyToClipboard";
 
-const demoData: User[] = [{id: 1, username: "Aaron", role: "user", managerid: 2},
-    {id: 2, username: "Felix", role: "manager", managerid: 2},
-    {id: 4, username: "Sebbi", role: "manager", managerid: 2},
-    {id: 3, username: "Justus", role: "admin", managerid: 2},]
+import {getUsers, createUser, deleteUser} from "@/scripts/userManagement";
+
 
 export default function Manage() {
-    const [users, setUsers] = React.useState<User[]>(demoData);
+    const [users, setUsers] = React.useState<User[]>([]);
+    const [onetimePassword, setOnetimePassword] = React.useState("");
     const {showModal} = useModal();
 
-    //TODO useEffect
-    const handleAddUser = () => {
+    useEffect(() => {
+        loadUsers().then(r => console.log("loaded users"));
+    }, []);
+
+    async function loadUsers() {
+        const token = localStorage.getItem("token");
+        const userid = localStorage.getItem("userid");
+        if (!token || !userid) {
+            return;
+        }
+        const user: User[] = await getUsers(token, Number(userid))
+        setUsers(user);
+    }
+
+    const handleAddUser = async () => {
+        const token = localStorage.getItem("token");
+        const userid = localStorage.getItem("userid");
+        if (!token || !userid) {
+            return;
+        }
         const username = (document.getElementById("newUsername") as HTMLInputElement).value;
         const role = (document.getElementById("selectRole") as HTMLSelectElement).value;
         const managerId = (document.getElementById("selectManager") as HTMLSelectElement).value;
@@ -31,33 +48,36 @@ export default function Manage() {
             alert("Bitte alle Felder ausfüllen");
             return;
         }
+        try {
+            const result = await createUser(
+                username,
+                Number(managerId),
+                role,
+                token,
+                Number(userid)
+            );
 
-        const newUser: User = {
-            id: Math.max(...users.map(u => u.id), 0) + 1,
-            username,
-            role: role as "user" | "manager" | "admin",
-            managerid: parseInt(managerId)
-        };
-
-        setUsers([...users, newUser]);
+            if (typeof result === "string") {
+                await loadUsers();
+                return result;
+            }
+        } catch (e) {
+            alert(e)
+        }
     };
 
-    function deleteUser(id: number) {
-        setUsers((prev) => {
-            const next = [...prev];
-            const index = next.findIndex((u) => u.id === id);
-            if (index === -1) return prev;
-
-            next.splice(index, 1);
-            return next;
-        });
+    async function deleteUserFrontend(id: number) {
+        const token = localStorage.getItem("token");
+        const userid = localStorage.getItem("userid");
+        if (!token || !userid) {
+            return;
+        }
+        const result = await deleteUser(token,Number(userid), Number(id));
+        await loadUsers();
+        if (result !== 200) {
+            alert("There was an error while deleting user");
+        }
     }
-
-    function randomString() :string {
-        return Math.random().toString(36).substr(2, 9);
-    }
-
-
 
     return (
         <>
@@ -66,7 +86,7 @@ export default function Manage() {
                 <div className={styles.rows}>
                     Nutzer
                     <Button label={"Nutzer anlegen"} height={2} width={6} onClick={() => {
-                        const {close : closeCreateUserModal} = showModal("popup", <div className={styles.rows}>
+                        const {close: closeCreateUserModal} = showModal("popup", <div className={styles.rows}>
                             <h3>Neuen Nutzer anlegen</h3>
                             <input type="text" id={"newUsername"} className={styles.inputs} placeholder={"Nutzername"}/>
                             <select className={styles.inputs} name="selectRole" id="selectRole">
@@ -80,20 +100,28 @@ export default function Manage() {
                                 ))}
                             </select>
                             <Button label={"Anlegen"} type={"accent"} height={2} width={"calc(100% - .75rem)"}
-                                    className={styles.inputs} onClick={() => {
-                                handleAddUser();
+                                    className={styles.inputs} onClick={async() => {
+                                const onetimePassword = await handleAddUser()
+                                if  (!onetimePassword){
+                                    return;
+                                }
+
                                 closeCreateUserModal();
-                                const onetimePassword :string = randomString();
-                                 const {close: closePasswordModal} =  showModal("popup", <div>
+
+                                const {close: closePasswordModal} = showModal("popup", <div>
                                     <h3>Einmalpasswort</h3>
-                                     <br/>
-                                     <p>Passwort speichern und dem Nutzer zu schicken</p>
-                                     <p>Das Passwort wird nur einmal angezeigt</p>
-                                     <br/>
-                                    <CopyToClipboard text={onetimePassword} />
-                                    <Button label={"Anlegen"} type={"accent"} height={2} width={"calc(100% - .75rem)"}
-                                            className={styles.inputs} onClick={() => {closePasswordModal()}} />
+                                    <br/>
+                                    <p>Passwort speichern und dem Nutzer zu schicken</p>
+                                    <p>Das Passwort wird nur einmal angezeigt</p>
+                                    <br/>
+                                    <CopyToClipboard text={onetimePassword}/>
+                                    <Button label={"Anlegen"} type={"accent"} height={2}
+                                            width={"calc(100% - .75rem)"}
+                                            className={styles.inputs} onClick={() => {
+                                        closePasswordModal()
+                                    }}/>
                                 </div>);
+
                             }}/>
                         </div>)
                     }}/>
@@ -101,7 +129,7 @@ export default function Manage() {
                 <div className={styles["rows"]}>
                     <UserItemHeader/>
                     {users.map((user) => (
-                        <UserItem key={user.id} user={user} onDeleteAction={deleteUser} />
+                        <UserItem key={user.id} user={user} onDeleteAction={deleteUserFrontend} />
                     ))}                </div>
             </div>
         </>

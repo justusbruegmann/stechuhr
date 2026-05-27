@@ -1,4 +1,5 @@
 import {createUser, changeOTP, getHash, getUsers, deleteUser, getManagers, getManagerById, getUserFromUserName} from "../repository/userManagement";
+import {deleteSessionsOfUser} from "../repository/auth";
 import {generateRandomString, isValidPassword} from "../utils/utils";
 import {verifyPassword} from "../utils/hashing";
 
@@ -70,6 +71,7 @@ export async function usersGet(limit :number , offset :number) {
 }
 
 export async function userDelete(userId:number){
+    const deleted = await deleteSessionsOfUser(userId);
     const result = await deleteUser(userId);
     return result;
 }

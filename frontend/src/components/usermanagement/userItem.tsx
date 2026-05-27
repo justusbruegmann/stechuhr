@@ -2,7 +2,6 @@
 import * as React from 'react';
 import styles from './userItem.module.css';
 import Button from "@/components/layout/Button";
-import {useRouter} from "next/navigation";
 import Image from "next/image";
 import type User from "@/types/User";
 
@@ -12,7 +11,7 @@ type Props = {
 }
 
 export default function UserItem({user, onDeleteAction}: Props) {
-
+    const [isDeleting, setIsDeleting] = React.useState(false);
     return (
         <>
             <div className={styles.container}>
@@ -22,7 +21,15 @@ export default function UserItem({user, onDeleteAction}: Props) {
                 <p className={styles.item}>{user.managerid}</p>
                 <div className={styles.item}>
                     <Button label={<Image src={"/delete.svg"} alt="delete" width="16" height="16"/>} type={"error"}
-                            height={2} width={2} onClick={() => {onDeleteAction(user.id)}} />
+                            height={2} width={2} onClick={async () => {
+                        if (isDeleting) {
+                            alert("Deleting user");
+                            return;
+                        }
+                        setIsDeleting(true);
+                        onDeleteAction(user.id)
+
+                    }}/>
                 </div>
             </div>
         </>

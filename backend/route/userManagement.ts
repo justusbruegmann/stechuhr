@@ -74,7 +74,7 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.delete('/user/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
     const token = req.headers.authorization;
     const id = Number(req.headers.userid);
     if (!token || !id) {
@@ -85,13 +85,11 @@ router.delete('/user/:id', async (req, res) => {
         return res.status(401).json({"error": "unauthorized"});
     }
     try {
-        const id = Number(req.params.id)
-        if (!req.body) {
-            return res.status(400).send("bad request");
-        }
-        const result = await userDelete(id);
+        const deleteId = Number(req.params.id)
+        const result = await userDelete(deleteId);
         return res.status(200).send("deleted successfully");
     } catch (error) {
+        console.log(error);
         res.status(500).send("internal error");
     }
 })
