@@ -1,5 +1,13 @@
 import {Router} from "express";
-import {userCreation, OTPChange, authUser, usersGet, userDelete, managerGet} from "../service/userManagement";
+import {
+    userCreation,
+    OTPChange,
+    authUser,
+    usersGet,
+    userDelete,
+    managerGet,
+    managerUpdate, roleUpdate
+} from "../service/userManagement";
 import {authHelper} from "../utils/auth";
 
 const router = Router();
@@ -108,4 +116,44 @@ router.get('/managers', async (req, res) => {
     return res.status(200).send(result);
 })
 
+router.put('/user/manager/:id', async (req, res) => {
+    const token = req.headers.authorization;
+    const id = Number(req.headers.userid);
+    if (!token || !id) {
+        return res.status(401).json({"error": "No token provided"});
+    }
+    const authUser = await authHelper(token, id, "admin")
+    if (!authUser?.authorized) {
+        return res.status(401).json({"error": "unauthorized"});
+    }
+    const userId: number = Number(req.params.id);
+    const managerid:number = req.body.managerid;
+    const update = await managerUpdate(userId,managerid)
+    if (update === "manager does not exist") {
+        return res.status(400).send("manager does not exist");
+    }
+    if (update === "is not a manager") {
+        return res.status(400).send("is not a manager");
+    }
+    return res.sendStatus(204);
+})
+
+router.put('/user/role/:id', async (req, res) => {
+    const token = req.headers.authorization;
+    const id = Number(req.headers.userid);
+    if (!token || !id) {
+        return res.status(401).json({"error": "No token provided"});
+    }
+    const authUser = await authHelper(token, id, "admin")
+    if (!authUser?.authorized) {
+        return res.status(401).json({"error": "unauthorized"});
+    }
+    const userId: number = Number(req.params.id);
+    const role: string = req.body.role;
+    const update = await roleUpdate(userId,role)
+    if (update === "invalid role") {
+        return res.status(400).send("invalid role");
+    }
+    return res.sendStatus(204);
+})
 export default router;

@@ -68,5 +68,14 @@ export async function getManagers() {
 export async function getManagerById(managerId: number) {
     const result = await db.select({id: users.id, role: users.role}).from(users).where(eq(users.id, managerId))
     return result[0];
+}
 
+export async function updateManager(userId: number, managerId: number) {
+    const result = await db.update(users).set({"managerid": managerId}).where(eq(users.id, userId))
+    return result;
+}
+
+export async function updateRole(userId: number, role:string) {
+    const result = await db.update(users).set({"role": role}).where(eq(users.id, userId))
+    return result;
 }
