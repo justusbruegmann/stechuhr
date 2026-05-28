@@ -12,16 +12,17 @@ import Image from "next/image";
 import {useModal} from "@/contexts/ModalContext";
 import CopyToClipboard from "@/components/usermanagement/CopyToClipboard";
 
-import {getUsers, createUser, deleteUser} from "@/scripts/userManagement";
+import {getUsers, createUser, deleteUser, getManagers} from "@/scripts/userManagement";
 
 
 export default function Manage() {
     const [users, setUsers] = React.useState<User[]>([]);
-    const [onetimePassword, setOnetimePassword] = React.useState("");
+    const [managers, setManagers] = React.useState<any>([]);
     const {showModal} = useModal();
 
     useEffect(() => {
         loadUsers().then(r => console.log("loaded users"));
+        getManagersBE().then(r => console.log("loaded managers"));
     }, []);
 
     async function loadUsers() {
@@ -32,6 +33,19 @@ export default function Manage() {
         }
         const user: User[] = await getUsers(token, Number(userid))
         setUsers(user);
+    }
+    async function getManagersBE() {
+        const token = localStorage.getItem("token");
+        const userid = localStorage.getItem("userid");
+        if (!token || !userid) {
+            return;
+        }
+        const managers: any = await getManagers(token, Number(userid));
+        if (!managers) {
+            alert("No managers found.");
+            return;
+        }
+        setManagers(managers);
     }
 
     const handleAddUser = async () => {
@@ -129,7 +143,7 @@ export default function Manage() {
                 <div className={styles["rows"]}>
                     <UserItemHeader/>
                     {users.map((user) => (
-                        <UserItem key={user.id} user={user} onDeleteAction={deleteUserFrontend} loadUsersAction={loadUsers} />
+                        <UserItem key={user.id} user={user} onDeleteAction={deleteUserFrontend} loadUsersAction={loadUsers} managers={managers} />
                     ))}                </div>
             </div>
         </>

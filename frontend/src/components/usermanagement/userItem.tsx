@@ -5,25 +5,30 @@ import Button from "@/components/layout/Button";
 import Image from "next/image";
 import type User from "@/types/User";
 import {useModal} from "@/contexts/ModalContext";
-import {finalizeLayoutVaryPath} from "next/dist/client/components/segment-cache/vary-path";
-import {getManagers, updateManager, updateRole} from "@/scripts/userManagement";
+import {updateManager, updateRole} from "@/scripts/userManagement";
 
 type Props = {
     user: User;
     onDeleteAction: (id: number) => void;
     loadUsersAction: () => void;
+    managers: any[]
 }
 
-export default function UserItem({user, onDeleteAction, loadUsersAction}: Props) {
+export default function UserItem({user, onDeleteAction, loadUsersAction, managers}: Props) {
     const [isDeleting, setIsDeleting] = React.useState(false);
     const {showModal} = useModal();
+
+    function getManagerByID(id: number) {
+        return managers.find((manager: any) => manager.id === id);
+    }
+
     return (
         <>
             <div className={styles.container}>
                 <p className={styles.item}>{user.id}</p>
                 <p className={styles.item}>{user.username}</p>
                 <p className={styles.item}>{user.role}</p>
-                <p className={styles.item}>{user.managerid}</p>
+                <p className={styles.item}>{getManagerByID(user.managerid)?.username ?? "-"}</p>
                 <div className={styles.item}>
                     <Button label={<Image src={"/delete.svg"} alt="delete" width="16" height="16"/>} type={"error"}
                             height={2} width={2} onClick={async () => {
@@ -40,11 +45,6 @@ export default function UserItem({user, onDeleteAction, loadUsersAction}: Props)
                         const userIdOfAdmin = localStorage.getItem("userid");
                         if (!token || !userIdOfAdmin) {
                             alert("User id or Token is missing!");
-                            return;
-                        }
-                        const managers: any = await getManagers(token, Number(userIdOfAdmin));
-                        if (!managers) {
-                            alert("No managers found.");
                             return;
                         }
                         const {close} = showModal("popup", <div>

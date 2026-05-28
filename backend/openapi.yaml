@@ -1,0 +1,493 @@
+openapi: 3.0.3
+info:
+  title: Stechuhr API
+  description: Backend API for Stechuhr - a time tracking application.
+  version: 0.0.1
+
+servers:
+  - url: http://localhost:3500
+    description: Local development server
+  - url: https://how2centeradiv.dev
+    description: Production server
+
+tags:
+  - name: Auth
+    description: Authentication and session management
+  - name: Users
+    description: User management (admin only)
+  - name: Password
+    description: Password management
+
+paths:
+  /:
+    get:
+      summary: Health check
+      description: Returns a simple health check response.
+      responses:
+        "200":
+          description: Server is running
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: hello world
+
+  /auth/:
+    post:
+      tags:
+        - Auth
+      summary: Login or validate session
+      description: |
+        Supports two modes:
+        - **Login**: Send `username` and `password` in the request body to create a new session.
+        - **Session validation**: Send `authorization` and `userid` headers to validate an existing session.
+      parameters:
+        - $ref: "#/components/parameters/Authorization"
+        - $ref: "#/components/parameters/UserId"
+      requestBody:
+        description: Login credentials (only required for login mode)
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Missing request body
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Not Found Body
+        "401":
+          description: Invalid credentials or token
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: not_authorized
+        "404":
+          description: User not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Not Found
+        "485":
+          description: User has a one-time password that must be changed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OtpResponse"
+
+  /users/:
+    get:
+      tags:
+        - Users
+      summary: List users
+      description: Returns a paginated list of users. Requires admin role.
+      parameters:
+        - $ref: "#/components/parameters/Authorization"
+        - $ref: "#/components/parameters/UserId"
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 25
+          description: Number of users to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Pagination offset
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserListItem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    post:
+      tags:
+        - Users
+      summary: Create user
+      description: |
+        Creates a new user with a generated password. Requires admin role.
+        The generated password is returned as plain text in the response.
+      parameters:
+        - $ref: "#/components/parameters/Authorization"
+        - $ref: "#/components/parameters/UserId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "201":
+          description: User created. Returns the generated password.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: aB3$xY9!kL
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                usernameExists:
+                  value:
+                    error: username exists
+                managerNotFound:
+                  value:
+                    error: manager does not exist
+                invalidRole:
+                  value:
+                    error: role does not exist
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /users/{id}:
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      description: Deletes a user by ID. Requires admin role.
+      parameters:
+        - $ref: "#/components/parameters/Authorization"
+        - $ref: "#/components/parameters/UserId"
+        - $ref: "#/components/parameters/PathId"
+      responses:
+        "200":
+          description: User deleted
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: deleted successfully
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /users/otp/{id}:
+    put:
+      tags:
+        - Password
+      summary: Change password (OTP)
+      description: |
+        Changes a user's password. The new password must meet complexity requirements:
+        - Minimum 8 characters
+        - At least one uppercase letter
+        - At least one lowercase letter
+        - At least one digit
+        - At least one special character
+      parameters:
+        - $ref: "#/components/parameters/PathId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordRequest"
+      responses:
+        "200":
+          description: Password changed
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: changed successfully
+        "400":
+          description: Password does not meet requirements
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "need 8 characters, upper/lowercase, numbers,special"
+        "401":
+          description: Current password is incorrect
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Unauthorized
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /users/managers:
+    get:
+      tags:
+        - Users
+      summary: List managers
+      description: Returns all users with the manager role. Requires admin role.
+      parameters:
+        - $ref: "#/components/parameters/Authorization"
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        "200":
+          description: List of managers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ManagerListItem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /users/user/manager/{id}:
+    put:
+      tags:
+        - Users
+      summary: Update user's manager
+      description: Assigns a manager to a user. Requires admin role.
+      parameters:
+        - $ref: "#/components/parameters/Authorization"
+        - $ref: "#/components/parameters/UserId"
+        - $ref: "#/components/parameters/PathId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateManagerRequest"
+      responses:
+        "204":
+          description: Manager updated
+        "400":
+          description: Invalid manager
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                notFound:
+                  value: manager does not exist
+                notManager:
+                  value: is not a manager
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /users/user/role/{id}:
+    put:
+      tags:
+        - Users
+      summary: Update user's role
+      description: Changes a user's role. Requires admin role.
+      parameters:
+        - $ref: "#/components/parameters/Authorization"
+        - $ref: "#/components/parameters/UserId"
+        - $ref: "#/components/parameters/PathId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRoleRequest"
+      responses:
+        "204":
+          description: Role updated
+        "400":
+          description: Invalid role
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: invalid role
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+components:
+  parameters:
+    Authorization:
+      name: authorization
+      in: header
+      description: Session token
+      schema:
+        type: string
+    UserId:
+      name: userid
+      in: header
+      description: Numeric user ID
+      schema:
+        type: string
+    PathId:
+      name: id
+      in: path
+      required: true
+      description: User ID
+      schema:
+        type: integer
+
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Username (case-insensitive)
+          example: johndoe
+        password:
+          type: string
+          description: User password
+          example: myP@ssw0rd!
+
+    AuthResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: User ID
+          example: 1
+        session:
+          type: string
+          description: Session token (only present on login)
+          example: dGhpcyBpcyBhIHRva2Vu
+        role:
+          type: string
+          enum: [admin, manager, user]
+          description: User role
+          example: admin
+
+    OtpResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Has onetime password
+        userId:
+          type: integer
+          example: 1
+
+    UserListItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: johndoe
+        role:
+          type: string
+          enum: [admin, manager, user]
+          example: user
+        managerid:
+          type: integer
+          nullable: true
+          example: 2
+
+    ManagerListItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        username:
+          type: string
+          example: janemanager
+        role:
+          type: string
+          example: manager
+
+    CreateUserRequest:
+      type: object
+      required:
+        - username
+        - role
+        - managerId
+      properties:
+        username:
+          type: string
+          maxLength: 64
+          description: Username (will be stored as lowercase)
+          example: newuser
+        role:
+          type: string
+          enum: [admin, manager, user]
+          description: Role to assign
+          example: user
+        managerId:
+          type: integer
+          description: ID of the user's manager
+          example: 2
+
+    ChangePasswordRequest:
+      type: object
+      required:
+        - currentpwd
+        - newpwd
+      properties:
+        currentpwd:
+          type: string
+          description: Current password
+        newpwd:
+          type: string
+          description: New password (min 8 chars, upper/lowercase, digit, special char)
+          minLength: 8
+
+    UpdateManagerRequest:
+      type: object
+      required:
+        - managerid
+      properties:
+        managerid:
+          type: integer
+          description: ID of the new manager
+          example: 3
+
+    UpdateRoleRequest:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          type: string
+          enum: [admin, manager, user]
+          description: New role
+          example: manager
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: username exists
+
+  responses:
+    Unauthorized:
+      description: Unauthorized - invalid or missing credentials
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: unauthorized
+    InternalError:
+      description: Internal server error
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: internal error
