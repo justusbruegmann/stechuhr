@@ -10,6 +10,7 @@ interface PopupProps {
     onClose: () => void;
     zIndex: number;
     onRegisterClose?: (fn: () => void) => void;
+    isLoader?: boolean;
 }
 
 function parseCssTimeToMs(value: string): number {
@@ -21,7 +22,7 @@ function parseCssTimeToMs(value: string): number {
     return Number.parseFloat(v);
 }
 
-export function Popup({children, onClose, zIndex, onRegisterClose}: PopupProps) {
+export function Popup({children, onClose, zIndex, onRegisterClose, isLoader = false}: PopupProps) {
     const [portalRoot, setPortalRoot] = useState<HTMLDivElement | null>(null);
 
     const [isClosing, setIsClosing] = useState(false);
@@ -78,14 +79,19 @@ export function Popup({children, onClose, zIndex, onRegisterClose}: PopupProps) 
 
     const styleOverrides = {padding: '0px', margin: '.5rem', boxShadow: 'none', zIndex: zIndex + 1};
 
+    const nothingFunction = () => {
+    }
+
     return createPortal(
-        <div className={`${styles["overlay-background"]} ${isClosing ? styles["fade-out"] : ""}`} onClick={handleClose}
+        <div className={`${styles["overlay-background"]} ${isClosing ? styles["fade-out"] : ""}`}
+             onClick={isLoader ? nothingFunction : handleClose}
              ref={overlayRef} style={{zIndex: zIndex}}>
             <Card className={`${styles["popup-container"]} ${isClosing ? styles["pop-out"] : ""}`}
                   onClick={(e) => e.stopPropagation()}>
-                <Card className={`${styles["close-button"]}`} styleOverrides={styleOverrides} onClick={handleClose}>
-                    ×
-                </Card>
+                {!isLoader &&
+                    <Card className={`${styles["close-button"]}`} styleOverrides={styleOverrides} onClick={handleClose}>
+                        ×
+                    </Card>}
                 {children}
             </Card>
         </div>,
