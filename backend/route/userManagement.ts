@@ -127,7 +127,13 @@ router.put('/user/manager/:id', async (req, res) => {
         return res.status(401).json({"error": "unauthorized"});
     }
     const userId: number = Number(req.params.id);
-    const managerid:number = req.body.managerid;
+     if (!Number.isInteger(userId) || userId <= 0) {
+      return res.status(400).send("invalid user id");
+  }
+    const managerid:number= Number(req.body.managerid);
+     if (!Number.isInteger(managerid) || managerid <= 0) {
+      return res.status(400).send("invalid managerid");
+  }
     const update = await managerUpdate(userId,managerid)
     if (update === "manager does not exist") {
         return res.status(400).send("manager does not exist");
@@ -149,6 +155,9 @@ router.put('/user/role/:id', async (req, res) => {
         return res.status(401).json({"error": "unauthorized"});
     }
     const userId: number = Number(req.params.id);
+     if (!Number.isInteger(userId) || userId <= 0) {
+      return res.status(400).send("invalid user id");
+  }
     const role: string = req.body.role;
     const update = await roleUpdate(userId,role)
     if (update === "invalid role") {

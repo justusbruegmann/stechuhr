@@ -21,9 +21,14 @@
     width: 20vw;
 }
 
-.rows {
+.column {
     display: flex;
     flex-direction: column;
+}
+
+.rows {
+    display: flex;
+    flex-direction: row;
 }
 
 .rowitem {

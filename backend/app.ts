@@ -44,7 +44,7 @@ app.use(cors({
 
         const isAllowed =
             allowedOrigins.includes(origin) ||
-            /^https:\/\/.*\.vercel\.app$/.test(origin); // to allow all vercel domains for preview testing
+            /^https:\/\/stechuhr(-[a-z0-9]+)?\.vercel\.app$/.test(origin); // to allow all vercel domains for preview testing
 
         if (isAllowed) {
             return callback(null, true);
