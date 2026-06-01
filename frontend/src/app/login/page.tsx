@@ -17,6 +17,7 @@ export default function Page(){
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [validInputs, setValidInputs] = useState<boolean>(true);
+    const [isDoing, setIsDoing] = useState(false);
 
     const [width, setWidth] = useState("20vw");
     const {showModal} = useModal();
@@ -46,6 +47,7 @@ export default function Page(){
     }, []);
 
     const login = async () => {
+        setIsDoing(true);
         if (username.trim() && password.trim()) {
             // Logic for BE login
             let result: any;
@@ -57,9 +59,11 @@ export default function Page(){
             setValidInputs(true);
             if (result === 401 || result === 400 || !result) {
                 setValidInputs(false);
+                setIsDoing(false);
                 return;
             }
             if (result?.status === 485) {
+                setIsDoing(false);
                 const {close} = showModal("popup",
                     <PasswordChangeModal
                         password={password}
@@ -83,6 +87,7 @@ export default function Page(){
 
         } else {
             setValidInputs(false);
+            setIsDoing(false);
         }
     }
 
@@ -109,7 +114,7 @@ export default function Page(){
                 </div>
                 <Button style={{margin: '.75rem'}} label={"Login"} type={"accent"} height={2.5}
                         width={"calc(100% - 1rem)"}
-                        onClick={login}/>
+                        onClick={login} loading={isDoing}/>
             </Card>
         </div>
     );

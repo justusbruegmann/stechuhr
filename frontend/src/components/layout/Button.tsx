@@ -11,6 +11,7 @@ type Props = {
     onClick?: React.MouseEventHandler<HTMLButtonElement>;
     className?: string;
     style?: React.CSSProperties;
+    loading?: boolean;
 };
 
 export default function Button({
@@ -21,6 +22,7 @@ export default function Button({
                                    onClick,
                                    className,
                                    style,
+                                   loading
                                }: Props) {
     const variantClass =
         type === 'primary' ? styles['button-normal']
@@ -35,10 +37,11 @@ export default function Button({
     const mergedStyle = {...computedStyle, ...style}; // external style overrides computed
     const mergedClassName = `${styles.button} ${variantClass} ${className ?? ''}`.trim();
 
+    // @ts-ignore
     return (
         <div className={styles.wrapper} style={mergedStyle}>
             <button className={mergedClassName} style={{height: '100%', width: '100%'}} onClick={onClick}>
-                {label}
+                {loading ? <span className={styles.spinner} /> : label}
             </button>
         </div>
     );

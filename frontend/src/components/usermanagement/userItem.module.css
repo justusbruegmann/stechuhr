@@ -14,3 +14,23 @@
 .item:last-child {
     border-right: none;
 }
+
+.inputs {
+    margin: .5rem;
+    height: 2rem;
+    width: 20vw;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
+.rows {
+    display: flex;
+    flex-direction: row;
+}
+
+.rowitem {
+    padding: 1rem;
+}
