@@ -1,0 +1,488 @@
+openapi: 3.0.3
+info:
+  title: Stechuhr API
+  description: API for authentication, user management and time entries.
+  version: 0.0.1
+servers:
+  - url: http://localhost:3500
+    description: Local development server
+tags:
+  - name: Auth
+    description: Authentication
+  - name: Users
+    description: User management
+  - name: TimeEntries
+    description: Operations on time entries
+paths:
+  /auth:
+    get:
+      tags:
+        - Auth
+      summary: Authenticate a user
+      description: >
+        Authenticate either by `Authorization`/`userid` headers (session token)
+        or by a JSON body containing `username` and `password`.
+      operationId: authenticate
+      parameters:
+        - name: Authorization
+          in: header
+          required: false
+          description: Session token
+          schema:
+            type: string
+        - name: userid
+          in: header
+          required: false
+          description: ID of the user
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  session:
+                    type: string
+                  role:
+                    type: string
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Not Found
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: not_authorized
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Not Found
+        "485":
+          description: Has one time password (custom status)
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Has onetime password
+  /users:
+    post:
+      tags:
+        - Users
+      summary: Create a user
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - role
+              properties:
+                username:
+                  type: string
+                role:
+                  type: string
+                managerId:
+                  type: integer
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequestText"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorText"
+    get:
+      tags:
+        - Users
+      summary: List users
+      operationId: listUsers
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of users to return
+          schema:
+            type: integer
+            default: 25
+        - name: offset
+          in: query
+          required: false
+          description: Number of users to skip
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorText"
+  /users/otp/{id}:
+    put:
+      tags:
+        - Users
+      summary: Change a user's one time password
+      operationId: changeOtp
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the user
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - currentpwd
+                - newpwd
+              properties:
+                currentpwd:
+                  type: string
+                newpwd:
+                  type: string
+      responses:
+        "200":
+          description: Password changed
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: changed successfully
+        "400":
+          $ref: "#/components/responses/BadRequestText"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorText"
+  /users/user/{id}:
+    delete:
+      tags:
+        - Users
+      summary: Delete a user
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the user to delete
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User deleted
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: deleted successfully
+        "400":
+          $ref: "#/components/responses/BadRequestText"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorText"
+  /timeentries/{userId}:
+    get:
+      tags:
+        - TimeEntries
+      summary: List time entries for a user
+      operationId: getTimeEntriesByUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user whose entries are requested
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: true
+          description: Type of time entry to filter by
+          schema:
+            type: string
+        - name: time
+          in: query
+          required: false
+          description: Time filter
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of time entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                  type:
+                    type: string
+                  time:
+                    type: string
+                  entries:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TimeEntry"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /timeentries:
+    post:
+      tags:
+        - TimeEntries
+      summary: Create a time entry
+      operationId: createTimeEntry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - startTime
+              properties:
+                id:
+                  type: integer
+                startTime:
+                  type: string
+                  format: date-time
+      responses:
+        "200":
+          description: Time entry created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  startTime:
+                    type: string
+                    format: date-time
+                  created:
+                    type: boolean
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /timeentries/{id}:
+    get:
+      tags:
+        - TimeEntries
+      summary: Get a single time entry by ID
+      operationId: getTimeEntryById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the time entry
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The requested time entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeEntry"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      tags:
+        - TimeEntries
+      summary: Set the end time of a time entry
+      operationId: updateTimeEntryEndTime
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the time entry to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - endTime
+              properties:
+                endTime:
+                  type: string
+                  format: date-time
+      responses:
+        "200":
+          description: Time entry updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  endTime:
+                    type: string
+                    format: date-time
+                  updated:
+                    type: boolean
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - TimeEntries
+      summary: Delete a time entry
+      operationId: deleteTimeEntry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the time entry to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Time entry deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  deleted:
+                    type: boolean
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        role:
+          type: string
+        managerId:
+          type: integer
+    TimeEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: Bad Request
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: Unauthorized
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: Internal Server Error
+    BadRequestText:
+      description: Bad Request
+      content:
+        text/plain:
+          schema:
+            type: string
+          example: bad request
+    UnauthorizedText:
+      description: Unauthorized
+      content:
+        text/plain:
+          schema:
+            type: string
+          example: Unauthorized
+    InternalServerErrorText:
+      description: Internal Server Error
+      content:
+        text/plain:
+          schema:
+            type: string
+          example: internal error

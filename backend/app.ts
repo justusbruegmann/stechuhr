@@ -34,9 +34,12 @@ app.use(express.json());
 //Router imports
 import userMangement from "./route/userManagement";
 import auth from "./route/auth"
+import timeentries from "./route/timeentries";
 
 app.use("/users", userMangement);
 app.use("/auth", auth);
+app.use("/timeentries", timeentries);
+
 
 app.get("/", (req, res) => {
     res.send("hello world");
