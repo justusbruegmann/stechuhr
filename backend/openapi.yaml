@@ -13,6 +13,12 @@ tags:
     description: User management
   - name: TimeEntries
     description: Operations on time entries
+  - name: Requests
+    description: Vacation, sick and other requests (Anträge)
+  - name: Summary
+    description: Aggregated working time summary for a user
+  - name: Notifications
+    description: Rule-based notifications (e.g. overtime, undertime)
 paths:
   /auth:
     get:
@@ -90,6 +96,9 @@ paths:
                 type: string
               example: Has onetime password
   /users:
+    parameters:
+      - $ref: "#/components/parameters/AuthorizationHeader"
+      - $ref: "#/components/parameters/UserIdHeader"
     post:
       tags:
         - Users
@@ -153,7 +162,10 @@ paths:
                   $ref: "#/components/schemas/User"
         "500":
           $ref: "#/components/responses/InternalServerErrorText"
-  /users/otp/{id}:
+  /users/{id}/otp:
+    parameters:
+      - $ref: "#/components/parameters/AuthorizationHeader"
+      - $ref: "#/components/parameters/UserIdHeader"
     put:
       tags:
         - Users
@@ -194,7 +206,10 @@ paths:
           $ref: "#/components/responses/UnauthorizedText"
         "500":
           $ref: "#/components/responses/InternalServerErrorText"
-  /users/user/{id}:
+  /users/{id}:
+    parameters:
+      - $ref: "#/components/parameters/AuthorizationHeader"
+      - $ref: "#/components/parameters/UserIdHeader"
     delete:
       tags:
         - Users
@@ -208,23 +223,50 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
+        "204":
           description: User deleted
-          content:
-            text/plain:
-              schema:
-                type: string
-              example: deleted successfully
         "400":
           $ref: "#/components/responses/BadRequestText"
         "500":
           $ref: "#/components/responses/InternalServerErrorText"
-  /timeentries/{userId}:
+  /users/{managerId}/requests:
+    parameters:
+      - $ref: "#/components/parameters/AuthorizationHeader"
+      - $ref: "#/components/parameters/UserIdHeader"
+    get:
+      tags:
+        - Requests
+      summary: List all requests a manager is responsible for
+      operationId: listRequestsByManager
+      parameters:
+        - name: managerId
+          in: path
+          required: true
+          description: ID of the responsible manager
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of requests for the manager
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Request"
+        "400":
+          $ref: "#/components/responses/BadRequestText"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorText"
+  /users/{userId}/timeentries:
+    parameters:
+      - $ref: "#/components/parameters/AuthorizationHeader"
+      - $ref: "#/components/parameters/UserIdHeader"
     get:
       tags:
         - TimeEntries
       summary: List time entries for a user
-      operationId: getTimeEntriesByUser
+      operationId: getTimeEntriesForUser
       parameters:
         - name: userId
           in: path
@@ -250,18 +292,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  userId:
-                    type: string
-                  type:
-                    type: string
-                  time:
-                    type: string
-                  entries:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/TimeEntry"
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimeEntry"
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -269,6 +302,9 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
   /timeentries:
+    parameters:
+      - $ref: "#/components/parameters/AuthorizationHeader"
+      - $ref: "#/components/parameters/UserIdHeader"
     post:
       tags:
         - TimeEntries
@@ -311,6 +347,9 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
   /timeentries/{id}:
+    parameters:
+      - $ref: "#/components/parameters/AuthorizationHeader"
+      - $ref: "#/components/parameters/UserIdHeader"
     get:
       tags:
         - TimeEntries
@@ -394,8 +433,155 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        "204":
           description: Time entry deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /requests:
+    parameters:
+      - $ref: "#/components/parameters/AuthorizationHeader"
+      - $ref: "#/components/parameters/UserIdHeader"
+    get:
+      tags:
+        - Requests
+      summary: List requests
+      operationId: listRequests
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          description: Filter by the requesting user
+          schema:
+            type: integer
+        - name: managerId
+          in: query
+          required: false
+          description: Filter by the responsible manager
+          schema:
+            type: integer
+        - name: type
+          in: query
+          required: false
+          description: Filter by request type
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Request"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - Requests
+      summary: Create a request
+      operationId: createRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - type
+                - startTime
+              properties:
+                userId:
+                  type: integer
+                managerId:
+                  type: integer
+                type:
+                  type: string
+                startTime:
+                  type: string
+                  format: date-time
+                endTime:
+                  type: string
+                  format: date-time
+      responses:
+        "201":
+          description: Request created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Request"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /requests/{id}:
+    parameters:
+      - $ref: "#/components/parameters/AuthorizationHeader"
+      - $ref: "#/components/parameters/UserIdHeader"
+    get:
+      tags:
+        - Requests
+      summary: Get a single request by ID
+      operationId: getRequestById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the request
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The requested request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Request"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      tags:
+        - Requests
+      summary: Update a request (e.g. approve or change times)
+      operationId: updateRequest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the request to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                approved:
+                  type: boolean
+                startTime:
+                  type: string
+                  format: date-time
+                endTime:
+                  type: string
+                  format: date-time
+      responses:
+        "200":
+          description: Request updated
           content:
             application/json:
               schema:
@@ -403,7 +589,9 @@ paths:
                 properties:
                   id:
                     type: string
-                  deleted:
+                  approved:
+                    type: boolean
+                  updated:
                     type: boolean
         "400":
           $ref: "#/components/responses/BadRequest"
@@ -411,7 +599,200 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "500":
           $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - Requests
+      summary: Delete a request
+      operationId: deleteRequest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the request to delete
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Request deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /summary:
+    parameters:
+      - $ref: "#/components/parameters/AuthorizationHeader"
+      - $ref: "#/components/parameters/UserIdHeader"
+    get:
+      tags:
+        - Summary
+      summary: Get aggregated working time summary for a user
+      operationId: getSummary
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: ID of the user to summarize
+          schema:
+            type: integer
+        - name: month
+          in: query
+          required: false
+          description: Month to summarize (e.g. 2026-06)
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Working time summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Summary"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /notifications:
+    parameters:
+      - $ref: "#/components/parameters/AuthorizationHeader"
+      - $ref: "#/components/parameters/UserIdHeader"
+    get:
+      tags:
+        - Notifications
+      summary: List notifications
+      operationId: listNotifications
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          description: Filter by user
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /notifications/{id}:
+    parameters:
+      - $ref: "#/components/parameters/AuthorizationHeader"
+      - $ref: "#/components/parameters/UserIdHeader"
+    get:
+      tags:
+        - Notifications
+      summary: Get a single notification by ID
+      operationId: getNotificationById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the notification
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The requested notification
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      tags:
+        - Notifications
+      summary: Update a notification (e.g. mark as read)
+      operationId: updateNotification
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the notification to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - read
+              properties:
+                read:
+                  type: boolean
+      responses:
+        "200":
+          description: Notification updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  read:
+                    type: boolean
+                  updated:
+                    type: boolean
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - Notifications
+      summary: Delete a notification
+      operationId: deleteNotification
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the notification to delete
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Notification deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
+  parameters:
+    AuthorizationHeader:
+      name: Authorization
+      in: header
+      required: true
+      description: Session token
+      schema:
+        type: string
+    UserIdHeader:
+      name: userid
+      in: header
+      required: true
+      description: ID of the requesting user
+      schema:
+        type: integer
   schemas:
     User:
       type: object
@@ -433,6 +814,58 @@ components:
           type: string
           format: date-time
         endTime:
+          type: string
+          format: date-time
+    Request:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        managerId:
+          type: integer
+        type:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        approved:
+          type: boolean
+    Summary:
+      type: object
+      properties:
+        userId:
+          type: integer
+        month:
+          type: string
+        workedHours:
+          type: number
+        workload:
+          type: number
+        overtime:
+          type: number
+        holidayDaysLeft:
+          type: number
+        openRequests:
+          type: integer
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        type:
+          type: string
+        message:
+          type: string
+        read:
+          type: boolean
+        createdAt:
           type: string
           format: date-time
     Error:

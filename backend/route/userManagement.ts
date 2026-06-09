@@ -6,6 +6,8 @@ const router = Router();
 
 router.post('/', async (req, res) => {
     //TODO: add admin auth
+    const token = req.headers.authorization;
+    const id = Number(req.headers.userid);
     try {
         const body: any = req.body;
         if (!body) {
@@ -18,7 +20,9 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.put('/otp/:id', async (req, res) => {
+router.put('/:id/otp', async (req, res) => {
+    const token = req.headers.authorization;
+    const id = Number(req.headers.userid);
     try {
         const currentpwd: string = req.body.currentpwd;
         const newpwd: string = req.body.newpwd;
@@ -39,6 +43,8 @@ router.put('/otp/:id', async (req, res) => {
 })
 
 router.get('/', async (req, res) => {
+    const token = req.headers.authorization;
+    const id = Number(req.headers.userid);
     //TODO: add Admin Auth
     try {
         const limit = Number(req.query.limit) || 25;
@@ -50,7 +56,26 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.delete('/user/:id', async (req, res) => {
+router.get('/:managerId/requests', async (req, res) => {
+    const token = req.headers.authorization;
+    const id = Number(req.headers.userid);
+    //TODO: add Manager auth
+    //TODO: wire to requests service once implemented
+    try {
+        const managerId = Number(req.params.managerId);
+        if (!managerId) {
+            return res.status(400).send("bad request");
+        }
+        const requests: any[] = [];
+        return res.status(200).send(requests);
+    } catch (error) {
+        res.status(500).send("internal error");
+    }
+})
+
+router.delete('/:id', async (req, res) => {
+    const token = req.headers.authorization;
+    const id = Number(req.headers.userid);
     //TODO: add Admin auth
     try {
         const id = Number(req.params.id)
@@ -58,10 +83,34 @@ router.delete('/user/:id', async (req, res) => {
             return res.status(400).send("bad request");
         }
         const result = await deleteUser(id);
-        return res.status(200).send("deleted successfully");
+        return res.status(204).send();
     } catch (error) {
         res.status(500).send("internal error");
     }
+})
+
+router.get("/:userId/timeentries", (req, res) => {
+    const token = req.headers.authorization;
+    const id = Number(req.headers.userid);
+    const type = req.query.type;
+    const time = req.query.time;
+    const userID = req.params.userId
+    const auth = 123123;
+    const succes = Boolean(auth);
+
+    if (!type) {
+        return res.status(400).send({error: "Bad Request"})
+    }
+    if (auth === null) {
+        return res.status(401).send({error: "Unauthorized"})
+
+    }
+    if (succes === false) {
+        return res.status(500).send({error: "Internal Server Error"})
+    }
+
+    return res.status(200).send([])
+
 })
 
 export default router;

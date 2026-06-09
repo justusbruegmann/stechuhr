@@ -35,10 +35,16 @@ app.use(express.json());
 import userMangement from "./route/userManagement";
 import auth from "./route/auth"
 import timeentries from "./route/timeentries";
+import requests from "./route/request";
+import summary from "./route/summary";
+import notifications from "./route/notifications";
 
 app.use("/users", userMangement);
 app.use("/auth", auth);
 app.use("/timeentries", timeentries);
+app.use("/requests", requests);
+app.use("/summary", summary);
+app.use("/notifications", notifications);
 
 
 app.get("/", (req, res) => {
