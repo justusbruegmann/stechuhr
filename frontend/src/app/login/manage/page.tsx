@@ -21,6 +21,7 @@ export default function Manage() {
     const {showModal, updateModalContent} = useModal();
 
     useEffect(() => {
+        const {close} = showModal("spinningLoader")
         loadUsers().then(r => console.log("loaded users"));
         getManagersBE().then(r => console.log("loaded managers"));
     }, []);
