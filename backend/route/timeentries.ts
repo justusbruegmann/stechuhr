@@ -7,7 +7,7 @@ const router = Router();
 router.post("/", (req, res) => {
     const token = req.headers.authorization;
     const id = Number(req.headers.userid);
-    const body: { id: number, startTime: Date } = req.body;
+    const body: { id: number, startTime: Date, type: string } = req.body;
     const auth = 123123;
     const succes = false
     if (!auth) {
@@ -17,7 +17,7 @@ router.post("/", (req, res) => {
         return res.status(400).send({error: "Bad Request"})
     }
     if (succes) {
-        return res.status(200).send({id: body.id, startTime: body.startTime, created: true})
+        return res.status(201).send()
     }
     return res.status(500).send({error: "Internal Server Error"})
 
@@ -25,7 +25,7 @@ router.post("/", (req, res) => {
 
 router.get("/:id", (req, res) => {
     const token = req.headers.authorization;
-    const id = Number(req.headers.userid);
+    const userId = Number(req.headers.userid);
     const id = req.params.id
     const auth = 123123;
     const succes = false
@@ -45,7 +45,7 @@ router.get("/:id", (req, res) => {
 
 router.put("/:id", (req, res) => {
     const token = req.headers.authorization;
-    const id = Number(req.headers.userid);
+    const userId = Number(req.headers.userid);
     const id = req.params.id
     const body: { endTime: Date } = req.body;
     const auth = 123123;
@@ -60,13 +60,13 @@ router.put("/:id", (req, res) => {
     if (succes === false) {
         return res.status(500).send({error: "Internal Server Error"})
     }
-    return res.status(200).send({id, endTime: body.endTime, updated: true})
+    return res.status(204).send()
 
 })
 
 router.delete("/:id", (req, res) => {
     const token = req.headers.authorization;
-    const id = Number(req.headers.userid);
+    const userId = Number(req.headers.userid);
     const id = req.params.id
     const auth = 123123;
     const succes = false

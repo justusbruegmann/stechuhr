@@ -27,7 +27,7 @@ router.get("/", (req, res) => {
 
 router.get("/:id", (req, res) => {
     const token = req.headers.authorization;
-    const id = Number(req.headers.userid);
+    const userId = Number(req.headers.userid);
     const id = req.params.id
     const auth = 123123;
     const succes = false
@@ -47,7 +47,7 @@ router.get("/:id", (req, res) => {
 
 router.put("/:id", (req, res) => {
     const token = req.headers.authorization;
-    const id = Number(req.headers.userid);
+    const userId = Number(req.headers.userid);
     const id = req.params.id
     const body: { read: boolean } = req.body;
     const auth = 123123;
@@ -62,13 +62,13 @@ router.put("/:id", (req, res) => {
     if (succes === false) {
         return res.status(500).send({error: "Internal Server Error"})
     }
-    return res.status(200).send({id, read: body.read, updated: true})
+    return res.status(204).send()
 
 })
 
 router.delete("/:id", (req, res) => {
     const token = req.headers.authorization;
-    const id = Number(req.headers.userid);
+    const userId = Number(req.headers.userid);
     const id = req.params.id
     const auth = 123123;
     const succes = false

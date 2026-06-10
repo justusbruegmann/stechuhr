@@ -21,7 +21,7 @@ tags:
     description: Rule-based notifications (e.g. overtime, undertime)
 paths:
   /auth:
-    get:
+    post:
       tags:
         - Auth
       summary: Authenticate a user
@@ -68,26 +68,11 @@ paths:
                   role:
                     type: string
         "400":
-          description: Bad Request
-          content:
-            text/plain:
-              schema:
-                type: string
-              example: Not Found
+          $ref: "#/components/responses/BadRequest"
         "401":
-          description: Unauthorized
-          content:
-            text/plain:
-              schema:
-                type: string
-              example: not_authorized
-        "404":
-          description: Not Found
-          content:
-            text/plain:
-              schema:
-                type: string
-              example: Not Found
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
         "485":
           description: Has one time password (custom status)
           content:
@@ -128,9 +113,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
         "400":
-          $ref: "#/components/responses/BadRequestText"
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "500":
-          $ref: "#/components/responses/InternalServerErrorText"
+          $ref: "#/components/responses/InternalServerError"
     get:
       tags:
         - Users
@@ -160,13 +147,15 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "500":
-          $ref: "#/components/responses/InternalServerErrorText"
+          $ref: "#/components/responses/InternalServerError"
   /users/{id}/otp:
     parameters:
       - $ref: "#/components/parameters/AuthorizationHeader"
       - $ref: "#/components/parameters/UserIdHeader"
-    put:
+    patch:
       tags:
         - Users
       summary: Change a user's one time password
@@ -229,6 +218,8 @@ paths:
           $ref: "#/components/responses/BadRequestText"
         "500":
           $ref: "#/components/responses/InternalServerErrorText"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /users/{managerId}/requests:
     parameters:
       - $ref: "#/components/parameters/AuthorizationHeader"
@@ -256,6 +247,8 @@ paths:
                   $ref: "#/components/schemas/Request"
         "400":
           $ref: "#/components/responses/BadRequestText"
+        "401":
+            $ref: "#/components/responses/Unauthorized"
         "500":
           $ref: "#/components/responses/InternalServerErrorText"
   /users/{userId}/timeentries:
@@ -280,12 +273,20 @@ paths:
           description: Type of time entry to filter by
           schema:
             type: string
-        - name: time
+        - name: startDate
           in: query
           required: false
-          description: Time filter
+          description: Start date
           schema:
             type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: false
+          description: End Date
+          schema:
+            type: string
+            format: date-time
       responses:
         "200":
           description: List of time entries
@@ -319,27 +320,21 @@ paths:
               required:
                 - id
                 - startTime
+                - type
               properties:
                 id:
                   type: integer
                 startTime:
                   type: string
                   format: date-time
+                endTime:
+                  type: string
+                  format: date-time
+                type:
+                  type: string
       responses:
-        "200":
+        "201":
           description: Time entry created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  startTime:
-                    type: string
-                    format: date-time
-                  created:
-                    type: boolean
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -375,7 +370,7 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "500":
           $ref: "#/components/responses/InternalServerError"
-    put:
+    patch:
       tags:
         - TimeEntries
       summary: Set the end time of a time entry
@@ -400,20 +395,8 @@ paths:
                   type: string
                   format: date-time
       responses:
-        "200":
+        "204":
           description: Time entry updated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  endTime:
-                    type: string
-                    format: date-time
-                  updated:
-                    type: boolean
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -552,7 +535,7 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "500":
           $ref: "#/components/responses/InternalServerError"
-    put:
+    patch:
       tags:
         - Requests
       summary: Update a request (e.g. approve or change times)
@@ -580,19 +563,8 @@ paths:
                   type: string
                   format: date-time
       responses:
-        "200":
+        "204":
           description: Request updated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  approved:
-                    type: boolean
-                  updated:
-                    type: boolean
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -636,12 +608,20 @@ paths:
           description: ID of the user to summarize
           schema:
             type: integer
-        - name: month
+        - name: startTime
           in: query
-          required: false
-          description: Month to summarize (e.g. 2026-06)
+          required: true
+          description: start time
           schema:
             type: string
+            format: date-time
+        - name: endTime
+          in: query
+          required: true
+          description: end time
+          schema:
+            type: string
+            format: date-time
       responses:
         "200":
           description: Working time summary
@@ -655,22 +635,22 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /notifications:
+  /users/{userId}/notifications:
     parameters:
       - $ref: "#/components/parameters/AuthorizationHeader"
       - $ref: "#/components/parameters/UserIdHeader"
     get:
       tags:
         - Notifications
-      summary: List notifications
+      summary: List notification of UserID
       operationId: listNotifications
       parameters:
         - name: userId
-          in: query
-          required: false
-          description: Filter by user
+          in: path
+          required: true
+          description: ID of the userId
           schema:
-            type: integer
+            type: string
       responses:
         "200":
           description: List of notifications
@@ -713,7 +693,7 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "500":
           $ref: "#/components/responses/InternalServerError"
-    put:
+    patch:
       tags:
         - Notifications
       summary: Update a notification (e.g. mark as read)
@@ -737,19 +717,8 @@ paths:
                 read:
                   type: boolean
       responses:
-        "200":
+        "204":
           description: Notification updated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  read:
-                    type: boolean
-                  updated:
-                    type: boolean
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -810,12 +779,16 @@ components:
       properties:
         id:
           type: string
+        userId:
+          type: string
         startTime:
           type: string
           format: date-time
         endTime:
           type: string
           format: date-time
+        type:
+          type: string
     Request:
       type: object
       properties:
