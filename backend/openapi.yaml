@@ -190,11 +190,11 @@ paths:
                 type: string
               example: changed successfully
         "400":
-          $ref: "#/components/responses/BadRequestText"
+          $ref: "#/components/responses/BadRequest"
         "401":
-          $ref: "#/components/responses/UnauthorizedText"
+          $ref: "#/components/responses/Unauthorized"
         "500":
-          $ref: "#/components/responses/InternalServerErrorText"
+          $ref: "#/components/responses/InternalServerError"
   /users/{id}:
     parameters:
       - $ref: "#/components/parameters/AuthorizationHeader"
@@ -215,9 +215,9 @@ paths:
         "204":
           description: User deleted
         "400":
-          $ref: "#/components/responses/BadRequestText"
+          $ref: "#/components/responses/BadRequest"
         "500":
-          $ref: "#/components/responses/InternalServerErrorText"
+          $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/Unauthorized"
   /users/{managerId}/requests:
@@ -246,11 +246,11 @@ paths:
                 items:
                   $ref: "#/components/schemas/Request"
         "400":
-          $ref: "#/components/responses/BadRequestText"
+          $ref: "#/components/responses/BadRequest"
         "401":
             $ref: "#/components/responses/Unauthorized"
         "500":
-          $ref: "#/components/responses/InternalServerErrorText"
+          $ref: "#/components/responses/InternalServerError"
   /users/{userId}/timeentries:
     parameters:
       - $ref: "#/components/parameters/AuthorizationHeader"
@@ -664,6 +664,38 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /notifications:
+    parameters:
+    - $ref: "#/components/parameters/AuthorizationHeader"
+    - $ref: "#/components/parameters/UserIdHeader"
+    post:
+      tags:
+        - Notifications
+      summary: Create notifications for the day before
+      operationId: postNotifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+               - date
+              properties:
+                date:
+                  type: string
+                  format: date-time
+                
+      responses:
+        "201":
+          $ref: "#/components/responses/CreatedText"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
   /notifications/{id}:
     parameters:
       - $ref: "#/components/parameters/AuthorizationHeader"
@@ -892,3 +924,14 @@ components:
           schema:
             type: string
           example: internal error
+    CreatedText:
+      description: Created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            example:
+              message: created successfully
