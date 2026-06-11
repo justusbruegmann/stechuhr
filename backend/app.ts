@@ -8,7 +8,14 @@ import {drizzle} from  'drizzle-orm/postgres-js'
 // @ts-ignore
 import postgres from "postgres"
 import {users} from "./drizzle/schema"
+import cors from "cors";
 
+app.use(
+    cors({
+        origin: ["http://localhost:3000", "https://how2centeradiv.dev"],
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    })
+);
 const connectionString = process.env.DATABASE_URL
 if (!connectionString) {
     throw new Error("Missing connection string");
