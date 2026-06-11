@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from "express";
 const app = express();
+import cors from "cors";
 
 import {drizzle} from  'drizzle-orm/postgres-js'
 // @ts-ignore
@@ -37,6 +38,29 @@ export const db = drizzle(client);
 const port = process.env.PORT || 3500;
 
 app.use(express.json());
+
+const allowedOrigins = [
+    "http://localhost:3000", // for development
+    "https://how2centeradiv.dev", // for productipo
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        // allow non-browser requests like Postman/server-to-server
+        if (!origin) return callback(null, true);
+
+        const isAllowed =
+            allowedOrigins.includes(origin) ||
+            /^https:\/\/stechuhr(-[a-z0-9]+)?\.vercel\.app$/.test(origin); // to allow all vercel domains for preview testing
+
+        if (isAllowed) {
+            return callback(null, true);
+        }
+
+        return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+}));
 
 //Router imports
 import userMangement from "./route/userManagement";

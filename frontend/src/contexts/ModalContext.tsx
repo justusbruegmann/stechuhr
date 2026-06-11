@@ -3,17 +3,20 @@
 import {createContext, ReactNode, useCallback, useContext, useState} from "react";
 import {Sidepane} from "@/components/layout/Sidepane";
 import {Popup} from "@/components/layout/Popup";
+import SpinningLoader from "@/components/layout/SpinningLoader";
+
+type ModalType = "sidepane" | "popup" | "spinningLoader";
 
 interface Modal {
     id: string;
-    type: "sidepane" | "popup";
+    type: ModalType;
     content: ReactNode;
     onClose: () => void;
     onRegisterClose: (fn: () => void) => void;
 }
 
 interface ModalContextType {
-    showModal: (type: "sidepane" | "popup", content: ReactNode, contentDeps?: any[]) => { id: string; close: () => void };
+    showModal: (type: ModalType, content?: ReactNode, contentDeps?: any[]) => { id: string; close: () => void };
     updateModalContent: (id: string, content: ReactNode) => void;
     hideModal: (id?: string) => void;
 }
@@ -32,7 +35,7 @@ export default function ModalProvider({children}: { children: ReactNode }) {
         setModals(prevModals => prevModals.filter(modal => modal.id !== id));
     }, []);
 
-    const showModal = useCallback((type: "sidepane" | "popup", content: ReactNode): { id: string; close: () => void } => {
+    const showModal = useCallback((type: ModalType, content: ReactNode): { id: string; close: () => void } => {
         const id = `modal-${Date.now()}-${Math.random()}`;
 
         setModals(prevModals => [...prevModals, {
@@ -40,15 +43,16 @@ export default function ModalProvider({children}: { children: ReactNode }) {
             type,
             content,
             onClose: () => hideModalById(id),
-            onRegisterClose: () => {},
+            onRegisterClose: () => {
+            },
         }]);
 
-        return { id, close: () => hideModalById(id) };
+        return {id, close: () => hideModalById(id)};
     }, [hideModalById]);
 
     const updateModalContent = useCallback((id: string, content: ReactNode) => {
         setModals(prevModals =>
-            prevModals.map(modal => modal.id === id ? { ...modal, content } : modal)
+            prevModals.map(modal => modal.id === id ? {...modal, content} : modal)
         );
     }, []);
 
@@ -63,7 +67,18 @@ export default function ModalProvider({children}: { children: ReactNode }) {
         <ModalContext.Provider value={{showModal, hideModal, updateModalContent}}>
             {children}
             {modals.map((modal, index) => {
-                const Component = modal.type === "sidepane" ? Sidepane : Popup;
+                let Component;
+                switch (modal.type) {
+                    case "sidepane":
+                        Component = Sidepane;
+                        break;
+                    case "spinningLoader":
+                        Component = SpinningLoader;
+                        break;
+                    default:
+                        Component = Popup;
+                        break;
+                }
 
                 return (
                     <CurrentModalContext.Provider
