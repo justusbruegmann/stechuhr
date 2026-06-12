@@ -43,7 +43,7 @@ export default function Dashboard() {
         const token = localStorage.getItem("token")
         const userid = localStorage.getItem("userid")
 
-        /*if (!token || !userid) {
+        if (!token || !userid) {
             router.push("/login")
             return
         }
@@ -55,7 +55,7 @@ export default function Dashboard() {
             return;
         }
 
-        localStorage.setItem("role", login.role);*/
+        localStorage.setItem("role", login.role);
     }
 
     useEffect( () => {
