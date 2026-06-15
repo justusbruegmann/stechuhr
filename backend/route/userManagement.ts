@@ -8,20 +8,11 @@ import {
     managerGet,
     managerUpdate, roleUpdate
 } from "../service/userManagement";
-import {authHelper} from "../utils/auth";
+import {authMiddleware} from "../middleware/auth";
 
 const router = Router();
 
-router.post('/', async (req, res) => {
-    const token = req.headers.authorization;
-    const id = Number(req.headers.userid);
-    if (!token || !id) {
-        return res.status(401).json({"error": "No token provided"});
-    }
-    const authUser = await authHelper(token, id, "admin")
-    if (!authUser?.authorized) {
-        return res.status(401).json({"error": "unauthorized"});
-    }
+router.post('/',authMiddleware, async (req, res) => {
 
     try {
         const body: any = req.body;
@@ -62,16 +53,8 @@ router.put('/otp/:id', async (req, res) => {
     }
 })
 
-router.get('/', async (req, res) => {
-    const token = req.headers.authorization;
-    const id = Number(req.headers.userid);
-    if (!token || !id) {
-        return res.status(401).json({"error": "No token provided"});
-    }
-    const authUser = await authHelper(token, id, "admin")
-    if (!authUser?.authorized) {
-        return res.status(401).json({"error": "unauthorized"});
-    }
+router.get('/',authMiddleware, async (req, res) => {
+
     try {
         const limit = Number(req.query.limit) || 25;
         const offset = Number(req.query.offset) || 0;
@@ -82,16 +65,7 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.delete('/:id', async (req, res) => {
-    const token = req.headers.authorization;
-    const id = Number(req.headers.userid);
-    if (!token || !id) {
-        return res.status(401).json({"error": "No token provided"});
-    }
-    const authUser = await authHelper(token, id, "admin")
-    if (!authUser?.authorized) {
-        return res.status(401).json({"error": "unauthorized"});
-    }
+router.delete('/:id',authMiddleware, async (req, res) => {
     try {
         const deleteId = Number(req.params.id)
         const result = await userDelete(deleteId);
@@ -103,29 +77,12 @@ router.delete('/:id', async (req, res) => {
 })
 
 router.get('/managers', async (req, res) => {
-    const token = req.headers.authorization;
-    const id = Number(req.headers.userid);
-    if (!token || !id) {
-        return res.status(401).json({"error": "No token provided"});
-    }
-    const authUser = await authHelper(token, id, "admin")
-    if (!authUser?.authorized) {
-        return res.status(401).json({"error": "unauthorized"});
-    }
+
     const result = await managerGet();
     return res.status(200).send(result);
 })
 
-router.put('/user/manager/:id', async (req, res) => {
-    const token = req.headers.authorization;
-    const id = Number(req.headers.userid);
-    if (!token || !id) {
-        return res.status(401).json({"error": "No token provided"});
-    }
-    const authUser = await authHelper(token, id, "admin")
-    if (!authUser?.authorized) {
-        return res.status(401).json({"error": "unauthorized"});
-    }
+router.put('/user/manager/:id',authMiddleware, async (req, res) => {
     const userId: number = Number(req.params.id);
      if (!Number.isInteger(userId) || userId <= 0) {
       return res.status(400).send("invalid user id");
@@ -144,16 +101,8 @@ router.put('/user/manager/:id', async (req, res) => {
     return res.sendStatus(204);
 })
 
-router.put('/user/role/:id', async (req, res) => {
-    const token = req.headers.authorization;
-    const id = Number(req.headers.userid);
-    if (!token || !id) {
-        return res.status(401).json({"error": "No token provided"});
-    }
-    const authUser = await authHelper(token, id, "admin")
-    if (!authUser?.authorized) {
-        return res.status(401).json({"error": "unauthorized"});
-    }
+router.put('/user/role/:id',authMiddleware, async (req, res) => {
+
     const userId: number = Number(req.params.id);
      if (!Number.isInteger(userId) || userId <= 0) {
       return res.status(400).send("invalid user id");
