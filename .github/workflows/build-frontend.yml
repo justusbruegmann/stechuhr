@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: "22"
       - name: change directory
-        run: cd frontend
+        run: cd frontend\
       - name: Install Packages
         run: npm ci --force
       - name: Build
