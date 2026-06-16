@@ -12,7 +12,7 @@ import {authMiddleware} from "../middleware/auth";
 
 const router = Router();
 
-router.post('/',authMiddleware, async (req, res) => {
+router.post('/',authMiddleware("admin"), async (req, res) => {
 
     try {
         const body: any = req.body;
@@ -53,7 +53,7 @@ router.put('/otp/:id', async (req, res) => {
     }
 })
 
-router.get('/',authMiddleware, async (req, res) => {
+router.get('/',authMiddleware("admin"), async (req, res) => {
 
     try {
         const limit = Number(req.query.limit) || 25;
@@ -65,7 +65,7 @@ router.get('/',authMiddleware, async (req, res) => {
     }
 })
 
-router.delete('/:id',authMiddleware, async (req, res) => {
+router.delete('/:id',authMiddleware("admin"), async (req, res) => {
     try {
         const deleteId = Number(req.params.id)
         const result = await userDelete(deleteId);
@@ -76,13 +76,13 @@ router.delete('/:id',authMiddleware, async (req, res) => {
     }
 })
 
-router.get('/managers', async (req, res) => {
+router.get('/managers', authMiddleware("admin"), async (req, res) => {
 
     const result = await managerGet();
     return res.status(200).send(result);
 })
 
-router.put('/user/manager/:id',authMiddleware, async (req, res) => {
+router.put('/user/manager/:id',authMiddleware("admin"), async (req, res) => {
     const userId: number = Number(req.params.id);
      if (!Number.isInteger(userId) || userId <= 0) {
       return res.status(400).send("invalid user id");
@@ -101,7 +101,7 @@ router.put('/user/manager/:id',authMiddleware, async (req, res) => {
     return res.sendStatus(204);
 })
 
-router.put('/user/role/:id',authMiddleware, async (req, res) => {
+router.put('/user/role/:id',authMiddleware("admin"), async (req, res) => {
 
     const userId: number = Number(req.params.id);
      if (!Number.isInteger(userId) || userId <= 0) {

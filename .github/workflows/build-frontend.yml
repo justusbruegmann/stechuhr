@@ -13,9 +13,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: change directory
-        run: cd frontend
       - name: Install Packages
+        working-directory: frontend
         run: npm ci --force
       - name: Build
+        working-directory: frontend
         run: npm run build
