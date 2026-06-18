@@ -48,6 +48,9 @@ export async function OTPChange(userId: number, newPwd: string) {
 export async function authUser(userId: number, password: string) {
     try {
         const hash = await getHash(userId);
+        if (hash === 404) {
+            return false;
+        }
         if (!hash) {
             return null;
         }

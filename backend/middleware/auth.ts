@@ -1,7 +1,8 @@
 import {Request, Response, NextFunction} from "express";
 import {authHelper} from "../utils/auth";
+import {UserRole} from "../types/users";
 
-export function authMiddleware(requiredRole: string) {
+export function authMiddleware(requiredRole: UserRole) {
     return async (req: Request, res: Response, next: NextFunction) => {
         const token = req.headers.authorization;
         const id = Number(req.headers.userid);
