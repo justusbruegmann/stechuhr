@@ -30,6 +30,8 @@ export default function UserItem({user, onDeleteAction, loadUsersAction, manager
                 <p className={styles.item}>{user.username}</p>
                 <p className={styles.item}>{user.role}</p>
                 <p className={styles.item}>{getManagerByID(user.managerid)?.username ?? "-"}</p>
+                <p className={styles.item}>{user.workload}</p>
+                <p className={styles.item}>{user.holidays}</p>
                 <div className={styles.column}>
                     <Button label={<Image src={"/delete.svg"} alt="delete" width="16" height="16"/>} type={"error"}
                             height={2} width={2} loading={isDoing} onClick={async () => {

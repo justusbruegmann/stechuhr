@@ -63,6 +63,8 @@ export default function Manage() {
         const username = (document.getElementById("newUsername") as HTMLInputElement).value;
         const role = (document.getElementById("selectRole") as HTMLSelectElement).value;
         const managerId = (document.getElementById("selectManager") as HTMLSelectElement).value;
+        const workload = (document.getElementById("workloadInput") as HTMLSelectElement).value;
+        const holidays = (document.getElementById("holidaysInput") as HTMLSelectElement).value;
 
         if (!username || !role || !managerId) {
             alert("Bitte alle Felder ausfüllen");
@@ -73,6 +75,8 @@ export default function Manage() {
                 username,
                 Number(managerId),
                 role,
+                Number(workload),
+                Number(holidays),
                 token,
                 Number(userid)
             );
@@ -133,7 +137,8 @@ export default function Manage() {
                         const buildCreateContent = (loading: boolean) => (
                             <div className={styles.rows}>
                                 <h3>Neuen Nutzer anlegen</h3>
-                                <input type="text" id={"newUsername"} className={styles.inputs} placeholder={"Nutzername"}/>
+                                <input type="text" id={"newUsername"} className={styles.inputs}
+                                       placeholder={"Nutzername"}/>
                                 <select className={styles.inputs} name="selectRole" id="selectRole">
                                     <option value="user">Nutzer</option>
                                     <option value="manager">Manager</option>
@@ -144,12 +149,19 @@ export default function Manage() {
                                         <option key={user.id} value={user.id}>{user.username}</option>
                                     ))}
                                 </select>
+                                <input type="number" id={"workloadInput"} className={styles.inputs}
+                                       placeholder={"Number of workloads in H"}/>
+                                <input type="number" id={"holidaysInput"} className={styles.inputs}
+                                       placeholder={"Number of holidays in Days"}/>
                                 <Button label={"Anlegen"} type={"accent"} height={2} width={"calc(100% - .75rem)"}
                                         className={styles.inputs} loading={loading} onClick={handleAnlegen}/>
                             </div>
                         );
 
-                        ({id: createModalId, close: closeCreateUserModal} = showModal("popup", buildCreateContent(false)));
+                        ({
+                            id: createModalId,
+                            close: closeCreateUserModal
+                        } = showModal("popup", buildCreateContent(false)));
                     }}/>
                 </div>
                 <div className={styles["rows"]}>
