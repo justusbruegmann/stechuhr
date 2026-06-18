@@ -41,9 +41,11 @@ app.use(express.json());
 //Router imports
 import userMangement from "./route/userManagement";
 import auth from "./route/auth"
+import summary from "./route/summary";
 
 app.use("/users", userMangement);
 app.use("/auth", auth);
+app.use("/summary", summary);
 
 app.get("/", (req, res) => {
     res.send("hello world");
