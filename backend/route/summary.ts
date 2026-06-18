@@ -4,7 +4,7 @@ import {authMiddleware} from "../middleware/auth";
 const router = Router();
 
 router.get(
-    '/',
+    '/summary/',
     authMiddleware("user"),
     async (req, res) => {
 
