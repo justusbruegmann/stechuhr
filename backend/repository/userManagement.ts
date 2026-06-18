@@ -31,6 +31,9 @@ export async function getHash(userId: number) {
         isotp: users.isotp,
         role: users.role
     }).from(users).where(eq(users.id, userId))
+    if (!result[0]) {
+        return 404;
+    }
     return {"hash": result[0].pw, "isotp": result[0].isotp, "role": result[0].role};
 
 }

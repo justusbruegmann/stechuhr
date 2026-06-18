@@ -82,7 +82,7 @@ export async function getManagers(token: string, userId: number) {
 }
 
 export async function updateRole(userId: number, role: string, tokenOfAdmin: string, useridOfAdmin: number) {
-    const url = `${BASE_URL}/users/user/role/${userId}`;
+    const url = `${BASE_URL}/users/${userId}/role`;
     const headers = {
         "content-type": "application/json",
         "Authorization": tokenOfAdmin,
@@ -102,7 +102,7 @@ export async function updateRole(userId: number, role: string, tokenOfAdmin: str
 }
 
 export async function updateManager(userId: number, managerId: number, tokenOfAdmin: string, useridOfAdmin: number) {
-    const url = `${BASE_URL}/users/user/manager/${userId}`;
+    const url = `${BASE_URL}/users/${userId}/manager`;
     const headers = {
         "content-type": "application/json",
         "Authorization": tokenOfAdmin,

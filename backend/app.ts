@@ -1,9 +1,11 @@
 import dotenv from "dotenv";
+
 dotenv.config();
 
 import express from "express";
+
 const app = express();
-import {drizzle} from  'drizzle-orm/postgres-js'
+import {drizzle} from 'drizzle-orm/postgres-js'
 // @ts-ignore
 import postgres from "postgres"
 import {users} from "./drizzle/schema"
@@ -20,7 +22,7 @@ if (!connectionString) {
     throw new Error("Missing connection string");
 }
 
-const client = postgres(connectionString, {prepare : false});
+const client = postgres(connectionString, {prepare: false});
 export const db = drizzle(client);
 
 (async () => {
@@ -41,9 +43,11 @@ app.use(express.json());
 //Router imports
 import userMangement from "./route/userManagement";
 import auth from "./route/auth"
+import summary from "./route/summary";
 
-app.use("/users", userMangement);
-app.use("/auth", auth);
+app.use(userMangement);
+app.use(auth);
+app.use(summary);
 
 app.get("/", (req, res) => {
     res.send("hello world");

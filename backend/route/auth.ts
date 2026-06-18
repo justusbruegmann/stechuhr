@@ -3,7 +3,7 @@ import {auth} from "../service/auth";
 
 const router = Router();
 
-router.post('/', async (req, res) => {
+router.post('/auth/', async (req, res) => {
     const body: any = req.body;
     let token: string | undefined = req.headers.authorization;
     let userId: number | undefined = Number(req.headers.userid);
