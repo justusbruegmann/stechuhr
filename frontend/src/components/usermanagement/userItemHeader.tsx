@@ -12,6 +12,8 @@ export default function UserItemHeader() {
                 <p className={styles.item}>Nutzername</p>
                 <p className={styles.item}>Rolle</p>
                 <p className={styles.item}>Manager</p>
+                <p className={styles.item}>Workload</p>
+                <p className={styles.item}>Holidays</p>
                 <p className={styles.item}>Actions</p>
             </div>
         </>

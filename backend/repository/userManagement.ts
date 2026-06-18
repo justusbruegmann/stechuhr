@@ -4,7 +4,7 @@ import {hashPassword} from "../utils/hashing";
 import {eq} from "drizzle-orm";
 
 
-export async function createUser(username: string, role: string, managerId: number, password: string) {
+export async function createUser(username: string, role: string, managerId: number, password: string, workload: number, holidays: number) {
     const otpFlag: boolean = true
     const pw: string = await hashPassword(password);
     const result = await db.insert(users).values({
@@ -12,7 +12,9 @@ export async function createUser(username: string, role: string, managerId: numb
         "role": role,
         "managerid": managerId,
         "pw": pw,
-        "isotp": otpFlag
+        "isotp": otpFlag,
+        "workload": workload,
+        "holidays": holidays,
     });
 
     return password;
@@ -44,6 +46,8 @@ export async function getUsers(limit: number, offset: number) {
         role: users.role,
         username: users.username,
         managerid: users.managerid,
+        workload: users.workload,
+        holidays: users.holidays,
 
     }).from(users).limit(limit).offset(offset * limit)
     return result;

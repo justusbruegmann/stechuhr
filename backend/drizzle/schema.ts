@@ -7,7 +7,10 @@ export const users = pgTable("users", {
     isotp: boolean("isotp"),
     role: varchar("role", { length: 32 }),
     managerid: integer("managerid"),
+    workload: integer("workload").notNull().default(40),
+    holidays: integer("holidays").notNull().default(30),
 });
+
 
 export const sessions = pgTable("sessions", {
     id: serial("id").primaryKey(),
