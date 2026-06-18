@@ -1,10 +1,11 @@
 import {Router} from "express";
+import {authMiddleware} from "../middleware/auth";
 
 const router = Router();
 
 router.get(
     '/',
-    // authMiddleware("user"),
+    authMiddleware("user"),
     async (req, res) => {
 
         let test = "ich bin eine summary"

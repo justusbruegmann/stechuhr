@@ -13,6 +13,9 @@ export async function sessionCreate(userId: number) {
 export async function auth(username?: string, password?: string, token?: string, userId?: number) {
     if (token && userId) {
         const user = await getHash(userId);
+        if (user === 404) {
+            return {"succes": false, "message": "User not found"};
+        }
         if (user.isotp) {
             return {"succes": false, "message": "has one time password"};
         }
