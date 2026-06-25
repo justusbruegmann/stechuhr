@@ -18,7 +18,7 @@ router.get(
 
         const {userId, startTime, endTime} = queryParams;
 
-        const summary = generateSummary(userId, startTime, endTime);
+        const summary = await generateSummary(userId, startTime, endTime);
 
         return res.status(200).json({"summary": summary});
     });

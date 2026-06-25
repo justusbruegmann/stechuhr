@@ -3,7 +3,7 @@ import * as z from 'zod';
 export const summaryRequestParameterSchema = z.object(
     {
         userId: z
-            .string(),
+            .coerce.number(),
         startTime: z
             .iso.datetime()
             .pipe(z.coerce.date()),
