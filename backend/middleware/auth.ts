@@ -4,16 +4,20 @@ import {UserRole} from "../types/users";
 
 export function authMiddleware(requiredRole: UserRole) {
     return async (req: Request, res: Response, next: NextFunction) => {
-        const token = req.headers.authorization;
-        const id = Number(req.headers.userid);
-        if (!token || !id) {
-            return res.status(401).json({"error": "No token provided"});
+        try {
+            const token = req.headers.authorization;
+            const id = Number(req.headers.userid);
+            if (!token || !id) {
+                return res.status(401).json({"error": "No token provided"});
+            }
+            const authUser = await authHelper(token, id, requiredRole);
+            if (!authUser?.authorized || !authUser.data.id || !authUser.data.role) {
+                return res.status(401).json({"error": "unauthorized"});
+            }
+            res.locals.user = {id: authUser.data.id, role: authUser.data.role};
+            next();
+        } catch (e) {
+            return res.status(500).json({"error": "internal error"});
         }
-        const authUser = await authHelper(token, id, requiredRole);
-        if (!authUser?.authorized || !authUser.data.id || !authUser.data.role) {
-            return res.status(401).json({"error": "unauthorized"});
-        }
-        res.locals.user = {id: authUser.data.id, role: authUser.data.role};
-        next();
     }
 }

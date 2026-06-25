@@ -6,7 +6,7 @@ import {deleteSessionsOfUser} from "../repository/auth";
 import {generateRandomString, isValidPassword} from "../utils/utils";
 import {verifyPassword} from "../utils/hashing";
 
-export async function userCreation(username: string, role: string, managerId: number) {
+export async function userCreation(username: string, role: string, managerId: number, workload: number,holidays: number) {
     try {
         //check if managerId is a manager
         const manager = await getManagerById(managerId);
@@ -21,7 +21,7 @@ export async function userCreation(username: string, role: string, managerId: nu
         //only allow user ceration of role exist
         if (role === "manager" || role === "admin" || role === "user") {
             const password = generateRandomString(16);
-            const user = await createUser(username.toLowerCase(), role, managerId, password);
+            const user = await createUser(username.toLowerCase(), role, managerId, password, workload, holidays);
             return user;
         }
         return "role does not exist";
