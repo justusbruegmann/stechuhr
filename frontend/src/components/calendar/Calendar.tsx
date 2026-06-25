@@ -190,8 +190,8 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
                 <div className={styles.calendar_header}>
                     <div className={styles.calendar_period}>
                         <div className={styles.calendar_period_text}>{currentYear}</div>
-                        <div
-                            className={styles.calendar_period_text}>{currentDay.toLocaleDateString("de-DE", { month: "long" })}</div>
+                        <div className={styles.calendar_period_text}>{currentDay.toLocaleDateString("de-DE", { month: "long" })}
+                        </div>
                     </div>
                     <div className={styles.calendar_navigation_grid}>
                         <button className={styles.calendar_reset_day} onClick={() => handleToday()}>
