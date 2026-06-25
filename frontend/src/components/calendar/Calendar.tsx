@@ -167,6 +167,7 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
         if (workHours !== -1) {
             entries.push(
                 <span
+                    key={index}
                     className={styles.calendar_symbols}
                     style={{
                         color: symbols[symbolIndex].color,
