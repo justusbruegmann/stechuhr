@@ -2,7 +2,7 @@
 
 import Card from "@/components/layout/Card";
 import styles from "./Calendar.module.css"
-import {useState} from "react";
+import { useState } from "react";
 import Holidays from 'date-holidays';
 import TimeEntry from "@/types/TimeEntry";
 
@@ -13,7 +13,7 @@ type Props = {
 }
 
 
-export default function Kalender({showDailyDetails, timeEntries}: Props) {
+export default function Kalender({ showDailyDetails, timeEntries }: Props) {
 
     // --- Kalender ---
     const timeEntryList = Object.values(timeEntries).flat();
@@ -59,7 +59,7 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
         [">8h", "rgb(30, 114, 30)", "rgba(0, 255, 0, 0.5)", "rgb(0, 150, 0)"],
         ["6-8h", "rgb(130, 72, 0)", "rgba(255, 140, 0, 0.5)", "rgb(200, 120, 0)"],
         ["<6h", "rgb(128, 0, 0)", "rgba(255, 0, 0, 0.5)", "rgb(200, 0, 0)"]
-    ].map(([text, color, backgroundColor, borderColor]) => ({text, color, backgroundColor, borderColor}));
+    ].map(([text, color, backgroundColor, borderColor]) => ({ text, color, backgroundColor, borderColor }));
 
     const legend1Symbols = symbols.slice(0, 4);
     const legend2Symbols = symbols.slice(4);
@@ -116,6 +116,7 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
         if (index % 7 === 5 || index % 7 === 6) {
             entries.push(
                 <span
+                    key={index}
                     className={styles.calendar_symbols}
                     style={{
                         color: symbols[2].color,
@@ -134,6 +135,7 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
         if (holiday && holiday.some(f => f.type === "public")) {
             entries.push(
                 <span
+                    key={index}
                     className={styles.calendar_symbols}
                     style={{
                         color: symbols[3].color,
@@ -188,22 +190,22 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
                     <div className={styles.calendar_period}>
                         <div className={styles.calendar_period_text}>{currentYear}</div>
                         <div
-                            className={styles.calendar_period_text}>{currentDay.toLocaleDateString("de-DE", {month: "long"})}</div>
+                            className={styles.calendar_period_text}>{currentDay.toLocaleDateString("de-DE", { month: "long" })}</div>
                     </div>
                     <div className={styles.calendar_navigation_grid}>
                         <button className={styles.calendar_reset_day} onClick={() => handleToday()}>
                             Heute
                         </button>
                         <button className={styles.calendar_arrow} onClick={() => handleMonthChange("back")}>
-                            <img src="/Arrow_Back.svg" alt=""/>
+                            <img src="/Arrow_Back.svg" alt="" />
                         </button>
                         <button className={styles.calendar_arrow} onClick={() => handleMonthChange("forward")}>
-                            <img src="/Arrow_Forward.svg" alt=""/>
+                            <img src="/Arrow_Forward.svg" alt="" />
                         </button>
                     </div>
                 </div>
-                <hr className={styles.line}/>
-                <br/>
+                <hr className={styles.line} />
+                <br />
 
                 <div className={styles.calendar_weekdays_grid}>
                     {weekdays.map((weekday, index) => (
@@ -219,7 +221,7 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
                         if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
                             return (
                                 <div key={index} className={styles.calendar_today}
-                                     onClick={() => showDailyDetails(new Date(currentYear, currentMonth, day))}>
+                                    onClick={() => showDailyDetails(new Date(currentYear, currentMonth, day))}>
                                     {day && <div className={styles.calendar_day_text}>{day}</div>}
                                     <div className={styles.calendar_day_symbols_container}>
                                         {handleEntries(index, day)}
@@ -229,7 +231,7 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
                         }
                         return (
                             <div key={index} className={styles.calendar_day}
-                                 onClick={() => showDailyDetails(new Date(currentYear, currentMonth, day))}>
+                                onClick={() => showDailyDetails(new Date(currentYear, currentMonth, day))}>
                                 {day && <div className={styles.calendar_day_text}>{day}</div>}
                                 <div className={styles.calendar_day_symbols_container}>
                                     {handleEntries(index, day)}
@@ -239,8 +241,8 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
                     })}
                 </div>
 
-                <br/>
-                <hr className={styles.line}/>
+                <br />
+                <hr className={styles.line} />
 
                 <div className={styles.calendar_legend1}>
                     {legend1Symbols.map((symbol, index) => (
