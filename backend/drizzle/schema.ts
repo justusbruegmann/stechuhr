@@ -1,4 +1,4 @@
-import { pgTable, serial, text, varchar, timestamp, boolean, integer } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, varchar, timestamp, boolean, integer, pgEnum } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
     id: serial("id").primaryKey(),
@@ -14,4 +14,14 @@ export const sessions = pgTable("sessions", {
     userid: integer("userid").references(() => users.id),
     token: varchar("token", { length: 1024 }),
     expiresat: timestamp("expiresat"),
+});
+
+export const time_entry_type = pgEnum("time_entry_type", ["work", "holiday", "sick"]);
+
+export const timeEntries = pgTable("timeEntries", {
+    id: serial("id").primaryKey(),
+    userid: integer("userid").references(() => users.id),
+    starttime: timestamp("starttime", { withTimezone: true}),
+    endtime: timestamp("endtime", {withTimezone: true}),
+    type: time_entry_type("type"),
 });
