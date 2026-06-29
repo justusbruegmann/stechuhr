@@ -17,14 +17,14 @@ export async function setEndTime(timeEntryId: number, endTime: Date) {
     return result;
 }
 
-export async function getTimeEntries(userid: number) {
+export async function getTimeEntries(userId: number) {
     const result = await db.select({
         id: timeEntries.id,
         userid: timeEntries.userid,
         starttime: timeEntries.starttime,
         endtime: timeEntries.endtime,
         type: timeEntries.type,
-    }).from(timeEntries).where(eq(timeEntries.userid, userid))
+    }).from(timeEntries).where(eq(timeEntries.userid, userId));
     return result;
 }
 
@@ -35,11 +35,11 @@ export async function getSingleTimeEntry(timeEntryId: number) {
         starttime: timeEntries.starttime,
         endtime: timeEntries.endtime,
         type: timeEntries.type,
-    }).from(timeEntries).where(eq(timeEntries.id, timeEntryId))
+    }).from(timeEntries).where(eq(timeEntries.id, timeEntryId));
     return result;
 }
 
 export async function deleteTimeEntry(timeEntryId: number){
-    const result = await db.delete(timeEntries).where(eq(timeEntries.id, timeEntryId))
+    const result = await db.delete(timeEntries).where(eq(timeEntries.id, timeEntryId));
     return result;
 }
