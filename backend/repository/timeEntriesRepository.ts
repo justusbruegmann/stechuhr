@@ -12,6 +12,11 @@ export async function createTimeEntry(userId: number, startTime: Date, type: (ty
     return result;
 }
 
+export async function setEndTime(timeEntryId: number, endTime: Date) {
+    const result = await db.update(timeEntries).set({"endtime": endTime}).where(eq(timeEntries.id, timeEntryId));
+    return result;
+}
+
 export async function getTimeEntries(userid: number) {
     const result = await db.select({
         id: timeEntries.id,
