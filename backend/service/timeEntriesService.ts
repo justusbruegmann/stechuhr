@@ -1,10 +1,10 @@
-import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, deleteTimeEntry } from '../repository/timeEntriesRepository';
+import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLastTimeEntry, deleteTimeEntry } from '../repository/timeEntriesRepository';
 import { timeEntries, time_entry_type } from '../drizzle/schema';
 
 export async function createTimeEntryService(userid: number, starttime: Date, endtime: Date, type: (typeof time_entry_type.enumValues)[number]){
     const currentDate = new Date();
     try{
-        const lastTimeEntry = (await getSingleTimeEntry(userid))[0];
+        const lastTimeEntry = (await getLastTimeEntry(userid))[0];
         if(currentDate.getDay() == 0 || currentDate.getDay() == 6){ //keine arbeit am wochenende
             return "not able to work on weekends";  
         }
