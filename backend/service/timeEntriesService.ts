@@ -63,6 +63,17 @@ export async function getSingleTimeEntrieService(userid: number){
     }
 }
 
+export async function getLastTimeEntryService(userid:number){
+    try{
+        const lastTimeEntry = await getLastTimeEntry(userid);
+        return lastTimeEntry;
+    }
+    catch(e){
+        console.error(e);
+        throw e;
+    }
+}
+
 export async function deleteTimeEntryService(timeEntryId: number){
     try{
         const deleted = await deleteTimeEntry(timeEntryId);
