@@ -52,7 +52,7 @@ export async function getTimeEntriesService(userid: number){
     }
 }
 
-export async function getSingleTimeEntrieService(userid: number){
+export async function getSingleTimeEntryService(userid: number){
     try{
         const singleTimeEntry = await getSingleTimeEntry(userid);
         return singleTimeEntry;
