@@ -26,3 +26,25 @@ export async function createTimeEntry(token: string,userid: number, starttime: D
         return await response.json();
     }
 }
+
+export async function setEndTime(token: string, userid: number, endtime: Date){
+    const url = `${BASE_URL}/timeEntries/`;
+    const headers = {
+        "content-type": "application/json",
+        "Authorization": token,
+        "userid": `${userid}`
+    };
+    const body = {
+        "endtime": endtime,
+    };
+    const response = await fetch(url, {method:"PATCH", body: JSON.stringify(body), headers: headers});
+    if(response.status == 400){
+        return 400;
+    }
+    if(response.status == 401){
+        return 401;
+    }
+    if(response.status == 204){
+        return await response.json();
+    }
+}

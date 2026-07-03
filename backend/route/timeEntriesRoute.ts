@@ -23,13 +23,14 @@ router.post('/timeEntries/', authMiddleware("user"), async (req, res) => {
     }
 })
 
-/*router.patch('/timeEntries/:id', async (req, res) => {
+router.patch('/timeEntries/', authMiddleware("user"), async (req, res) => {
     try{
         const reqBody: any = req.body;
+        const userid = res.locals.user.id;
         if(!reqBody){
             return res.status(400).send("bad request");
         }
-        const patchEndTime = await setEndTimeService(reqBody.timeEntryId, reqBody.endtime);
+        const patchEndTime = await setEndTimeService(userid,reqBody.timeEntryId, reqBody.endtime);
         if(patchEndTime == "end time is already set" || patchEndTime == "end time is before start time"){
             return res.status(400).json({"error": patchEndTime});
         }
@@ -37,7 +38,7 @@ router.post('/timeEntries/', authMiddleware("user"), async (req, res) => {
     catch(error){
         res.status(500).send("internal error");
     }
-})*/
+})
 
 router.delete('/timeEntries/:id', async (req,res) => {
     try{
