@@ -6,6 +6,7 @@ import Card from "@/components/layout/Card";
 import Image from "next/image";
 import React, {useEffect, useState} from "react";
 import TimeEntry from "@/types/TimeEntry";
+import {createTimeEntry} from "@/scripts/timeEntriesScript";
 
 
 interface PopupProps {
@@ -33,13 +34,24 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
     const [startTime, setStartTime] = useState<Date | null>(null);
 
 
-    function returnTime() {
+    async function returnTime() {
         setInOrOut(!inOrOut);
         const buttonClickedTime = new Date();
         const action = inOrOut ? "Eingestochen: " : "Ausgestochen: ";
         console.log(action + buttonClickedTime);
 
         if (!startTime) {
+            const token = localStorage.getItem("token");
+            const userid = localStorage.getItem("userid");
+            if(!token || !userid){
+                console.error("Nicht eingeloggt oder kein Token");
+                return;
+            }
+            const result = await createTimeEntry(token, parseInt(userid), buttonClickedTime, "work");
+            if(result == 401 || !result?.id){
+                console.error("Fehler beim Einstempeln", result);
+                return;
+            }
             setStartTime(buttonClickedTime);
         } else {
             if (!startTime) throw new Error("startTime is null");
