@@ -4,19 +4,20 @@ import styles from "./Dashboard.module.css"
 import Header from "@/components/layout/Header";
 import Timecard from "@/components/timecard/Timecard";
 import Calendar from "@/components/calendar/Calendar";
-import {useModal} from "@/contexts/ModalContext";
+import Notifications from "@/components/notifications/Notifications";
+import { useModal } from "@/contexts/ModalContext";
 import Overview from "@/components/overview/Overview";
-import {useCallback, useEffect, useRef, useState} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import TimeEntry from "@/types/TimeEntry";
 import DailyDetailsPane from "@/components/timeAdjustment/DailyDetailsPane";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 
-import {loginToken} from "@/scripts/auth";
+import { loginToken } from "@/scripts/auth";
 
 
 export default function Dashboard() {
 
-    const {showModal, updateModalContent} = useModal();
+    const { showModal, updateModalContent } = useModal();
     const router = useRouter();
 
     /**
@@ -58,7 +59,7 @@ export default function Dashboard() {
         localStorage.setItem("role", login.role);
     }
 
-    useEffect( () => {
+    useEffect(() => {
         authCheck().then(r => console.log("Logged in"));
     }, [router])
 
@@ -77,7 +78,7 @@ export default function Dashboard() {
     }
 
     const createOverviewContent = () => (
-        <Overview entries={dailyEntries} deleteEntry={deleteEntry}/>
+        <Overview entries={dailyEntries} deleteEntry={deleteEntry} />
     );
 
     const createDailyDetailsContent = (datum: Date) => (
@@ -108,27 +109,29 @@ export default function Dashboard() {
     }, [dailyEntries, updateModalContent]);
 
     const openOverviewModal = useCallback(() => {
-        const {id} = showModal("sidepane", <Overview entries={dailyEntries} deleteEntry={deleteEntry}/>)
-        currentlyOpenModal.current = {id, type: "OverviewModal"};
+        const { id } = showModal("sidepane", <Overview entries={dailyEntries} deleteEntry={deleteEntry} />)
+        currentlyOpenModal.current = { id, type: "OverviewModal" };
     }, [dailyEntries, showModal, addEntryForDate]);
 
     const showDailyDetails = useCallback((datum: Date) => {
-        const {id} = showModal("sidepane", createDailyDetailsContent(datum));
-        currentlyOpenModal.current = {id, type: "DailyDetails", date: datum};
+        const { id } = showModal("sidepane", createDailyDetailsContent(datum));
+        currentlyOpenModal.current = { id, type: "DailyDetails", date: datum };
     }, [dailyEntries, showModal, addEntryForDate]);
 
 
     return (
         <div className={styles.wrapper}>
             <div className={styles.headerBar}>
-                <Header name={"dashboard"}/>
+                <Header name={"dashboard"} />
             </div>
             <div className={styles.viewArea}>
-                <Timecard openOverview={openOverviewModal} addEntry={addEntryForDate}/>
-
+                <Timecard openOverview={openOverviewModal} addEntry={addEntryForDate} />
                 <div className={styles.calendarWrapper}>
-                    <Calendar showDailyDetails={showDailyDetails} timeEntries={dailyEntries}/>
+                    <Calendar showDailyDetails={showDailyDetails} timeEntries={dailyEntries} />
                 </div>
+                {/*
+                <Notifications showDailyDetails={showDailyDetails} timeEntries={dailyEntries}/>
+                */}
             </div>
         </div>
     );
