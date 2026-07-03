@@ -1,7 +1,7 @@
 import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLastTimeEntry, deleteTimeEntry } from '../repository/timeEntriesRepository';
 import { timeEntries, time_entry_type } from '../drizzle/schema';
 
-export async function createTimeEntryService(userid: number, starttime: Date, endtime: Date, type: (typeof time_entry_type.enumValues)[number]){
+export async function createTimeEntryService(userid: number, starttime: Date, endtime: Date | undefined, type: (typeof time_entry_type.enumValues)[number]){
     const currentDate = new Date();
     try{
         const lastTimeEntry = (await getLastTimeEntry(userid))[0];
@@ -11,7 +11,7 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
         if(currentDate.getHours() >= 23 || currentDate.getHours() < 6){ //nur arbeiten zwischen 6 und 23 Uhr möglich
             return "out of working time";    
         }
-        if(lastTimeEntry.endtime == null){ //überprüfen ob letzter Eintrag für den Benutzer noch kein Endzeitpunkt hat
+        if(lastTimeEntry.endTime == null){ //überprüfen ob letzter Eintrag für den Benutzer noch kein Endzeitpunkt hat
             return "last time entry has no end time";     
         }         
         const timeEntry = await createTimeEntry(userid, starttime, type, endtime);
@@ -26,10 +26,10 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
 export async function setEndTimeService(timeEntryId: number, endtime: Date){
     const timeEntry = (await getSingleTimeEntry(timeEntryId))[0];
     try{
-        if(timeEntry.endtime != null){//überprüfen ob es nicht schon einen endzeitpunkt gibt
+        if(timeEntry.endTime != null){//überprüfen ob es nicht schon einen endzeitpunkt gibt
             return "end time is already set";
         }
-        if(timeEntry.starttime != null && timeEntry.starttime > endtime){ //überprüfen ob die endzeit nach der startzeit liegt
+        if(timeEntry.startTime != null && timeEntry.startTime > endtime){ //überprüfen ob die endzeit nach der startzeit liegt
             return "end time is before start time";
         }
         const endTime = await setEndTime(timeEntryId, endtime);
