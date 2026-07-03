@@ -20,8 +20,8 @@ export const time_entry_type = pgEnum("time_entry_type", ["work", "holiday", "si
 
 export const timeEntries = pgTable("timeEntries", {
     id: serial("id").primaryKey(),
-    userid: integer("userid").references(() => users.id),
-    starttime: timestamp("starttime", { withTimezone: true}),
-    endtime: timestamp("endtime", {withTimezone: true}),
+    userId: integer("userId").references(() => users.id),
+    startTime: timestamp("startTime", { withTimezone: true}),
+    endTime: timestamp("endTime", {withTimezone: true}),
     type: time_entry_type("type"),
 });
