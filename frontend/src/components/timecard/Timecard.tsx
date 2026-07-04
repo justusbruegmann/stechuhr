@@ -34,7 +34,7 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
     const [startTime, setStartTime] = useState<Date | null>(null);
 
 
-    async function returnTime() {
+    async function setTimeEntry() {
         setInOrOut(!inOrOut);
         const buttonClickedTime = new Date();
         const action = inOrOut ? "Eingestochen: " : "Ausgestochen: ";
@@ -104,7 +104,7 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             </div>
             <Button onClick={() => {
                 setClicked(!clicked);
-                returnTime();
+                setTimeEntry();
             }} label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked ? "success" : "error"} height={2.5}
                     width={"100%"}></Button>
             <hr className={Styles["gap"]}></hr>
