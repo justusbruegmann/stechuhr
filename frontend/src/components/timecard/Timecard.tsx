@@ -6,7 +6,7 @@ import Card from "@/components/layout/Card";
 import Image from "next/image";
 import React, {useEffect, useState} from "react";
 import TimeEntry from "@/types/TimeEntry";
-import {createTimeEntry} from "@/scripts/timeEntriesScript";
+import {createTimeEntry, getTimeEntries} from "@/scripts/timeEntriesScript";
 
 
 interface PopupProps {
@@ -64,6 +64,19 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             })
 
             setStartTime(null);
+        }
+    }
+
+    async function getAllTimeEntries(){
+        const token = localStorage.getItem("token");
+        const userid = localStorage.getItem("userid");
+        if(!token || !userid){
+            console.error("Nicht eingeloggt oder kein Token");
+            return;
+        }
+        const result = await getTimeEntries(token, parseInt(userid));
+        if(result == 401 || !result){
+            console.error("Fehler beim holen der Zeiteinträge", result);
         }
     }
 

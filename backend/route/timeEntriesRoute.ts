@@ -30,10 +30,21 @@ router.patch('/timeEntries/', authMiddleware("user"), async (req, res) => {
         if(!reqBody){
             return res.status(400).send("bad request");
         }
-        const patchEndTime = await setEndTimeService(userid,reqBody.timeEntryId, reqBody.endtime);
+        const patchEndTime = await setEndTimeService(reqBody.timeEntryId, reqBody.endtime);
         if(patchEndTime == "end time is already set" || patchEndTime == "end time is before start time"){
             return res.status(400).json({"error": patchEndTime});
         }
+    }
+    catch(error){
+        res.status(500).send("internal error");
+    }
+})
+
+router.get('/timeEntries/', authMiddleware("user"), async (req, res) => {
+    try{
+        const userid = res.locals.user.id;
+        const timeEntries = await getTimeEntriesService(userid);
+        return res.status(200).send(timeEntries);
     }
     catch(error){
         res.status(500).send("internal error");

@@ -48,3 +48,24 @@ export async function setEndTime(token: string, userid: number, endtime: Date){
         return await response.json();
     }
 }
+
+export async function getTimeEntries(token: string, userid: number){
+    const url = `${BASE_URL}/timeEntries/`;
+    const headers = {
+        "content-type": "application/json",
+        "Authorization": token,
+        "userid": `${userid}`
+    };
+    const response = await fetch(url, {method:"GET", headers: headers})
+    if(response.status == 400){
+        return 400;
+    }
+    if(response.status == 401){
+        return 401;
+    }
+    if(response.status == 200){
+        const result = await response.json();
+        console.log("GET timeEntries status:", response.status, "| data:", result); //tmp
+        return result;
+    }
+}
