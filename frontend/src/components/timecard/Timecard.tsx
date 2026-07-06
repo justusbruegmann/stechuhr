@@ -35,36 +35,19 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
 
 
     async function setTimeEntry() {
-        setInOrOut(!inOrOut);
         const buttonClickedTime = new Date();
-        const action = inOrOut ? "Eingestochen: " : "Ausgestochen: ";
-        console.log(action + buttonClickedTime);
-
-        if (!startTime) {
-            const token = localStorage.getItem("token");
-            const userid = localStorage.getItem("userid");
-            if(!token || !userid){
-                console.error("Nicht eingeloggt oder kein Token");
-                return;
-            }
-            const result = await createTimeEntry(token, parseInt(userid), buttonClickedTime, "work");
-            if(result == 401 || !result?.id){
-                console.error("Fehler beim Einstempeln", result);
-                return;
-            }
-            setStartTime(buttonClickedTime);
-        } else {
-            if (!startTime) throw new Error("startTime is null");
-
-            addEntry(buttonClickedTime, {
-                id: crypto.randomUUID(),
-                userId: "123",
-                startTime: startTime?.toISOString(),
-                endTime: buttonClickedTime.toISOString()
-            })
-
-            setStartTime(null);
+        const token = localStorage.getItem("token");
+        const userid = localStorage.getItem("userid");
+        if(!token || !userid){
+            console.error("Nicht eingeloggt oder kein Token");
+            return;
         }
+        const result = await createTimeEntry(token, parseInt(userid), buttonClickedTime, "work");
+        if(result == 401 || !result?.id){
+            console.error("Fehler beim Einstempeln", result);
+            return;
+        }
+        setStartTime(buttonClickedTime);
     }
 
     async function setEndTimeEntry() {
@@ -139,11 +122,21 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
                 <span className={`${Styles["workTimeTextBody"]}`}>0h 0m</span>
             </div>
             <Button onClick={() => {
+                setInOrOut(!inOrOut);
+                const action = inOrOut ? "Eingestochen: " : "Ausgestochen: ";
+                console.log(action + new Date());
                 setClicked(!clicked);
+                if(clicked){
+                    console.log("ein"+clicked);
+                    setTimeEntry();
+                }
+                else{
+                    console.log("aus"+clicked);
+                    setEndTimeEntry();
+                }
                 //setTimeEntry();
                 //getAllTimeEntries();
                 //getLastTimeEntryFromUser();
-                setEndTimeEntry();
             }} label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked ? "success" : "error"} height={2.5}
                     width={"100%"}></Button>
             <hr className={Styles["gap"]}></hr>
