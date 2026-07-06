@@ -9,6 +9,7 @@ import { useModal } from "@/contexts/ModalContext";
 import Overview from "@/components/overview/Overview";
 import { useCallback, useEffect, useRef, useState } from "react";
 import TimeEntry from "@/types/TimeEntry";
+import Notification from "@/types/Notification";
 import DailyDetailsPane from "@/components/timeAdjustment/DailyDetailsPane";
 import { useRouter } from "next/navigation";
 
@@ -26,6 +27,8 @@ export default function Dashboard() {
      * and the value is an array of TimeEntry objects.
      */
     const [dailyEntries, setDailyEntries] = useState<Record<string, TimeEntry[]>>({});
+
+    const [notifications, setNotifications] = useState<Notification[]>([]);
 
     const currentlyOpenModal = useRef<
         { id: string; type: "OverviewModal" } |
@@ -129,9 +132,8 @@ export default function Dashboard() {
                 <div className={styles.calendarWrapper}>
                     <Calendar showDailyDetails={showDailyDetails} timeEntries={dailyEntries} />
                 </div>
-                {/*
-                <Notifications showDailyDetails={showDailyDetails} timeEntries={dailyEntries}/>
-                */}
+                {
+                    <Notifications notifications={notifications} />}
             </div>
         </div>
     );

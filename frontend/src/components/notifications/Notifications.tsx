@@ -2,21 +2,30 @@
 
 import Card from "@/components/layout/Card";
 import styles from "./Notifications.module.css"
-import { useState } from "react";
-import TimeEntry from "@/types/TimeEntry";
+import Notification from "@/types/Notification";
+
 
 type Props = {
-    showDailyDetails: (date: Date) => void;
-    timeEntries: Record<string, TimeEntry[]>
+    notifications: Notification[]
 }
 
-export default function Notifications({ showDailyDetails, timeEntries }: Props) {
+
+export default function Notifications({ notifications }: Props) {
     return (
-        <Card>
-            <div className={styles.notifications_container}>
-                <p className={styles.notifications_title}>TITEL</p>
-                <p className={styles.notifications_text}>TEXT TEXT TEXT</p>
-            </div>
-        </Card>
+        <div>
+            {
+                notifications.map((notifications, index) =>
+                (
+                    <Card key={index}>
+                        <div className={styles.notifications_container}>
+                            <div>
+                                <p className={styles.notifications_title}>{notifications.type}</p>
+                                <p className={styles.notifications_text}>{notifications.description}</p>
+                            </div>
+                        </div>
+                    </Card>
+                ))
+            }
+        </div>
     )
 }
