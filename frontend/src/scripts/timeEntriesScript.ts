@@ -110,3 +110,22 @@ export async function getLastTimeEntry(token: string, userid: number){
         return result;
     }
 }
+
+export async function deleteTimeEntry(token: string, userid: number, timeEntryId: number){
+    const url = `${BASE_URL}/timeEntries/${timeEntryId}`;
+    const headers = {
+        "content-type": "application/json",
+        "Authorization": token,
+        "userid": `${userid}`
+    };
+    const response = await fetch(url, {method:"DELETE", headers: headers});
+    if(response.status == 400){
+        return 400;
+    }
+    if(response.status == 401){
+        return 401;
+    }
+    if(response.status == 200){
+       return 200;
+    }
+}
