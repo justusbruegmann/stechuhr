@@ -5,6 +5,7 @@ import {useModal} from "@/contexts/ModalContext";
 import TimeEntry from "@/types/TimeEntry";
 
 import styles from "./DailyDetailsPane.module.css";
+import RequestPopup from "./RequestPopup";
 
 export default function DailyDetailsPane({date, entries, onAddEntry, deleteEntry}: {
     date: Date; entries: TimeEntry[]; onAddEntry: (entry: TimeEntry) => void; deleteEntry: (id: string) => void;
@@ -41,12 +42,25 @@ export default function DailyDetailsPane({date, entries, onAddEntry, deleteEntry
                         label="Manuell nachtragen"
                         type="accent"
                         height={3}
-                        width={15}
+                        width={10}
                         onClick={() =>
                             showModal("popup",
                                 <ManualEntryPopup
                                     date={date}
-                                    onClose={() => hideModal()}
+                                    onCreate={onAddEntry}
+                                />
+                            )
+                        }
+                    />
+                    <Button
+                        label="Antrag erstellen"
+                        type="primary"
+                        height={3}
+                        width={10}
+                        onClick={() =>
+                            showModal("popup",
+                                <RequestPopup
+                                    date={date}
                                     onCreate={onAddEntry}
                                 />
                             )

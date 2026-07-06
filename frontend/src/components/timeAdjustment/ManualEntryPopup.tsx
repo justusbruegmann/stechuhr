@@ -9,7 +9,6 @@ import styles from "./ManualEntryPopup.module.css";
 
 type Props = {
   date: Date;
-  onClose: () => void;
   onCreate: (entry: TimeEntry) => void;
 };
 
