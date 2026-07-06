@@ -6,7 +6,7 @@ import Card from "@/components/layout/Card";
 import Image from "next/image";
 import React, {useEffect, useState} from "react";
 import TimeEntry from "@/types/TimeEntry";
-import {createTimeEntry, getTimeEntries} from "@/scripts/timeEntriesScript";
+import {createTimeEntry, getTimeEntries, getLastTimeEntry} from "@/scripts/timeEntriesScript";
 
 
 interface PopupProps {
@@ -75,6 +75,21 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             return;
         }
         const result = await getTimeEntries(token, parseInt(userid));
+        console.log("DEBUG result:", JSON.stringify(result));
+        if(result == 401 || !result){
+            console.error("Fehler beim holen der Zeiteinträge", result);
+        }
+    }
+
+    async function getLastTimeEntryFromUser(){
+        const token = localStorage.getItem("token");
+        const userid = localStorage.getItem("userid");
+        if(!token || !userid){
+            console.error("Nicht eingeloggt oder kein Token");
+            return;
+        }
+        const result = await getLastTimeEntry(token, parseInt(userid));
+        console.log("DEBUG result:", JSON.stringify(result));
         if(result == 401 || !result){
             console.error("Fehler beim holen der Zeiteinträge", result);
         }
@@ -104,7 +119,9 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             </div>
             <Button onClick={() => {
                 setClicked(!clicked);
-                setTimeEntry();
+                //setTimeEntry();
+                //getAllTimeEntries();
+                getLastTimeEntryFromUser();
             }} label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked ? "success" : "error"} height={2.5}
                     width={"100%"}></Button>
             <hr className={Styles["gap"]}></hr>

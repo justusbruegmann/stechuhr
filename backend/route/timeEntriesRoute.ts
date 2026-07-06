@@ -4,6 +4,7 @@ import { authMiddleware } from "../middleware/auth";
 
 const router = Router();
 
+//create time entry
 router.post('/timeEntries/', authMiddleware("user"), async (req, res) => {
     try{
         const reqBody: any = req.body;
@@ -23,6 +24,7 @@ router.post('/timeEntries/', authMiddleware("user"), async (req, res) => {
     }
 })
 
+//add end time
 router.patch('/timeEntries/', authMiddleware("user"), async (req, res) => {
     try{
         const reqBody: any = req.body;
@@ -40,6 +42,7 @@ router.patch('/timeEntries/', authMiddleware("user"), async (req, res) => {
     }
 })
 
+//get all time entries
 router.get('/timeEntries/', authMiddleware("user"), async (req, res) => {
     try{
         const userid = res.locals.user.id;
@@ -51,6 +54,19 @@ router.get('/timeEntries/', authMiddleware("user"), async (req, res) => {
     }
 })
 
+//get last time entry
+router.get('/timeEntries/last', authMiddleware("user"), async (req, res) => {
+    try{
+        const userid = res.locals.user.id;
+        const timeEntry = await getLastTimeEntryService(userid);
+        return res.status(200).send(timeEntry);
+    }
+    catch(error){
+        res.status(500).send("internal error");
+    }
+})
+
+//delete time entry
 router.delete('/timeEntries/:id', async (req,res) => {
     try{
         const deletedTimeEntry = Number(req.params.id);

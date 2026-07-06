@@ -69,3 +69,24 @@ export async function getTimeEntries(token: string, userid: number){
         return result;
     }
 }
+
+export async function getLastTimeEntry(token: string, userid: number){
+    const url = `${BASE_URL}/timeEntries/last`;
+    const headers = {
+        "content-type": "application/json",
+        "Authorization": token,
+        "userid": `${userid}`
+    };
+    const response = await fetch(url, {method:"GET", headers: headers})
+    if(response.status == 400){
+        return 400;
+    }
+    if(response.status == 401){
+        return 401;
+    }
+    if(response.status == 200){
+        const result = await response.json();
+        console.log("GET timeLastEntry status:", response.status, "| data:", result); //tmp
+        return result;
+    }
+}
