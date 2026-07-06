@@ -81,7 +81,7 @@ router.get('/timeEntries/:id', authMiddleware("user"), async (req, res) => {
 })
 
 //delete time entry
-router.delete('/timeEntries/:id', async (req,res) => {
+router.delete('/timeEntries/:id', authMiddleware("user"),async (req,res) => {
     try{
         const deletedTimeEntry = Number(req.params.id);
         const result = await deleteTimeEntryService(deletedTimeEntry);
