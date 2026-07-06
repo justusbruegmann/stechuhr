@@ -25,7 +25,7 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
 
 export async function setEndTimeService(timeEntryId: number, newEndTime: Date){
     try{
-        const timeEntry = (await getLastTimeEntry(timeEntryId))[0];//-----------------------Hier muss getSingleTimeEntry hin -----
+        const timeEntry = (await getSingleTimeEntry(timeEntryId))[0];//-----------------------Hier muss getSingleTimeEntry hin -----
         if(timeEntry.endTime != null){//überprüfen ob es nicht schon einen endzeitpunkt gibt
             return "end time is already set";
         }
@@ -52,9 +52,9 @@ export async function getTimeEntriesService(userid: number){
     }
 }
 
-export async function getSingleTimeEntryService(userid: number){
+export async function getSingleTimeEntryService(timeEntryId: number){
     try{
-        const singleTimeEntry = await getSingleTimeEntry(userid);
+        const singleTimeEntry = await getSingleTimeEntry(timeEntryId);
         return singleTimeEntry;
     }
     catch(e){

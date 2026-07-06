@@ -44,7 +44,7 @@ export async function setEndTime(token: string, userid: number, timeEntryId: num
     if(response.status == 401){
         return 401;
     }
-    if(response.status == 204){
+    if(response.status == 200){
         return await response.json();
     }
 }
@@ -66,6 +66,26 @@ export async function getTimeEntries(token: string, userid: number){
     if(response.status == 200){
         const result = await response.json();
         console.log("GET timeEntries status:", response.status, "| data:", result); //tmp
+        return result;
+    }
+}
+
+export async function getSingleTimeEntry(token: string, userid: number, timeEntryId: number){
+    const url = `${BASE_URL}/timeEntries/${timeEntryId}`;
+    const headers = {
+        "content-type": "application/json",
+        "Authorization": token,
+        "userid": `${userid}`
+    };
+    const response = await fetch(url, {method:"GET", headers: headers})
+    if(response.status == 400){
+        return 400;
+    }
+    if(response.status == 401){
+        return 401;
+    }
+    if(response.status == 200){
+        const result = await response.json();
         return result;
     }
 }

@@ -36,7 +36,7 @@ router.patch('/timeEntries/:id', authMiddleware("user"), async (req, res) => {
         if(patchEndTime == "end time is already set" || patchEndTime == "end time is before start time"){
             return res.status(400).json({"error": patchEndTime});
         }
-        return res.status(204).send(patchEndTime);
+        return res.status(200).json(patchEndTime);
     }
     catch(error){
         res.status(500).send("internal error");
@@ -55,12 +55,25 @@ router.get('/timeEntries/', authMiddleware("user"), async (req, res) => {
     }
 })
 
+
 //get last time entry
 router.get('/timeEntries/last', authMiddleware("user"), async (req, res) => {
     try{
         const userid = res.locals.user.id;
         const timeEntry = await getLastTimeEntryService(userid);
         return res.status(200).send(timeEntry);
+    }
+    catch(error){
+        res.status(500).send("internal error");
+    }
+})
+
+//get single time entry
+router.get('/timeEntries/:id', authMiddleware("user"), async (req, res) => {
+    try{
+        const timeEntryId = Number(req.params.id);
+        const singleTimeEntry = await getSingleTimeEntryService(timeEntryId);
+        return res.status(200).send(singleTimeEntry);
     }
     catch(error){
         res.status(500).send("internal error");
