@@ -25,17 +25,18 @@ router.post('/timeEntries/', authMiddleware("user"), async (req, res) => {
 })
 
 //add end time
-router.patch('/timeEntries/', authMiddleware("user"), async (req, res) => {
+router.patch('/timeEntries/:id', authMiddleware("user"), async (req, res) => {
     try{
         const reqBody: any = req.body;
-        const userid = res.locals.user.id;
         if(!reqBody){
             return res.status(400).send("bad request");
         }
-        const patchEndTime = await setEndTimeService(reqBody.timeEntryId, reqBody.endtime);
+        const timeEntryId = Number(req.params.id);
+        const patchEndTime = await setEndTimeService(timeEntryId, new Date(reqBody.endtime));
         if(patchEndTime == "end time is already set" || patchEndTime == "end time is before start time"){
             return res.status(400).json({"error": patchEndTime});
         }
+        return res.status(204).send(patchEndTime);
     }
     catch(error){
         res.status(500).send("internal error");

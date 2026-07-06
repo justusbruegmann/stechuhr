@@ -6,7 +6,7 @@ import Card from "@/components/layout/Card";
 import Image from "next/image";
 import React, {useEffect, useState} from "react";
 import TimeEntry from "@/types/TimeEntry";
-import {createTimeEntry, getTimeEntries, getLastTimeEntry} from "@/scripts/timeEntriesScript";
+import {createTimeEntry, getTimeEntries, getLastTimeEntry, setEndTime} from "@/scripts/timeEntriesScript";
 
 
 interface PopupProps {
@@ -67,6 +67,27 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
         }
     }
 
+    async function setEndTimeEntry() {
+        const token = localStorage.getItem("token");
+        const userid = localStorage.getItem("userid");
+        if(!token || !userid){
+            console.error("Nicht eingeloggt oder kein Token");
+            return;
+        }
+        const lastTimeEntry = (await getLastTimeEntry(token, parseInt(userid)))[0];
+        console.log("DEBUG lastEntry:", JSON.stringify(lastTimeEntry));
+        if(lastTimeEntry == 401 || !lastTimeEntry){
+            console.error("Fehler beim holen des letzten Zeiteintrags", lastTimeEntry);
+            return;
+        }
+        const buttonClickedTime = new Date();
+        const result = await setEndTime(token, parseInt(userid), parseInt(lastTimeEntry.id), buttonClickedTime);
+        if(result == 401 || !result?.id){
+            console.error("Fehler beim Ausstempeln", result);
+            return;
+        }
+    }
+
     async function getAllTimeEntries(){
         const token = localStorage.getItem("token");
         const userid = localStorage.getItem("userid");
@@ -121,7 +142,8 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
                 setClicked(!clicked);
                 //setTimeEntry();
                 //getAllTimeEntries();
-                getLastTimeEntryFromUser();
+                //getLastTimeEntryFromUser();
+                setEndTimeEntry();
             }} label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked ? "success" : "error"} height={2.5}
                     width={"100%"}></Button>
             <hr className={Styles["gap"]}></hr>

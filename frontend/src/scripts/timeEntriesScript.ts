@@ -27,15 +27,15 @@ export async function createTimeEntry(token: string,userid: number, starttime: D
     }
 }
 
-export async function setEndTime(token: string, userid: number, endtime: Date){
-    const url = `${BASE_URL}/timeEntries/`;
+export async function setEndTime(token: string, userid: number, timeEntryId: number, endtime: Date){
+    const url = `${BASE_URL}/timeEntries/${timeEntryId}`;
     const headers = {
         "content-type": "application/json",
         "Authorization": token,
         "userid": `${userid}`
     };
     const body = {
-        "endtime": endtime,
+        "endtime": endtime
     };
     const response = await fetch(url, {method:"PATCH", body: JSON.stringify(body), headers: headers});
     if(response.status == 400){

@@ -13,8 +13,8 @@ export async function createTimeEntry(userId: number, startTime: Date, type: (ty
 }
 
 export async function setEndTime(timeEntryId: number, endTime: Date) {
-    const result = await db.update(timeEntries).set({"endTime": endTime}).where(eq(timeEntries.id, timeEntryId));
-    return result;
+    const result = await db.update(timeEntries).set({"endTime": endTime}).where(eq(timeEntries.id, timeEntryId)).returning();
+    return result[0];
 }
 
 export async function getTimeEntries(userId: number) {

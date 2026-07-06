@@ -23,16 +23,16 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
     }
 }
 
-export async function setEndTimeService(timeEntryId: number, endtime: Date){
-    const timeEntry = (await getSingleTimeEntry(timeEntryId))[0];
+export async function setEndTimeService(timeEntryId: number, newEndTime: Date){
     try{
+        const timeEntry = (await getLastTimeEntry(timeEntryId))[0];//-----------------------Hier muss getSingleTimeEntry hin -----
         if(timeEntry.endTime != null){//überprüfen ob es nicht schon einen endzeitpunkt gibt
             return "end time is already set";
         }
-        if(timeEntry.startTime != null && timeEntry.startTime > endtime){ //überprüfen ob die endzeit nach der startzeit liegt
+        if(timeEntry.startTime != null && timeEntry.startTime > newEndTime){ //überprüfen ob die endzeit nach der startzeit liegt
             return "end time is before start time";
         }
-        const endTime = await setEndTime(timeEntryId, endtime);
+        const endTime = await setEndTime(timeEntryId, newEndTime);
         return endTime;
     }
     catch(e){
