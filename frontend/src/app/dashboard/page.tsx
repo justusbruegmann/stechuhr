@@ -14,6 +14,7 @@ import DailyDetailsPane from "@/components/timeAdjustment/DailyDetailsPane";
 import { useRouter } from "next/navigation";
 
 import { loginToken } from "@/scripts/auth";
+import { getNotificationList } from "@/scripts/notifications";
 
 
 export default function Dashboard() {
@@ -60,6 +61,10 @@ export default function Dashboard() {
         }
 
         localStorage.setItem("role", login.role);
+        const notificationList = await getNotificationList(token, Number(userid));
+        if (notificationList && notificationList != 400 && notificationList != 401) {
+            setNotifications(notificationList);
+        }
     }
 
     useEffect(() => {

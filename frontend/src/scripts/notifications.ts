@@ -38,7 +38,7 @@ export async function postNotification(token: string, userId: number, date: stri
     if (response.status === 400) {
         return 400;
     }
-    if (response.status === 200) {
+    if (response.status === 201) {
         return await response.json();
     }
 }
