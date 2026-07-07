@@ -31,8 +31,37 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
         return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        checkCurrentStatus();
+    }, []);
+
     const [startTime, setStartTime] = useState<Date | null>(null);
 
+    async function checkCurrentStatus() {
+        const token = localStorage.getItem("token");
+        const userid = localStorage.getItem("userid");
+        if (!token || !userid) {
+            console.error("Nicht eingeloggt oder kein Token");
+            return;
+        }
+
+        const lastTimeEntry = (await getLastTimeEntry(token, parseInt(userid)))[0];
+
+        if (lastTimeEntry == 401 || !lastTimeEntry) {
+            setClicked(true);
+            setInOrOut(true);
+            return;
+        }
+
+        if (!lastTimeEntry.endTime) {
+            setClicked(false);
+            setInOrOut(false);
+            setStartTime(new Date(lastTimeEntry.startTime));
+        } else {
+            setClicked(true);
+            setInOrOut(true);
+        }
+    }
 
     async function setTimeEntry() {
         const buttonClickedTime = new Date();
