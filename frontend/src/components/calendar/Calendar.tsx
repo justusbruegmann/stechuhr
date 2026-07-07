@@ -18,7 +18,7 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
     // --- Kalender ---
     const timeEntryList = Object.values(timeEntries).flat();
 
-    const today = new Date();
+    const today = new Date(2026, 0, 1);
     const [currentDay, setCurrentDay] = useState(new Date());
     const currentMonth = currentDay.getMonth();
     const currentYear = currentDay.getFullYear();
@@ -51,16 +51,15 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
     const holidays = new Holidays('DE', 'BW');
 
     // --- Legende ---
-    const symbols = [
-        ["Krank", "rgb(99, 90, 0)", "rgba(255, 234, 0, 0.5)", "rgb(200, 180, 0)"],
-        ["Urlaub", "rgb(82, 0, 120)", "rgba(174, 0, 255, 0.5)", "rgb(120, 0, 200)"],
-        ["WE", "rgb(0, 37, 116)", "rgba(0, 81, 255, 0.5)", "rgb(0, 37, 200)"],
-        ["FT", "rgb(124, 0, 124)", "rgba(255, 0, 255, 0.5)", "rgb(180, 0, 180)"],
-        [">8h", "rgb(30, 114, 30)", "rgba(0, 255, 0, 0.5)", "rgb(0, 150, 0)"],
-        ["6-8h", "rgb(130, 72, 0)", "rgba(255, 140, 0, 0.5)", "rgb(200, 120, 0)"],
-        ["<6h", "rgb(128, 0, 0)", "rgba(255, 0, 0, 0.5)", "rgb(200, 0, 0)"]
-    ].map(([text, color, backgroundColor, borderColor]) => ({ text, color, backgroundColor, borderColor }));
-
+const symbols = [
+    ["Krank", "rgb(0, 0, 0)", "rgba(255, 200, 0, 0.12)", "rgb(255, 180, 0)"],
+    ["Urlaub", "rgb(0, 0, 0)", "rgba(180, 50, 240, 0.12)", "rgb(180, 20, 240)"],
+    ["WE", "rgb(0, 0, 0)", "rgba(50, 110, 255, 0.12)", "rgb(20, 90, 255)"],
+    ["FT", "rgb(0, 0, 0)", "rgba(230, 50, 230, 0.12)", "rgb(230, 10, 230)"],
+    [">8h", "rgb(0, 0, 0)", "rgba(0, 255, 0, 0.5)", "rgb(0, 150, 0)"],
+    ["6-8h", "rgb(0, 0, 0)", "rgba(255, 140, 0, 0.5)", "rgb(200, 120, 0)"],
+    ["<6h", "rgb(0, 0, 0)", "rgba(255, 0, 0, 0.5)", "rgb(200, 0, 0)"]
+].map(([text, color, backgroundColor, borderColor]) => ({ text, color, backgroundColor, borderColor }));
     const legend1Symbols = symbols.slice(0, 4);
     const legend2Symbols = symbols.slice(4);
 
@@ -80,6 +79,17 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
 
     function handleToday() {
         setCurrentDay(new Date(today.getFullYear(), today.getMonth(), 1));
+    }
+
+    // Wochenende
+    function isWeekend(index: number) {
+        return index % 7 === 5 || index % 7 === 6;
+    }
+
+    // Feiertag
+    function isHoliday(day: number) {
+        const holiday = holidays.isHoliday(new Date(currentYear, currentMonth, day));
+        return holiday && holiday.some(h => h.type === "public");
     }
 
     function handleWorkingHours(day: number) {
@@ -111,42 +121,6 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
 
     function handleEntries(index: number, day: number) {
         const entries = [];
-
-        // Wochenende
-        if (index % 7 === 5 || index % 7 === 6) {
-            entries.push(
-                <span
-                    key={index + "WE"}
-                    className={styles.calendar_symbols}
-                    style={{
-                        color: symbols[2].color,
-                        backgroundColor: symbols[2].backgroundColor,
-                        border: `2px solid ${symbols[2].borderColor}`
-                    }}
-                >
-                    {symbols[2].text}
-                </span>
-            );
-        }
-
-        // Feiertag
-        const holiday = holidays.isHoliday(new Date(currentYear, currentMonth, day));
-
-        if (holiday && holiday.some(f => f.type === "public")) {
-            entries.push(
-                <span
-                    key={index + "FT"}
-                    className={styles.calendar_symbols}
-                    style={{
-                        color: symbols[3].color,
-                        backgroundColor: symbols[3].backgroundColor,
-                        border: `2px solid ${symbols[3].borderColor}`
-                    }}
-                >
-                    {symbols[3].text}
-                </span>
-            );
-        }
 
         // Arbeitszeit
         const workHours = handleWorkingHours(day);
@@ -185,7 +159,7 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
 
     // --- UI ---
     return (
-        <Card>
+        <Card className={styles.container}>
             <div className={styles.calendar_container}>
                 <div className={styles.calendar_header}>
                     <div className={styles.calendar_period}>
@@ -219,9 +193,21 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
                         if (day === null) {
                             return <div key={index} className={styles.calendar_empty}>{day}</div>;
                         }
+                        const weekendStyle = isWeekend(index) ? {
+                            backgroundColor: symbols[2].backgroundColor,
+                            borderColor: symbols[2].borderColor
+                        } : undefined;
+
+                        const holidayStyle = isHoliday(day) ? {
+                            backgroundColor: symbols[3].backgroundColor,
+                            borderColor: symbols[3].borderColor
+                        } : undefined;
+
+                        const dayStyle = holidayStyle ?? weekendStyle;
+
                         if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
                             return (
-                                <div key={index} className={styles.calendar_today}
+                                <div key={index} className={styles.calendar_today} style={dayStyle}
                                     onClick={() => showDailyDetails(new Date(currentYear, currentMonth, day))}>
                                     {day && <div className={styles.calendar_day_text}>{day}</div>}
                                     <div className={styles.calendar_day_symbols_container}>
@@ -231,7 +217,7 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
                             );
                         }
                         return (
-                            <div key={index} className={styles.calendar_day}
+                            <div key={index} className={styles.calendar_day} style={dayStyle}
                                 onClick={() => showDailyDetails(new Date(currentYear, currentMonth, day))}>
                                 {day && <div className={styles.calendar_day_text}>{day}</div>}
                                 <div className={styles.calendar_day_symbols_container}>
