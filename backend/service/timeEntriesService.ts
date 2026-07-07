@@ -1,14 +1,19 @@
 import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLastTimeEntry, deleteTimeEntry } from '../repository/timeEntriesRepository';
 import { timeEntries, time_entry_type } from '../drizzle/schema';
+import Holidays from 'date-holidays';
 
 export async function createTimeEntryService(userid: number, starttime: Date, endtime: Date | undefined, type: (typeof time_entry_type.enumValues)[number]){
-    const currentDate = new Date();
+    //const currentDate = new Date();
+    const holidays = new Holidays('DE', 'BW');
     try{
         const lastTimeEntry = (await getLastTimeEntry(userid))[0];
-        if(currentDate.getDay() == 0 || currentDate.getDay() == 6){ //keine arbeit am wochenende
+        if(starttime.getDay() == 0 || starttime.getDay() == 6){ //keine arbeit am wochenende
             return "not able to work on weekends";  
         }
-        if(currentDate.getHours() >= 23 || currentDate.getHours() < 6){ //nur arbeiten zwischen 6 und 23 Uhr möglich
+        if(holidays.isHoliday(new Date(starttime.getFullYear(), starttime.getMonth(), starttime.getDay()))){ //keine Arbeit an Feiertagen
+            return "not able to work on holidays";
+        }
+        if(starttime.getHours() >= 23 || starttime.getHours() < 6){ //nur arbeiten zwischen 6 und 23 Uhr möglich
             return "out of working time";    
         }
         if(lastTimeEntry.endTime == null){ //überprüfen ob letzter Eintrag für den Benutzer noch kein Endzeitpunkt hat

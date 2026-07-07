@@ -13,7 +13,12 @@ router.post('/timeEntries/', authMiddleware("user"), async (req, res) => {
         }
         const userid = res.locals.user.id;
         const createdTimeEntry = await createTimeEntryService(userid, new Date(reqBody.starttime),  reqBody.endTime ? new Date(reqBody.endTime) : undefined, reqBody.type);
-        if(createdTimeEntry == "not able to work on weekends"|| createdTimeEntry == "out of working time" || createdTimeEntry == "last time entry has no end time"){
+        if(
+            createdTimeEntry == "not able to work on weekends"|| 
+            createdTimeEntry == "out of working time" || 
+            createdTimeEntry == "last time entry has no end time" ||
+            createdTimeEntry == "not able to work on holidays"
+        ){
             return res.status(400).json({"error": createdTimeEntry});
         }
         return res.status(201).send(createdTimeEntry);
