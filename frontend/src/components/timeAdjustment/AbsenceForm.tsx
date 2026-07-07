@@ -4,12 +4,13 @@ import styles from "./AbsenceForm.module.css";
 type Props = {
     type: "Vacation" | "Sick";
     date: string;
+    setType: (type: string) => void;
     updateFromDate: (date: string) => void;
     updateToDate: (date: string) => void;
-    setType?: (type: string) => void;
+    updateRemark: (remark: string) => void;
 };
 
-export default function AbsenceForm({ type, date, updateFromDate, updateToDate, setType }: Props) {
+export default function AbsenceForm({ type, date, setType ,updateFromDate, updateToDate, updateRemark}: Props) {
 
     useEffect(() => {
         setType && setType(type);
@@ -26,7 +27,7 @@ export default function AbsenceForm({ type, date, updateFromDate, updateToDate, 
                 </div>
             </div>
             <label>Bemerkung:</label>
-            <textarea />
+            <textarea onChange={(e) => updateRemark(e.target.value)} />
         </div>
     );
 }

@@ -16,6 +16,7 @@ export default function RequestPopup({ date, onCreate }: Props) {
   const [type, setType] = useState("");
   const [fromDate, setFromDate] = useState(formatDate(date));
   const [toDate, setToDate] = useState(formatDate(date));
+  const [remark, setRemark] = useState("");
 
   function upadateFromDate(date: string) {
     setFromDate(date);
@@ -23,6 +24,10 @@ export default function RequestPopup({ date, onCreate }: Props) {
 
   function upadateToDate(date: string) {
     setToDate(date);
+  }
+
+  function updateRemark(remark: string) {
+    setRemark(remark);
   }
 
   function formatDate(date: Date): string {
@@ -33,8 +38,8 @@ export default function RequestPopup({ date, onCreate }: Props) {
   }
 
   const tabs = {
-    "Urlaub": <AbsenceForm type="Vacation" date={formatDate(date)} updateFromDate={upadateFromDate} updateToDate={upadateToDate} setType={setType} />,
-    "Krankheit": <AbsenceForm type="Sick" date={formatDate(date)} updateFromDate={upadateFromDate} updateToDate={upadateToDate} setType={setType} />
+    "Urlaub": <AbsenceForm type="Vacation" date={formatDate(date)} setType={setType} updateFromDate={upadateFromDate} updateToDate={upadateToDate} updateRemark={updateRemark} />,
+    "Krankheit": <AbsenceForm type="Sick" date={formatDate(date)} setType={setType} updateFromDate={upadateFromDate} updateToDate={upadateToDate} updateRemark={updateRemark} />
   };
 
   return (
@@ -67,6 +72,7 @@ export default function RequestPopup({ date, onCreate }: Props) {
             console.log(`Type: ${type}`)
             console.log(`From: ${fromDate}`)
             console.log(`To: ${toDate}`)
+            console.log(`Remark: ${remark}`)
           }}
         />
       </div>

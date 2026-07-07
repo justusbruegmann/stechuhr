@@ -5,5 +5,6 @@ export default interface Request {
     type: "Vacation" | "Sick";
     fromDate: string;
     toDate: string;
+    remark: string;
     isApproved: boolean;
 }
