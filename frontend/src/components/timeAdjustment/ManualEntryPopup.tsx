@@ -15,7 +15,7 @@ type Props = {
 export default function ManualEntryPopup({ date, onCreate }: Props) {
   const { hideModal } = useModal();
 
-  const {close} = useCurrentModal();
+  const { close } = useCurrentModal();
 
   const [fromTime, setFromTime] = useState("");
   const [toTime, setToTime] = useState("");
@@ -57,8 +57,8 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
 
       <br />
       <div className={styles["container-einstempelzeit"]}>
-      <img src="/clock.svg" alt="Clock Icon" className={styles["clock-icon"]} />
-      <label className={styles["labels"]}>Einstempelzeit</label>
+        <img src="/clock.svg" alt="Clock Icon" className={styles["clock-icon"]} />
+        <label className={styles["labels"]}>Einstempelzeit</label>
       </div>
 
       <TimeInput
