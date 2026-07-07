@@ -4,6 +4,12 @@
   gap: 1rem;
 }
 
+.labels {
+    font-weight: 600;
+    font-size: 16px;
+    color: #2f2e2e;
+}
+
 .date-input-container {
   display: flex;
   flex-direction: column;
@@ -42,4 +48,30 @@
 
 .date-input::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
+}
+
+.remark-input {
+  width: 100%;
+  min-height: 120px;
+  padding: 14px 16px 0px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: #f9fafb;
+  color: #1f2937;
+  font: inherit;
+  line-height: 1.5;
+  resize: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.remark-input::placeholder {
+  color: #9ca3af;
+}
+
+.remark-input:focus {
+  outline: none;
+  border-color: #6b7280;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.15);
 }

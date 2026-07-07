@@ -50,9 +50,6 @@ export default function RequestPopup({ date, onCreate }: Props) {
       <Tabs tabs={tabs} />
       <br />
 
-
-      <br />
-
       <div className={styles["container-popup-buttons"]}>
         <Button
           label="Abbrechen"
@@ -67,7 +64,6 @@ export default function RequestPopup({ date, onCreate }: Props) {
           type="accent"
           height={2.5}
           width={9}
-          //onClick={() => { onCreate({ date: date.toISOString(), type: "" }) 
           onClick={() => {
             console.log(`Type: ${type}`)
             console.log(`From: ${fromDate}`)
