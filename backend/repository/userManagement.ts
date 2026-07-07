@@ -72,6 +72,17 @@ export async function getManagers() {
     return result;
 }
 
+export async function getUsersForManager(managerId: number) {
+    const result = await db.select({
+        username: users.username,
+        role: users.role,
+        id: users.id,
+        workload: users.workload,
+        holidays: users.holidays
+    }).from(users).where(eq(users.managerid, managerId));
+    return result;
+}
+
 export async function getManagerById(managerId: number) {
     const result = await db.select({id: users.id, role: users.role}).from(users).where(eq(users.id, managerId))
     return result[0];

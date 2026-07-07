@@ -48,6 +48,25 @@ export async function getUsers(token: string, userId: number) {
     }
 }
 
+export async function getUsersForManager(token: string, userId: number, managerId: number) {
+    const url = `${BASE_URL}/users/managers/users`;
+    const headers = {
+        "content-type": "application/json",
+        "Authorization": `${token}`,
+        "userid": `${userId}`
+    };
+    const response = await fetch(url, {method: "get", headers: headers})
+    if (response.status === 401) {
+        return 401;
+    }
+    if (response.status === 400) {
+        return 400;
+    }
+    if (response.status === 200) {
+        return await response.json();
+    }
+}
+
 export async function deleteUser(token: string, userIdOfAdmin: number, userid: number) {
     const url = `${BASE_URL}/users/${userid}`;
     const headers = {

@@ -6,7 +6,7 @@ import {
     usersGet,
     userDelete,
     managerGet,
-    managerUpdate, roleUpdate
+    managerUpdate, roleUpdate, managerGetOwnUsers
 } from "../service/userManagement";
 import {authMiddleware} from "../middleware/auth";
 
@@ -76,6 +76,12 @@ router.delete('/users/:id',authMiddleware("admin"), async (req, res) => {
 router.get('/users/managers', authMiddleware("admin"), async (req, res) => {
 
     const result = await managerGet();
+    return res.status(200).send(result);
+})
+
+router.get('/users/managers/users', authMiddleware("manager"), async (req, res) => {
+    const userId = res.locals.user.id;
+    const result = await managerGetOwnUsers(userId);
     return res.status(200).send(result);
 })
 

@@ -1,6 +1,6 @@
 import {
     createUser, changeOTP, getHash, getUsers, deleteUser, getManagers, getManagerById, getUserFromUserName,
-    updateRole, updateManager
+    updateRole, updateManager, getUsersForManager
 } from "../repository/userManagement";
 import {deleteSessionsOfUser} from "../repository/auth";
 import {generateRandomString, isValidPassword} from "../utils/utils";
@@ -83,6 +83,11 @@ export async function userDelete(userId: number) {
 
 export async function managerGet() {
     const result = await getManagers();
+    return result;
+}
+
+export async function managerGetOwnUsers(managerId: number) {
+    const result = await getUsersForManager(managerId);
     return result;
 }
 
