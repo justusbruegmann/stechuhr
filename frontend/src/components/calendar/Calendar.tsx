@@ -116,7 +116,7 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
         if (index % 7 === 5 || index % 7 === 6) {
             entries.push(
                 <span
-                    key={index}
+                    key={index + "WE"}
                     className={styles.calendar_symbols}
                     style={{
                         color: symbols[2].color,
@@ -135,7 +135,7 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
         if (holiday && holiday.some(f => f.type === "public")) {
             entries.push(
                 <span
-                    key={index}
+                    key={index + "FT"}
                     className={styles.calendar_symbols}
                     style={{
                         color: symbols[3].color,
@@ -167,7 +167,7 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
         if (workHours !== -1) {
             entries.push(
                 <span
-                    key={index}
+                    key={index + "Hours"}
                     className={styles.calendar_symbols}
                     style={{
                         color: symbols[symbolIndex].color,
