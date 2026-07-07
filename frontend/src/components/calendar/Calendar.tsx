@@ -18,7 +18,7 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
     // --- Kalender ---
     const timeEntryList = Object.values(timeEntries).flat();
 
-    const today = new Date(2026, 0, 1);
+    const today = new Date();
     const [currentDay, setCurrentDay] = useState(new Date());
     const currentMonth = currentDay.getMonth();
     const currentYear = currentDay.getFullYear();
