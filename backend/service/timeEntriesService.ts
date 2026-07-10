@@ -16,7 +16,7 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
         if(starttime.getHours() >= 23 || starttime.getHours() < 6){ //nur arbeiten zwischen 6 und 23 Uhr möglich
             return "out of working time";    
         }
-        if(lastTimeEntry.endTime == null){ //überprüfen ob letzter Eintrag für den Benutzer noch kein Endzeitpunkt hat
+        if(lastTimeEntry && lastTimeEntry.endTime == null){ //überprüfen ob letzter Eintrag für den Benutzer noch kein Endzeitpunkt hat
             return "last time entry has no end time";     
         }         
         const timeEntry = await createTimeEntry(userid, starttime, type, endtime);
