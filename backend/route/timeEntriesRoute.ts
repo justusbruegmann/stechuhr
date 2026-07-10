@@ -12,7 +12,7 @@ router.post('/timeEntries/', authMiddleware("user"), async (req, res) => {
             return res.status(400).send("bad request");
         }
         const userid = res.locals.user.id;
-        const createdTimeEntry = await createTimeEntryService(userid, new Date(reqBody.starttime),  reqBody.endTime ? new Date(reqBody.endTime) : undefined, reqBody.type);
+        const createdTimeEntry = await createTimeEntryService(userid, new Date(reqBody.starttime),  reqBody.endtime ? new Date(reqBody.endtime) : undefined, reqBody.type);
         if(
             createdTimeEntry == "not able to work on weekends"|| 
             createdTimeEntry == "out of working time" || 
@@ -33,11 +33,14 @@ router.post('/timeEntries/', authMiddleware("user"), async (req, res) => {
 router.patch('/timeEntries/:id', authMiddleware("user"), async (req, res) => {
     try{
         const reqBody: any = req.body;
-        if(!reqBody){
+        if(!reqBody?.endtime){
             return res.status(400).send("bad request");
         }
         const timeEntryId = Number(req.params.id);
         const patchEndTime = await setEndTimeService(timeEntryId, new Date(reqBody.endtime));
+        if(patchEndTime == "time entry not found"){
+            return res.status(404).json({"error": patchEndTime});
+        }
         if(patchEndTime == "end time is already set" || patchEndTime == "end time is before start time"){
             return res.status(400).json({"error": patchEndTime});
         }

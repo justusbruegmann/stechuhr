@@ -1,5 +1,5 @@
 import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLastTimeEntry, deleteTimeEntry } from '../repository/timeEntriesRepository';
-import { timeEntries, time_entry_type } from '../drizzle/schema';
+import { time_entry_type } from '../drizzle/schema';
 import Holidays from 'date-holidays';
 
 export async function createTimeEntryService(userid: number, starttime: Date, endtime: Date | undefined, type: (typeof time_entry_type.enumValues)[number]){
@@ -10,13 +10,13 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
         if(starttime.getDay() == 0 || starttime.getDay() == 6){ //keine arbeit am wochenende
             return "not able to work on weekends";  
         }
-        if(holidays.isHoliday(new Date(starttime.getFullYear(), starttime.getMonth(), starttime.getDay()))){ //keine Arbeit an Feiertagen
+        if(holidays.isHoliday(new Date(starttime.getFullYear(), starttime.getMonth(), starttime.getDate()))){ //keine Arbeit an Feiertagen
             return "not able to work on holidays";
         }
         if(starttime.getHours() >= 23 || starttime.getHours() < 6){ //nur arbeiten zwischen 6 und 23 Uhr möglich
             return "out of working time";    
         }
-        if(lastTimeEntry.endTime == null){ //überprüfen ob letzter Eintrag für den Benutzer noch kein Endzeitpunkt hat
+        if(lastTimeEntry && lastTimeEntry.endTime == null){ //überprüfen ob letzter Eintrag für den Benutzer noch kein Endzeitpunkt hat
             return "last time entry has no end time";     
         }         
         const timeEntry = await createTimeEntry(userid, starttime, type, endtime);
@@ -30,7 +30,10 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
 
 export async function setEndTimeService(timeEntryId: number, newEndTime: Date){
     try{
-        const timeEntry = (await getSingleTimeEntry(timeEntryId))[0];//-----------------------Hier muss getSingleTimeEntry hin -----
+        const timeEntry = (await getSingleTimeEntry(timeEntryId))[0];
+        if(!timeEntry){
+            return "time entry not found";
+        }
         if(timeEntry.endTime != null){//überprüfen ob es nicht schon einen endzeitpunkt gibt
             return "end time is already set";
         }
