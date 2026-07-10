@@ -30,7 +30,10 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
 
 export async function setEndTimeService(timeEntryId: number, newEndTime: Date){
     try{
-        const timeEntry = (await getSingleTimeEntry(timeEntryId))[0];//-----------------------Hier muss getSingleTimeEntry hin -----
+        const timeEntry = (await getSingleTimeEntry(timeEntryId))[0];
+        if(!timeEntry){
+            return "time entry not found";
+        }
         if(timeEntry.endTime != null){//überprüfen ob es nicht schon einen endzeitpunkt gibt
             return "end time is already set";
         }
