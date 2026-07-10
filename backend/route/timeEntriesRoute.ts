@@ -38,6 +38,9 @@ router.patch('/timeEntries/:id', authMiddleware("user"), async (req, res) => {
         }
         const timeEntryId = Number(req.params.id);
         const patchEndTime = await setEndTimeService(timeEntryId, new Date(reqBody.endtime));
+        if(patchEndTime == "time entry not found"){
+            return res.status(404).json({"error": patchEndTime});
+        }
         if(patchEndTime == "end time is already set" || patchEndTime == "end time is before start time"){
             return res.status(400).json({"error": patchEndTime});
         }
