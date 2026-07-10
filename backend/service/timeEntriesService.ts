@@ -79,8 +79,15 @@ export async function getLastTimeEntryService(userid:number){
     }
 }
 
-export async function deleteTimeEntryService(timeEntryId: number){
+export async function deleteTimeEntryService(timeEntryId: number, userid: number){
     try{
+        const timeEntry = (await getSingleTimeEntry(timeEntryId))[0];
+        if(!timeEntry){
+            return "time entry not found";
+        }
+        if(timeEntry.userId !== userid){
+            return "not authorized to delete this entry";
+        }
         const deleted = await deleteTimeEntry(timeEntryId);
         return deleted;
     }

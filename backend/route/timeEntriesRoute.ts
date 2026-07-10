@@ -89,7 +89,11 @@ router.get('/timeEntries/:id', authMiddleware("user"), async (req, res) => {
 router.delete('/timeEntries/:id', authMiddleware("user"),async (req,res) => {
     try{
         const deletedTimeEntry = Number(req.params.id);
-        const result = await deleteTimeEntryService(deletedTimeEntry);
+        const userid = res.locals.user.id;
+        const result = await deleteTimeEntryService(deletedTimeEntry, userid);
+        if(result == "time entry not found" || result == "not authorized to delete this entry"){
+            return res.status(result == "time entry not found" ? 404 : 403).json({"error": result});
+        }
         return res.status(200).send(result);
     }
     catch(error){
