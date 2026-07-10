@@ -65,7 +65,7 @@ export async function getTimeEntries(token: string, userid: number){
     }
     if(response.status == 200){
         const result = await response.json();
-        console.log("GET timeEntries status:", response.status, "| data:", result); //tmp
+        // console.log("GET timeEntries status:", response.status, "| data:", result); //tmp
         return result;
     }
 }
