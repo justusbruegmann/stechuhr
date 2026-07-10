@@ -106,7 +106,7 @@ export async function getLastTimeEntry(token: string, userid: number){
     }
     if(response.status == 200){
         const result = await response.json();
-        console.log("GET timeLastEntry status:", response.status, "| data:", result); //tmp
+        // console.log("GET timeLastEntry status:", response.status, "| data:", result); //tmp
         return result;
     }
 }
