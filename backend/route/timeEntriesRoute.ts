@@ -33,7 +33,7 @@ router.post('/timeEntries/', authMiddleware("user"), async (req, res) => {
 router.patch('/timeEntries/:id', authMiddleware("user"), async (req, res) => {
     try{
         const reqBody: any = req.body;
-        if(!reqBody){
+        if(!reqBody?.endtime){
             return res.status(400).send("bad request");
         }
         const timeEntryId = Number(req.params.id);
