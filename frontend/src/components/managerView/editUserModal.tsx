@@ -2,7 +2,7 @@
 import * as React from 'react';
 import {useEffect} from 'react';
 import User from "@/types/User";
-import {getUserById} from "@/scripts/userManagement";
+import {getUserById, updateUser} from "@/scripts/userManagement";
 import {capitalize} from "@/utils/StringUtils";
 import styles from './editUserModal.module.css';
 import Button from "@/components/layout/Button";
@@ -42,19 +42,38 @@ export default function EditUserModal({userId, user, updateLocalState}: EditUser
 
 
     async function save() {
+
+        const updates = {
+            holidays: Number((document.getElementById("vacationDays") as HTMLInputElement).value),
+            workload: Number((document.getElementById("workload") as HTMLInputElement).value)
+        }
+
+        if (updates.holidays == userState?.holidays && updates.workload == userState?.workload) {
+            setLoading(false);
+            close();
+            return
+        }
+
         setLoading(true);
+
         try {
             console.log("asdf")
         } catch (e) {
             console.error(e);
         }
+        await updateUser(userId, updates)
+            .then(_ => {
+                if (updateLocalState) {
+                    updateLocalState({
+                        holidays: Number((document.getElementById("vacationDays") as HTMLInputElement).value),
+                        workload: Number((document.getElementById("workload") as HTMLInputElement).value)
+                    });
+                }
+            })
+            .catch(e => {
+                console.error(e);
+            })
 
-        if (updateLocalState) {
-            updateLocalState({
-                holidays: Number((document.getElementById("vacationDays") as HTMLInputElement).value),
-                workload: Number((document.getElementById("workload") as HTMLInputElement).value)
-            });
-        }
         setLoading(false);
         close();
     }
@@ -71,7 +90,7 @@ export default function EditUserModal({userId, user, updateLocalState}: EditUser
                     {capitalize((userState?.username || "Loading..."))}
                 </h2>
 
-                <hr className={styles.separator} />
+                <hr className={styles.separator}/>
 
                 <div className={styles.row}>
                     <p><b>Urlaubstage</b></p>
@@ -85,8 +104,8 @@ export default function EditUserModal({userId, user, updateLocalState}: EditUser
                 </div>
 
                 <div className={styles.footer}>
-                    <Button label={"Speichern"} type={"accent"} onClick={() => save()} />
-                    <Button label={"Abbrechen"} type={"primary"} onClick={() => close()} />
+                    <Button label={"Speichern"} type={"accent"} onClick={() => save()}/>
+                    <Button label={"Abbrechen"} type={"primary"} onClick={() => close()}/>
                 </div>
             </div>
         }

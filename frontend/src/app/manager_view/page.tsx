@@ -44,7 +44,7 @@ export default function ManagerView() {
                 close();
                 setLoading(false);
             })
-            .catch(error => {
+            .catch(_ => {
                 setUsers({});
                 close();
                 setLoading(false);

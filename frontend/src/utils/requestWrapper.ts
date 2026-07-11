@@ -1,6 +1,7 @@
 export default async function sendRequest(
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
     url: string,
+    body?: any,
     headersOverrides?: Record<string, string>
 ) {
 
@@ -21,7 +22,13 @@ export default async function sendRequest(
         ...headersOverrides
     }
 
-    const response = await fetch(url, {method: method, headers: headers})
+    let response;
+    if (body) {
+        const bodyJson = JSON.stringify(body)
+        response = await fetch(url, {method: method, body: bodyJson, headers: headers})
+    } else {
+        response = await fetch(url, {method: method, headers: headers})
+    }
 
     if (!response.ok) {
         throw new Error(response.statusText);
