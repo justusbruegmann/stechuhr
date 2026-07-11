@@ -6,14 +6,18 @@ import {getUserById} from "@/scripts/userManagement";
 import {capitalize} from "@/utils/StringUtils";
 import styles from './editUserModal.module.css';
 import Button from "@/components/layout/Button";
+import {useCurrentModal} from "@/contexts/ModalContext";
 
 
 export type EditUserModalProps = {
     userId: number;
     user?: User;
+    updateLocalState?: (newEntries: Partial<Record<keyof User, any>>) => void;
 }
 
-export default function EditUserModal({userId, user}: EditUserModalProps) {
+export default function EditUserModal({userId, user, updateLocalState}: EditUserModalProps) {
+
+    const {close} = useCurrentModal()
 
     const [loading, setLoading] = React.useState(false);
     const [userState, setUserState] = React.useState<User | null>(user || null);
@@ -34,6 +38,25 @@ export default function EditUserModal({userId, user}: EditUserModalProps) {
         } catch (error) {
             console.error(error);
         }
+    }
+
+
+    async function save() {
+        setLoading(true);
+        try {
+            console.log("asdf")
+        } catch (e) {
+            console.error(e);
+        }
+
+        if (updateLocalState) {
+            updateLocalState({
+                holidays: Number((document.getElementById("vacationDays") as HTMLInputElement).value),
+                workload: Number((document.getElementById("workload") as HTMLInputElement).value)
+            });
+        }
+        setLoading(false);
+        close();
     }
 
 
@@ -62,8 +85,8 @@ export default function EditUserModal({userId, user}: EditUserModalProps) {
                 </div>
 
                 <div className={styles.footer}>
-                    <Button label={"Speichern"} type={"accent"} onClick={() => {console.log("Saving!")}} />
-                    <Button label={"Abbrechen"} type={"primary"} onClick={() => {console.log("Close")}} />
+                    <Button label={"Speichern"} type={"accent"} onClick={() => save()} />
+                    <Button label={"Abbrechen"} type={"primary"} onClick={() => close()} />
                 </div>
             </div>
         }

@@ -79,8 +79,32 @@ export default function ManagerView() {
     /**
      * Editing users
      */
+    function generateUserUpdateFunction(userId: number) {
+        return (updates: Partial<Record<keyof User, any>>): void => {
+
+            console.log(`Saving changes ${updates} to user ${userId}`);
+
+            setUsers(prevUsers => {
+                const updatedUser = {
+                    ...prevUsers[userId],
+                    ...updates
+                };
+                return {
+                    ...prevUsers,
+                    [userId]: updatedUser
+                };
+            });
+        }
+    }
+
+
     function editUser(userId: number) {
-        const {close} = showModal("popup", <EditUserModal userId={userId} user={users[userId]}/>);
+        showModal("popup",
+            <EditUserModal userId={userId}
+                           user={users[userId]}
+                           updateLocalState={generateUserUpdateFunction(userId)}
+            />
+        );
     }
 
 
