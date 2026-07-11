@@ -4,19 +4,29 @@ import User from "@/types/User";
 import React, {useEffect} from "react"
 import Header from "@/components/layout/Header";
 import {useModal} from "@/contexts/ModalContext";
+import styles from './manager_view.module.css';
+
 
 import {createUser, deleteUser, getUsersForManager} from "@/scripts/userManagement";
 import UserTable from "@/components/managerView/userTable";
 import Button from "@/components/layout/Button";
+import {useRouter} from "next/navigation";
 
 
 export default function ManagerView() {
+    const router = useRouter();
+
     const {showModal, updateModalContent} = useModal();
     const [users, setUsers] = React.useState<User[]>([]);
+    const [loading, setLoading] = React.useState(false);
 
     useEffect(() => {
+        setLoading(true);
         const {close} = showModal("spinningLoader")
-        loadUsers().then(r => close());
+        loadUsers().then(r => {
+            close();
+            setLoading(false);
+        });
     }, []);
 
     async function loadUsers() {
@@ -95,7 +105,8 @@ export default function ManagerView() {
             <td>{user.workload}</td>
             <td>0</td>
             <td>
-                <Button label={"KÜNDIGUNG!"} type={"error"} onClick={() => alert(`Mitarbeiter ${user.username} wird gefeuert!`)}/>
+                <Button label={"KÜNDIGUNG!"} type={"error"}
+                        onClick={() => alert(`Mitarbeiter ${user.username} wird gefeuert!`)}/>
             </td>
         </tr>
     ))
@@ -104,8 +115,18 @@ export default function ManagerView() {
     return (
         <>
             <Header/>
-            <div className="tableContainer">
-                <UserTable columnNames={columns} rows={rows}/>
+
+            <div className={styles.tableContainer}>
+                {!loading && users.length > 0 &&
+                    <UserTable columnNames={columns} rows={rows}/>
+                }
+
+                {!loading && users.length == 0 &&
+                    <div className={styles.noUsers}>
+                        <h2>Sie haben keine Mitarbeiter zu verwalten</h2>
+                        <Button label={"Zurück zum Dashboard"} onClick={() => router.push("/dashboard")}/>
+                    </div>
+                }
             </div>
         </>
     )
