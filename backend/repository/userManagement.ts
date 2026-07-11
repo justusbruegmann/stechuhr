@@ -53,6 +53,17 @@ export async function getUsers(limit: number, offset: number) {
     return result;
 }
 
+export async function getUserById(userId: number) {
+    return db.select({
+        id: users.id,
+        role: users.role,
+        username: users.username,
+        managerid: users.managerid,
+        workload: users.workload,
+        holidays: users.holidays,
+    }).from(users).where(eq(users.id, userId));
+}
+
 export async function deleteUser(userId: number) {
     const result = await db.delete(users).where(eq(users.id, userId))
     return result;

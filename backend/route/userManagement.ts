@@ -6,7 +6,7 @@ import {
     usersGet,
     userDelete,
     managerGet,
-    managerUpdate, roleUpdate, managerGetOwnUsers
+    managerUpdate, roleUpdate, managerGetOwnUsers, usersGetById
 } from "../service/userManagement";
 import {authMiddleware} from "../middleware/auth";
 
@@ -57,6 +57,25 @@ router.get('/users/',authMiddleware("admin"), async (req, res) => {
         const offset = Number(req.query.offset) || 0;
         const users = await usersGet(limit, offset);
         return res.status(200).send(users);
+    } catch (e) {
+        res.status(500).send("internal error");
+    }
+})
+
+router.get('/users/:id',authMiddleware("user"), async (req, res) => {
+    const userId = Number(req.params.id)
+
+    try {
+        const user = await usersGetById(userId);
+        if (!user) {
+            return res.status(404).send("user not found");
+        }
+
+        if (user.id !== res.locals.userId || user.managerid !== res.locals.userId) {
+            return res.status(401).send("unauthorized");
+        }
+
+        return res.status(200).send(user);
     } catch (e) {
         res.status(500).send("internal error");
     }

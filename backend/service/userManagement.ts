@@ -1,12 +1,22 @@
 import {
-    createUser, changeOTP, getHash, getUsers, deleteUser, getManagers, getManagerById, getUserFromUserName,
-    updateRole, updateManager, getUsersForManager
+    changeOTP,
+    createUser,
+    deleteUser,
+    getHash,
+    getManagerById,
+    getManagers,
+    getUserById,
+    getUserFromUserName,
+    getUsers,
+    getUsersForManager,
+    updateManager,
+    updateRole
 } from "../repository/userManagement";
 import {deleteSessionsOfUser} from "../repository/auth";
 import {generateRandomString, isValidPassword} from "../utils/utils";
 import {verifyPassword} from "../utils/hashing";
 
-export async function userCreation(username: string, role: string, managerId: number, workload: number,holidays: number) {
+export async function userCreation(username: string, role: string, managerId: number, workload: number, holidays: number) {
     try {
         //check if managerId is a manager
         const manager = await getManagerById(managerId);
@@ -69,6 +79,18 @@ export async function usersGet(limit: number, offset: number) {
     try {
         const users = await getUsers(limit, offset);
         return users;
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
+}
+
+export async function usersGetById(userId: number) {
+    try {
+        const result = await getUserById(userId);
+
+        if (!result || !Array.isArray(result) || !(result.length == 0)) return null
+        else return result[0]
     } catch (e) {
         console.error(e);
         throw e;

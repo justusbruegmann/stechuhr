@@ -129,7 +129,7 @@ export async function updateManager(userId: number, managerId: number, tokenOfAd
 
 
 export async function getUserById(userId: number):Promise<User> {
-    const url = `${BASE_URL}/users?id=${userId}`;
+    const url = `${BASE_URL}/users/${userId}`;
     return await sendRequest("GET", url);
 }
 
