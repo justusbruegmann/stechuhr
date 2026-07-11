@@ -44,7 +44,7 @@ export default function Header({name}: Headerprops) {
 
     const [managerViewButtonText, setManagerViewButtonText] = useState("Manager-Ansicht")
     useEffect(() => {
-        setManagerViewButtonText(currentPath === MANAGER_VIEW ? "Zurück zum Dashboard" : "Manager-Ansicht")
+        setManagerViewButtonText(currentPath === MANAGER_VIEW ? "Dashboard" : "Manager-Ansicht")
     }, [currentPath]);
 
     const toggleManagerView = () => {
@@ -59,24 +59,31 @@ export default function Header({name}: Headerprops) {
     return (
         <>
             <div className={styles['background']}>
-                <Button label={"Logout"} type={"primary"} height={2} width={6}
-                        onClick={() => logout()}/>
-                <Image
-                    src={`/person_icon.svg`}
-                    alt="person_icon"
-                    width={32}
-                    height={32}
-                    style={{filter: 'invert()', opacity: 1}}
-                    priority
-                />
-                {currentPath !== LOGIN && userRole === "admin" &&
-                    <Button label={name === "admin" ? "Dashboard" : "Admin-Ansicht"} type={"primary"} height={2}
-                            width={6} onClick={() => adminView()}/>
-                }
-                {currentPath !== LOGIN && userRole === "manager" &&
-                <Button label={managerViewButtonText} type={"primary"} height={2}
-                        width={6} style={{marginRight: 12}} onClick={() => toggleManagerView()}/>
-                }
+
+                <div className={styles['navigation']}>
+                    {currentPath !== LOGIN && userRole === "admin" &&
+                        <Button label={name === "admin" ? "Dashboard" : "Admin-Ansicht"} type={"primary"} height={2}
+                                width={6} onClick={() => adminView()}/>
+                    }
+                    {currentPath !== LOGIN && userRole === "manager" &&
+                        <Button label={managerViewButtonText} type={"primary"} height={2}
+                                width={6} style={{marginRight: 12}} onClick={() => toggleManagerView()}/>
+                    }
+                </div>
+
+                <div className={styles['login-indicator']}>
+                    <Image
+                        src={`/person_icon.svg`}
+                        alt="person_icon"
+                        width={32}
+                        height={32}
+                        style={{filter: 'invert()', opacity: 1}}
+                        priority
+                    />
+
+                    <Button label={"Logout"} type={"primary"} height={2} width={6}
+                            onClick={() => logout()}/>
+                </div>
             </div>
             <hr className={styles["hr-color"]}></hr>
         </>
