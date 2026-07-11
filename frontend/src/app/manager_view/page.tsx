@@ -12,6 +12,7 @@ import UserTable from "@/components/managerView/userTable";
 import Button from "@/components/layout/Button";
 import {useRouter} from "next/navigation";
 import {capitalize} from "@/utils/StringUtils";
+import EditUserModal from "@/components/managerView/editUserModal";
 
 
 type UserWithSummaryEntries = User & {
@@ -66,6 +67,13 @@ export default function ManagerView() {
     const currentYear = new Date().getFullYear();
 
 
+    /**
+     * Editing users
+     */
+    function editUser(userId: number) {
+        const {close} = showModal("popup", <EditUserModal userId={userId}/>);
+    }
+
 
     const columns = ["Name", `Urlaub (${currentYear})`, `Krankheitstage (${currentYear})`, "Arbeitszeit diese Woche", ""];
 
@@ -79,10 +87,10 @@ export default function ManagerView() {
                     <td><b>{(user.summaryEntries.hoursWorkedThisWeek || "?")}</b> / <b>{user.workload}</b> h</td>
                     <td>
                         <div className={styles.buttonContainer}>
-                        <Button label={"Bearbeiten"} type={"primary"}
-                                onClick={() => alert(`Mitarbeiter ${user.username} wird gefeuert!`)}/>
-                        <Button label={"Anträge"} type={"accent"}
-                                onClick={() => alert(`Mitarbeiter ${user.username} wird gefeuert!`)}/>
+                            <Button label={"Bearbeiten"} type={"primary"}
+                                    onClick={() => editUser(user.id)}/>
+                            <Button label={"Anträge"} type={"accent"}
+                                    onClick={() => alert(`Mitarbeiter ${user.username} wird gefeuert!`)}/>
                         </div>
                     </td>
                 </tr>);
