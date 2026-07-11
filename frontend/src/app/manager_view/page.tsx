@@ -7,23 +7,37 @@ import {useModal} from "@/contexts/ModalContext";
 import styles from './manager_view.module.css';
 
 
-import {createUser, deleteUser, getUsersForManager} from "@/scripts/userManagement";
+import {getUsersForManager} from "@/scripts/userManagement";
 import UserTable from "@/components/managerView/userTable";
 import Button from "@/components/layout/Button";
 import {useRouter} from "next/navigation";
+import {capitalize} from "@/utils/StringUtils";
+
+
+type UserWithSummaryEntries = User & {
+    summaryEntries: {
+        vacationDaysThisYear: number | null;
+        sickDaysThisYear: number | null;
+        hoursWorkedThisWeek: number | null;
+    };
+};
 
 
 export default function ManagerView() {
     const router = useRouter();
 
-    const {showModal, updateModalContent} = useModal();
-    const [users, setUsers] = React.useState<User[]>([]);
+
+    /**
+     * Loading and storing users
+     */
+    const {showModal} = useModal();
+    const [users, setUsers] = React.useState<Record<number, UserWithSummaryEntries>>({});
     const [loading, setLoading] = React.useState(false);
 
     useEffect(() => {
         setLoading(true);
         const {close} = showModal("spinningLoader")
-        loadUsers().then(r => {
+        loadUsers().then(_ => {
             close();
             setLoading(false);
         });
@@ -42,74 +56,44 @@ export default function ManagerView() {
 
         if (!Array.isArray(response)) return;
 
-        setUsers(response);
-    }
+        const extendedUser: Record<number, UserWithSummaryEntries> = response.map((user: User) => ({
 
-    const handleAddUser = async () => {
-        const token = localStorage.getItem("token");
-        const userid = localStorage.getItem("userid");
-        if (!token || !userid) {
-            return;
-        }
-        const username = (document.getElementById("newUsername") as HTMLInputElement).value;
-        const role = (document.getElementById("selectRole") as HTMLSelectElement).value;
-        const managerId = (document.getElementById("selectManager") as HTMLSelectElement).value;
-        const workload = (document.getElementById("workloadInput") as HTMLSelectElement).value;
-        const holidays = (document.getElementById("holidaysInput") as HTMLSelectElement).value;
-
-        if (!username || !role || !managerId) {
-            alert("Bitte alle Felder ausfüllen");
-            return;
-        }
-        try {
-            const result = await createUser(
-                username,
-                Number(managerId),
-                role,
-                Number(workload),
-                Number(holidays),
-                token,
-                Number(userid)
-            );
-
-            if (typeof result === "string") {
-                await loadUsers();
-                return result;
+            ...user,
+            summaryEntries: {
+                vacationDaysThisYear: null,
+                sickDaysThisYear: null,
+                hoursWorkedThisWeek: null
             }
-        } catch (e) {
-            alert(e)
-        }
-    };
+        }));
 
-    async function deleteUserFrontend(id: number) {
-        const token = localStorage.getItem("token");
-        const userid = localStorage.getItem("userid");
-        if (!token || !userid) {
-            return;
-        }
-        const result = await deleteUser(token, Number(userid), Number(id));
-        await loadUsers();
-        if (result !== 200) {
-            alert("There was an error while deleting user");
-        }
+        setUsers(extendedUser);
     }
 
 
-    const columns = ["Name", "Rolle", "Urlaub", "Arbeitszeit", "Krankheitstage", ""];
+    /**
+     * Loading summary entries for users
+     */
 
-    const rows = users.map((user) => (
-        <tr key={user.id}>
-            <td>{user.username}</td>
-            <td>{user.role}</td>
-            <td>{user.holidays}</td>
-            <td>{user.workload}</td>
-            <td>0</td>
-            <td>
-                <Button label={"KÜNDIGUNG!"} type={"error"}
-                        onClick={() => alert(`Mitarbeiter ${user.username} wird gefeuert!`)}/>
-            </td>
-        </tr>
-    ))
+
+
+
+    const columns = ["Name", "Urlaub dieses Jahr", "Krankheitstage dieses Jahr", "Arbeitszeit diese Woche", ""];
+
+    const rows = Object.keys(users).map((id) => {
+            const user = users[Number(id)];
+            return (
+                <tr key={user.id}>
+                    <td><b>{capitalize(user.username)}</b></td>
+                    <td><b>{(user.summaryEntries.vacationDaysThisYear || "?")}</b> / <b>{user.holidays}</b> Tage</td>
+                    <td><b>{user.summaryEntries.sickDaysThisYear || "?"}</b></td>
+                    <td><b>{(user.summaryEntries.hoursWorkedThisWeek || "?")}</b> / <b>{user.workload}</b> h</td>
+                    <td>
+                        <Button label={"KÜNDIGUNG!"} type={"error"}
+                                onClick={() => alert(`Mitarbeiter ${user.username} wird gefeuert!`)}/>
+                    </td>
+                </tr>);
+        }
+    );
 
 
     return (
@@ -117,11 +101,11 @@ export default function ManagerView() {
             <Header/>
 
             <div className={styles.tableContainer}>
-                {!loading && users.length > 0 &&
+                {!loading && Object.keys(users).length > 0 &&
                     <UserTable columnNames={columns} rows={rows}/>
                 }
 
-                {!loading && users.length == 0 &&
+                {!loading && Object.keys(users).length == 0 &&
                     <div className={styles.noUsers}>
                         <h2>Sie haben keine Mitarbeiter zu verwalten</h2>
                         <Button label={"Zurück zum Dashboard"} onClick={() => router.push("/dashboard")}/>
