@@ -45,8 +45,10 @@
 .table th:last-child,
 .table td:last-child {
     text-align: right;
-    width: 140px;
-    padding-right: 20px;
+
+    /*Hacky workaround so that the table cell scales with the actual size of the buttons*/
+    width: 1%;
+    white-space: nowrap;
 }
 
 .table td button {

@@ -73,11 +73,11 @@ export default function ManagerView() {
     /**
      * Loading summary entries for users
      */
+    const currentYear = new Date().getFullYear();
 
 
 
-
-    const columns = ["Name", "Urlaub dieses Jahr", "Krankheitstage dieses Jahr", "Arbeitszeit diese Woche", ""];
+    const columns = ["Name", `Urlaub (${currentYear})`, `Krankheitstage (${currentYear})`, "Arbeitszeit diese Woche", ""];
 
     const rows = Object.keys(users).map((id) => {
             const user = users[Number(id)];
@@ -88,8 +88,12 @@ export default function ManagerView() {
                     <td><b>{user.summaryEntries.sickDaysThisYear || "?"}</b></td>
                     <td><b>{(user.summaryEntries.hoursWorkedThisWeek || "?")}</b> / <b>{user.workload}</b> h</td>
                     <td>
-                        <Button label={"KÜNDIGUNG!"} type={"error"}
+                        <div className={styles.buttonContainer}>
+                        <Button label={"Bearbeiten"} type={"primary"}
                                 onClick={() => alert(`Mitarbeiter ${user.username} wird gefeuert!`)}/>
+                        <Button label={"Anträge"} type={"accent"}
+                                onClick={() => alert(`Mitarbeiter ${user.username} wird gefeuert!`)}/>
+                        </div>
                     </td>
                 </tr>);
         }
