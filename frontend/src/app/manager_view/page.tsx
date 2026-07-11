@@ -44,20 +44,10 @@ export default function ManagerView() {
     }, []);
 
     async function loadUsers() {
-        const token = localStorage.getItem("token");
-        const userid = localStorage.getItem("userid");
-        if (!token || !userid) {
-            return;
-        }
-        const response: User[] = await getUsersForManager(token, Number(userid), Number(userid));
-
-        console.log("Response");
-        console.log(response);
-
+        const response: User[] = await getUsersForManager();
         if (!Array.isArray(response)) return;
 
         const extendedUser: Record<number, UserWithSummaryEntries> = response.map((user: User) => ({
-
             ...user,
             summaryEntries: {
                 vacationDaysThisYear: null,

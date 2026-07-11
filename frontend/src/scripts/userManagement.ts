@@ -1,3 +1,6 @@
+import sendRequest from "@/utils/requestWrapper";
+import User from "@/types/User";
+
 const BASE_URL: string | undefined = process.env.NEXT_PUBLIC_BACKEND_URL;
 if (!BASE_URL) {
     throw new Error("no BASE_URL provided");
@@ -31,25 +34,6 @@ export async function createUser(username: string, managerId: number, role: stri
 
 export async function getUsers(token: string, userId: number) {
     const url = `${BASE_URL}/users?limit=100`;
-    const headers = {
-        "content-type": "application/json",
-        "Authorization": `${token}`,
-        "userid": `${userId}`
-    };
-    const response = await fetch(url, {method: "get", headers: headers})
-    if (response.status === 401) {
-        return 401;
-    }
-    if (response.status === 400) {
-        return 400;
-    }
-    if (response.status === 200) {
-        return await response.json();
-    }
-}
-
-export async function getUsersForManager(token: string, userId: number, managerId: number) {
-    const url = `${BASE_URL}/users/managers/users`;
     const headers = {
         "content-type": "application/json",
         "Authorization": `${token}`,
@@ -141,4 +125,15 @@ export async function updateManager(userId: number, managerId: number, tokenOfAd
     } else {
         return 400
     }
+}
+
+
+export async function getUserById(userId: number):Promise<User> {
+    const url = `${BASE_URL}/users?id=${userId}`;
+    return await sendRequest("GET", url);
+}
+
+export async function getUsersForManager(): Promise<User[]> {
+    const url = `${BASE_URL}/users/managers/users`;
+    return await sendRequest("GET", url);
 }
