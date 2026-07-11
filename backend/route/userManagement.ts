@@ -53,9 +53,7 @@ router.put('/users/otp/:id', async (req, res) => {
 router.get('/users/',authMiddleware("admin"), async (req, res) => {
 
     try {
-        const limit = Number(req.query.limit) || 25;
-        const offset = Number(req.query.offset) || 0;
-        const users = await usersGet(limit, offset);
+        const users = await usersGet();
         return res.status(200).send(users);
     } catch (e) {
         res.status(500).send("internal error");
