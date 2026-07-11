@@ -42,9 +42,9 @@ export default function Header({name}: Headerprops) {
     }
 
 
-    const [managerViewButtonText, setManagerViewButtonText] = useState("Manager View")
+    const [managerViewButtonText, setManagerViewButtonText] = useState("Manager-Ansicht")
     useEffect(() => {
-        setManagerViewButtonText(currentPath === MANAGER_VIEW ? "Back to Dashboard" : "Manager View")
+        setManagerViewButtonText(currentPath === MANAGER_VIEW ? "Zurück zum Dashboard" : "Manager-Ansicht")
     }, [currentPath]);
 
     const toggleManagerView = () => {
@@ -70,7 +70,7 @@ export default function Header({name}: Headerprops) {
                     priority
                 />
                 {currentPath !== LOGIN && userRole === "admin" &&
-                    <Button label={name === "admin" ? "Dashboard" : "Admin ansicht"} type={"primary"} height={2}
+                    <Button label={name === "admin" ? "Dashboard" : "Admin-Ansicht"} type={"primary"} height={2}
                             width={6} onClick={() => adminView()}/>
                 }
                 {currentPath !== LOGIN && userRole === "manager" &&

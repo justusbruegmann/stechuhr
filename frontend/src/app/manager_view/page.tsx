@@ -85,7 +85,7 @@ export default function ManagerView() {
     }
 
 
-    const columns = ["Name", "Role", "Vacation Days", "Workload", "Sick Leave", ""];
+    const columns = ["Name", "Rolle", "Urlaub", "Arbeitszeit", "Krankheitstage", ""];
 
     const rows = users.map((user) => (
         <tr key={user.id}>
@@ -95,7 +95,7 @@ export default function ManagerView() {
             <td>{user.workload}</td>
             <td>0</td>
             <td>
-                <Button label={"Fire"} type={"error"} onClick={() => alert(`Firing ${user.username}!`)}/>
+                <Button label={"KÜNDIGUNG!"} type={"error"} onClick={() => alert(`Mitarbeiter ${user.username} wird gefeuert!`)}/>
             </td>
         </tr>
     ))
