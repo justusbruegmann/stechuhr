@@ -1,18 +1,21 @@
-import express, {NextFunction, Request, Response, Router} from "express";
+import {NextFunction, Request, Response, Router} from "express";
 import {
-    userCreation,
-    OTPChange,
     authUser,
-    usersGet,
-    userDelete,
     managerGet,
-    managerUpdate, roleUpdate, managerGetOwnUsers, usersGetById
+    managerGetOwnUsers,
+    managerUpdate,
+    OTPChange,
+    roleUpdate,
+    userCreation,
+    userDelete,
+    usersGet,
+    usersGetById
 } from "../service/userManagement";
 import {authMiddleware} from "../middleware/auth";
 
 const router = Router();
 
-router.post('/users/',authMiddleware("admin"),validateBody, async (req, res) => {
+router.post('/users/', authMiddleware("admin"), validateBody, async (req, res) => {
 
     try {
         const body: any = req.body;
@@ -50,7 +53,7 @@ router.put('/users/otp/:id', async (req, res) => {
     }
 })
 
-router.get('/users/',authMiddleware("admin"), async (req, res) => {
+router.get('/users/', authMiddleware("admin"), async (req, res) => {
 
     try {
         const users = await usersGet();
@@ -60,26 +63,28 @@ router.get('/users/',authMiddleware("admin"), async (req, res) => {
     }
 })
 
-router.get('/users/:id',authMiddleware("user"), async (req, res) => {
+router.get('/users/:id', authMiddleware("user", true), async (req, res) => {
     const userId = Number(req.params.id)
 
     try {
         const user = await usersGetById(userId);
+
         if (!user) {
             return res.status(404).send("user not found");
         }
 
-        if (user.id !== res.locals.userId || user.managerid !== res.locals.userId) {
+        if (user.id == res.locals.user.id || user.managerid == res.locals.user.id) {
+            return res.status(200).send(user);
+        } else {
             return res.status(401).send("unauthorized");
         }
 
-        return res.status(200).send(user);
     } catch (e) {
         res.status(500).send("internal error");
     }
 })
 
-router.delete('/users/:id',authMiddleware("admin"), async (req, res) => {
+router.delete('/users/:id', authMiddleware("admin"), async (req, res) => {
     try {
         const deleteId = Number(req.params.id)
         const result = await userDelete(deleteId);
@@ -102,16 +107,16 @@ router.get('/users/managers/users', authMiddleware("manager"), async (req, res) 
     return res.status(200).send(result);
 })
 
-router.put('/users/:id/manager',authMiddleware("admin"), async (req, res) => {
+router.put('/users/:id/manager', authMiddleware("admin"), async (req, res) => {
     const userId: number = Number(req.params.id);
-     if (!Number.isInteger(userId) || userId <= 0) {
-      return res.status(400).send("invalid user id");
-  }
-    const managerid:number= Number(req.body.managerid);
-     if (!Number.isInteger(managerid) || managerid <= 0) {
-      return res.status(400).send("invalid managerid");
-  }
-    const update = await managerUpdate(userId,managerid)
+    if (!Number.isInteger(userId) || userId <= 0) {
+        return res.status(400).send("invalid user id");
+    }
+    const managerid: number = Number(req.body.managerid);
+    if (!Number.isInteger(managerid) || managerid <= 0) {
+        return res.status(400).send("invalid managerid");
+    }
+    const update = await managerUpdate(userId, managerid)
     if (update === "manager does not exist") {
         return res.status(400).send("manager does not exist");
     }
@@ -121,14 +126,14 @@ router.put('/users/:id/manager',authMiddleware("admin"), async (req, res) => {
     return res.sendStatus(204);
 })
 
-router.put('/users/:id/role',authMiddleware("admin"), async (req, res) => {
+router.put('/users/:id/role', authMiddleware("admin"), async (req, res) => {
 
     const userId: number = Number(req.params.id);
-     if (!Number.isInteger(userId) || userId <= 0) {
-      return res.status(400).send("invalid user id");
-  }
+    if (!Number.isInteger(userId) || userId <= 0) {
+        return res.status(400).send("invalid user id");
+    }
     const role: string = req.body.role;
-    const update = await roleUpdate(userId,role)
+    const update = await roleUpdate(userId, role)
     if (update === "invalid role") {
         return res.status(400).send("invalid role");
     }
@@ -141,32 +146,32 @@ function validateBody(req: Request, res: Response, next: NextFunction) {
         return res.status(400).send("invalid body");
     }
     if (!body.username || typeof body.username !== "string" || body.username.trim() === "") {
-        return res.status(400).json({ error: "Username is required" });
+        return res.status(400).json({error: "Username is required"});
     }
     if (body.username.length > 64) {
-        return res.status(400).json({ error: "Username must be 64 characters or less" });
+        return res.status(400).json({error: "Username must be 64 characters or less"});
     }
 
     const validRoles = ["admin", "manager", "user"];
     if (!body.role || !validRoles.includes(body.role)) {
-        return res.status(400).json({ error: "Invalid role" });
+        return res.status(400).json({error: "Invalid role"});
     }
 
     if (body.managerId !== undefined && body.managerId !== null) {
         if (!Number.isInteger(body.managerId) || body.managerId < 1) {
-            return res.status(400).json({ error: "managerId must be a positive integer" });
+            return res.status(400).json({error: "managerId must be a positive integer"});
         }
     }
 
     if (body.workload !== undefined) {
         if (!Number.isInteger(body.workload) || body.workload < 0 || body.workload > 80) {
-            return res.status(400).json({ error: "Workload must be an integer between 0 and 80" });
+            return res.status(400).json({error: "Workload must be an integer between 0 and 80"});
         }
     }
 
     if (body.holidays !== undefined) {
         if (!Number.isInteger(body.holidays) || body.holidays < 0 || body.holidays > 365) {
-            return res.status(400).json({ error: "Holidays must be an integer between 0 and 365" });
+            return res.status(400).json({error: "Holidays must be an integer between 0 and 365"});
         }
     }
     next()

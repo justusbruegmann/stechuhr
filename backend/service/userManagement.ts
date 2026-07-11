@@ -89,7 +89,7 @@ export async function usersGetById(userId: number) {
     try {
         const result = await getUserById(userId);
 
-        if (!result || !Array.isArray(result) || !(result.length == 0)) return null
+        if (!result || !Array.isArray(result) || result.length == 0) return null
         else return result[0]
     } catch (e) {
         console.error(e);
