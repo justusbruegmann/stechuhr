@@ -104,8 +104,9 @@ export default function ManagerView() {
     return (
         <>
             <Header/>
-
-            <UserTable columnNames={columns} rows={rows}/>
+            <div className="tableContainer">
+                <UserTable columnNames={columns} rows={rows}/>
+            </div>
         </>
     )
 

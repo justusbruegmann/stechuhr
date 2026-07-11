@@ -1,22 +1,21 @@
 'use client';
 import * as React from 'react';
-
+import styles from './userTable.module.css';
 
 export type UserTableProps = {
-    columnNames?: String[];
+    columnNames?: string[];
     rows?: React.ReactNode[];
 }
 
 export default function UserTable({columnNames, rows}: UserTableProps) {
-
     return (
-        <>
-            <table>
+        <div className={styles.container}>
+            <table className={styles.table}>
                 <thead>
                 <tr>
                     {columnNames &&
                         columnNames.map((item, i) => (
-                            <th id={i.toString()}>{item}</th>
+                            <th key={i}>{item}</th>
                         ))
                     }
                 </tr>
@@ -25,6 +24,6 @@ export default function UserTable({columnNames, rows}: UserTableProps) {
                 {rows}
                 </tbody>
             </table>
-        </>
+        </div>
     );
 }
