@@ -65,9 +65,9 @@ export async function authUser(userId: number, password: string) {
     }
 }
 
-export async function usersGet(limit: number, offset: number) {
+export async function usersGet() {
     try {
-        const users = await getUsers(limit, offset);
+        const users = await getUsers();
         return users;
     } catch (e) {
         console.error(e);

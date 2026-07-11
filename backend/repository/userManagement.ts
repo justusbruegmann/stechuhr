@@ -40,7 +40,7 @@ export async function getHash(userId: number) {
 
 }
 
-export async function getUsers(limit: number, offset: number) {
+export async function getUsers() {
     const result = await db.select({
         id: users.id,
         role: users.role,
@@ -49,7 +49,7 @@ export async function getUsers(limit: number, offset: number) {
         workload: users.workload,
         holidays: users.holidays,
 
-    }).from(users).limit(limit).offset(offset * limit)
+    }).from(users)
     return result;
 }
 
