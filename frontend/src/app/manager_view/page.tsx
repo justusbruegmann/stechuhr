@@ -33,22 +33,30 @@ export default function ManagerView() {
      */
     const {showModal} = useModal();
     const [users, setUsers] = React.useState<Record<number, UserWithSummaryEntries>>({});
-    const [loading, setLoading] = React.useState(false);
+    const [loading, setLoading] = React.useState(true);
 
     useEffect(() => {
         setLoading(true);
         const {close} = showModal("spinningLoader")
-        loadUsers().then(_ => {
-            close();
-            setLoading(false);
-        });
+
+        loadUsers()
+            .then(_ => {
+                close();
+                setLoading(false);
+            })
+            .catch(error => {
+                setUsers({});
+                close();
+                setLoading(false);
+            });
     }, []);
 
     async function loadUsers() {
         const response: User[] = await getUsersForManager();
+
         if (!Array.isArray(response)) return;
 
-        const extendedUser: Record<number, UserWithSummaryEntries> = response.map((user: User) => ({
+        const extendedUser: UserWithSummaryEntries[] = response.map((user: User) => ({
             ...user,
             summaryEntries: {
                 vacationDaysThisYear: null,
@@ -57,7 +65,8 @@ export default function ManagerView() {
             }
         }));
 
-        setUsers(extendedUser);
+        const usersRecord = Object.fromEntries(extendedUser.map(user => [user.id, user]));
+        setUsers(usersRecord);
     }
 
 
@@ -71,7 +80,7 @@ export default function ManagerView() {
      * Editing users
      */
     function editUser(userId: number) {
-        const {close} = showModal("popup", <EditUserModal userId={userId}/>);
+        const {close} = showModal("popup", <EditUserModal userId={userId} user={users[userId]}/>);
     }
 
 
