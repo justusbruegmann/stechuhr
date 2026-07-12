@@ -138,9 +138,15 @@ export default function ManagerView() {
             return (
                 <tr key={user.id}>
                     <td><b>{capitalize(user.username)}</b></td>
-                    <td><b>{(user.summaryEntries.vacationDaysThisYear || "?")}</b> / <b>{user.holidays}</b> Tage</td>
-                    <td><b>{user.summaryEntries.sickDaysThisYear || "?"}</b></td>
-                    <td><b>{(user.summaryEntries.hoursWorkedThisWeek || "?")}</b> / <b>{user.workload}</b> h</td>
+                    <td className={(user.summaryEntries.vacationDaysThisYear || Number.MAX_VALUE) > user.holidays ? styles.warning : ""}>
+                        <b>{(user.summaryEntries.vacationDaysThisYear || "?")}</b> / <b>{user.holidays}</b> Tage
+                    </td>
+                    <td>
+                        <b>{user.summaryEntries.sickDaysThisYear || "?"}</b>
+                    </td>
+                    <td className={(user.summaryEntries.hoursWorkedThisWeek ?? Number.MAX_VALUE) > user.workload ? styles.warning : ""}>
+                        <b>{(user.summaryEntries.hoursWorkedThisWeek || "?")}</b> / <b>{user.workload}</b> h
+                    </td>
                     <td>
                         <div className={styles.buttonContainer}>
                             <Button label={"Bearbeiten"} type={"primary"}
