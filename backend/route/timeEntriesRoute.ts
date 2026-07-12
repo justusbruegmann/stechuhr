@@ -59,13 +59,13 @@ router.patch('/timeEntries/:id', authMiddleware("user"), async (req, res) => {
         const userid = res.locals.user.id;
         const patchEndTime = await setEndTimeService(timeEntryId, new Date(reqBody.endtime), userid);
         if(patchEndTime == "time entry not found"){
-            return res.status(404).json({"error": patchEndTime});
+            return res.status(404).json(patchEndTime);
         }
         if(patchEndTime == "end time is already set" || patchEndTime == "end time is before start time"){
-            return res.status(400).json({"error": patchEndTime});
+            return res.status(400).json(patchEndTime);
         }
         if(patchEndTime == "not authorized to modify this entry"){
-            return res.status(403).json({"error": patchEndTime});
+            return res.status(403).json(patchEndTime);
         }
         return res.status(200).json(patchEndTime);
     }
@@ -85,7 +85,7 @@ router.get('/timeEntries/', authMiddleware("user"), async (req, res) => {
         const start = startDate ? new Date(startDate as string) : undefined;
         const end = endDate ? new Date(endDate as string) : undefined;
         const timeEntries = await getTimeEntriesService(userid, type as "work"|"holiday"|"sick", start, end);
-        return res.status(200).send(timeEntries);
+        return res.status(200).json(timeEntries);
     }
     catch(error){
         res.status(500).send("internal error");
@@ -98,7 +98,7 @@ router.get('/timeEntries/last', authMiddleware("user"), async (req, res) => {
     try{
         const userid = res.locals.user.id;
         const timeEntry = await getLastTimeEntryService(userid);
-        return res.status(200).send(timeEntry);
+        return res.status(200).json(timeEntry);
     }
     catch(error){
         res.status(500).send("internal error");
@@ -109,8 +109,15 @@ router.get('/timeEntries/last', authMiddleware("user"), async (req, res) => {
 router.get('/timeEntries/:id', authMiddleware("user"), async (req, res) => {
     try{
         const timeEntryId = Number(req.params.id);
-        const singleTimeEntry = await getSingleTimeEntryService(timeEntryId);
-        return res.status(200).send(singleTimeEntry);
+        const userid = res.locals.user.id;
+        const singleTimeEntry = await getSingleTimeEntryService(timeEntryId, userid);
+        if(singleTimeEntry=="no time entry found"){
+            return res.status(404).json(singleTimeEntry);
+        }
+        if(singleTimeEntry == "not authorized to view this entry"){
+            return res.status(403).json(singleTimeEntry);
+        }
+        return res.status(200).json(singleTimeEntry);
     }
     catch(error){
         res.status(500).send("internal error");

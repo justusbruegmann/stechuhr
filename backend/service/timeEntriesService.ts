@@ -65,9 +65,15 @@ export async function getTimeEntriesService(userid: number, type: "work" | "holi
     }
 }
 
-export async function getSingleTimeEntryService(timeEntryId: number){
+export async function getSingleTimeEntryService(timeEntryId: number, userid: number){
     try{
-        const singleTimeEntry = await getSingleTimeEntry(timeEntryId);
+        const singleTimeEntry = (await getSingleTimeEntry(timeEntryId))[0];
+        if(!singleTimeEntry){
+            return "no time entry found";
+        }
+        if(singleTimeEntry.userId != userid){
+            return "not authorized to view this entry";
+        }
         return singleTimeEntry;
     }
     catch(e){
