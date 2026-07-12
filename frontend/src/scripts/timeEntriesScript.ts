@@ -3,7 +3,7 @@ if (!BASE_URL) {
     throw new Error("no BASE_URL provided");
 }
 
-export async function createTimeEntry(token: string,userid: number, starttime: Date, type: string, endtime?:Date){
+export async function createTimeEntry(token: string,userid: number, startTime: Date, type: "work" | "holiday" | "sick", endTime?:Date){
     const url = `${BASE_URL}/timeEntries/`;
     const headers = {
         "content-type": "application/json",
@@ -11,8 +11,8 @@ export async function createTimeEntry(token: string,userid: number, starttime: D
         "userid": `${userid}`
     };
     const body = {
-        "starttime": starttime,
-        "endtime": endtime,
+        "startTime": startTime,
+        "endTime": endTime,
         "type": type
     };
     const response = await fetch(url, {method:"POST", body: JSON.stringify(body), headers: headers});

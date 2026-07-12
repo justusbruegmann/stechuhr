@@ -3,7 +3,6 @@ import { time_entry_type } from '../drizzle/schema';
 import Holidays from 'date-holidays';
 
 export async function createTimeEntryService(userid: number, starttime: Date, endtime: Date | undefined, type: (typeof time_entry_type.enumValues)[number]){
-    //const currentDate = new Date();
     const holidays = new Holidays('DE', 'BW');
     try{
         const lastTimeEntry = (await getLastTimeEntry(userid))[0];

@@ -11,8 +11,23 @@ router.post('/timeEntries/', authMiddleware("user"), async (req, res) => {
         if(!reqBody){
             return res.status(400).send("bad request");
         }
+        const validTypes = ["work", "holiday", "sick"];
+        if(!reqBody.type || !validTypes.includes(reqBody.type)){
+            return res.status(400).send("type is required and has to be work, holiday or sick");
+        }
+        if(!reqBody.startTime){
+            return res.status(400).send("starttime is needed");
+        }
+        if(isNaN(new Date(reqBody.startTime).getTime())){
+            return res.status(400).send("starttime is not valid");
+        }
+        if(reqBody.endTime){
+            if(isNaN(new Date(reqBody.endTime).getTime())){
+            return res.status(400).send("endtime is not valid");
+        }
+        }
         const userid = res.locals.user.id;
-        const createdTimeEntry = await createTimeEntryService(userid, new Date(reqBody.starttime),  reqBody.endtime ? new Date(reqBody.endtime) : undefined, reqBody.type);
+        const createdTimeEntry = await createTimeEntryService(userid, new Date(reqBody.startTime),  reqBody.endTime ? new Date(reqBody.endTime) : undefined, reqBody.type);
         if(
             createdTimeEntry == "not able to work on weekends"|| 
             createdTimeEntry == "out of working time" || 
