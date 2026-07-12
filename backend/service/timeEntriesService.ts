@@ -17,7 +17,10 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
         }
         if(lastTimeEntry && lastTimeEntry.endTime == null){ //überprüfen ob letzter Eintrag für den Benutzer noch kein Endzeitpunkt hat
             return "last time entry has no end time";     
-        }         
+        }       
+        if(endtime && endtime < starttime){
+            return "end time is before startime";
+        }
         const timeEntry = await createTimeEntry(userid, starttime, type, endtime);
         return timeEntry;
     }
@@ -27,11 +30,14 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
     }
 }
 
-export async function setEndTimeService(timeEntryId: number, newEndTime: Date){
+export async function setEndTimeService(timeEntryId: number, newEndTime: Date, userid: number){
     try{
         const timeEntry = (await getSingleTimeEntry(timeEntryId))[0];
         if(!timeEntry){
             return "time entry not found";
+        }
+        if(timeEntry.userId !== userid){
+            return "not authorized to modify this entry";
         }
         if(timeEntry.endTime != null){//überprüfen ob es nicht schon einen endzeitpunkt gibt
             return "end time is already set";

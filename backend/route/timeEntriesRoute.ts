@@ -32,7 +32,8 @@ router.post('/timeEntries/', authMiddleware("user"), async (req, res) => {
             createdTimeEntry == "not able to work on weekends"|| 
             createdTimeEntry == "out of working time" || 
             createdTimeEntry == "last time entry has no end time" ||
-            createdTimeEntry == "not able to work on holidays"
+            createdTimeEntry == "not able to work on holidays" ||
+            createdTimeEntry == "end time is before startime"
         ){
             return res.status(400).json({"error": createdTimeEntry});
         }
@@ -51,13 +52,20 @@ router.patch('/timeEntries/:id', authMiddleware("user"), async (req, res) => {
         if(!reqBody?.endtime){
             return res.status(400).send("bad request");
         }
+        if(isNaN(new Date(reqBody.endtime).getTime())){
+            return res.status(400).send("endtime is not valid");
+        }
         const timeEntryId = Number(req.params.id);
-        const patchEndTime = await setEndTimeService(timeEntryId, new Date(reqBody.endtime));
+        const userid = res.locals.user.id;
+        const patchEndTime = await setEndTimeService(timeEntryId, new Date(reqBody.endtime), userid);
         if(patchEndTime == "time entry not found"){
             return res.status(404).json({"error": patchEndTime});
         }
         if(patchEndTime == "end time is already set" || patchEndTime == "end time is before start time"){
             return res.status(400).json({"error": patchEndTime});
+        }
+        if(patchEndTime == "not authorized to modify this entry"){
+            return res.status(403).json({"error": patchEndTime});
         }
         return res.status(200).json(patchEndTime);
     }
