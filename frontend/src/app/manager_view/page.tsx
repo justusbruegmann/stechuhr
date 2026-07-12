@@ -13,6 +13,8 @@ import Button from "@/components/layout/Button";
 import {useRouter} from "next/navigation";
 import {capitalize} from "@/utils/StringUtils";
 import EditUserModal from "@/components/managerView/editUserModal";
+import Summary from "@/types/summary";
+import {getSummaryForUser} from "@/scripts/summary";
 
 
 type UserWithSummaryEntries = User & {
@@ -41,6 +43,7 @@ export default function ManagerView() {
 
         loadUsers()
             .then(_ => {
+                console.log(users);
                 close();
                 setLoading(false);
             })
@@ -56,17 +59,29 @@ export default function ManagerView() {
 
         if (!Array.isArray(response)) return;
 
-        const extendedUser: UserWithSummaryEntries[] = response.map((user: User) => ({
-            ...user,
-            summaryEntries: {
-                vacationDaysThisYear: null,
-                sickDaysThisYear: null,
-                hoursWorkedThisWeek: null
-            }
-        }));
+        const summaries = await Promise.all(
+            response.map((user: User) => loadSummary(user.id))
+        );
 
-        const usersRecord = Object.fromEntries(extendedUser.map(user => [user.id, user]));
-        setUsers(usersRecord);
+        const extendedUser: UserWithSummaryEntries[] = response.map((user: User, index: number) => {
+            const summary = summaries[index];
+
+            console.log(`Loaded summary for user ${user.id}: ${JSON.stringify(summary)}`);
+
+            return {
+                ...user,
+                summaryEntries: {
+                    vacationDaysThisYear: summary?.vacationDaysTaken ?? null,
+                    sickDaysThisYear: summary?.sickDaysTaken ?? null,
+                    hoursWorkedThisWeek: summary ? Math.floor(summary.timeWorkedInMinutes / 60) : null
+                }
+            };
+        });
+
+        console.log(`Extended users object: ${JSON.stringify(extendedUser)}`);
+
+        const extendedUsers = Object.fromEntries(extendedUser.map(user => [user.id, user]));
+        setUsers(extendedUsers);
     }
 
 
@@ -74,6 +89,14 @@ export default function ManagerView() {
      * Loading summary entries for users
      */
     const currentYear = new Date().getFullYear();
+
+    async function loadSummary(userId: number): Promise<Summary | undefined> {
+        return await getSummaryForUser(userId, "2026-01-01", "2026-07-01")
+            .catch((e) => {
+                console.error(e);
+                return undefined;
+            });
+    }
 
 
     /**
@@ -123,7 +146,7 @@ export default function ManagerView() {
                             <Button label={"Bearbeiten"} type={"primary"}
                                     onClick={() => editUser(user.id)}/>
                             <Button label={"Anträge"} type={"accent"}
-                                    onClick={() => alert(`Mitarbeiter ${user.username} wird gefeuert!`)}/>
+                                    onClick={() => users[user.id].summaryEntries.hoursWorkedThisWeek = 20}/>
                         </div>
                     </td>
                 </tr>);

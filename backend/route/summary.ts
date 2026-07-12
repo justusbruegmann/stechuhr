@@ -9,8 +9,9 @@ const router = Router();
 
 router.get(
     '/summary',
-    authMiddleware("user"),
+    authMiddleware("user", true),
     validateQueryParameters(summaryRequestParameterSchema),
+
     async (req, res) => {
         const queryParams = res.locals.queryParams;
         if (!queryParams) {
@@ -21,7 +22,7 @@ router.get(
 
         const summary: Summary = await generateSummary(userId, startDate, endDate);
 
-        return res.status(200).json({"summary": summary});
+        return res.status(200).json(summary);
     });
 
 export default router;
