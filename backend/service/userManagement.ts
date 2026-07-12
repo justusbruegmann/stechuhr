@@ -5,13 +5,13 @@ import {
     getHash,
     getManagerById,
     getManagers,
-    getUserById,
     getUserFromUserName,
     getUsers,
     getUsersForManager,
     updateManager,
     updateRole
 } from "../repository/userManagement";
+import * as repo from "../repository/userManagement";
 import {deleteSessionsOfUser} from "../repository/auth";
 import {generateRandomString, isValidPassword} from "../utils/utils";
 import {verifyPassword} from "../utils/hashing";
@@ -85,9 +85,9 @@ export async function usersGet() {
     }
 }
 
-export async function usersGetById(userId: number) {
+export async function getUserById(userId: number) {
     try {
-        const result = await getUserById(userId);
+        const result = await repo.getUserById(userId);
 
         if (!result || !Array.isArray(result) || result.length == 0) return null
         else return result[0]
@@ -131,4 +131,8 @@ export async function managerUpdate(userId: number, managerId: number) {
     }
     const result = await updateManager(userId, managerId);
     return "succes";
+}
+
+export async function updateEmploymentDetails(userId: number, updateFields: {workload?: number, holidays?: number}) {
+    return await repo.updateEmploymentDetails(userId, updateFields);
 }

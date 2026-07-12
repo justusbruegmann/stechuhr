@@ -56,18 +56,11 @@ export default function EditUserModal({userId, user, updateLocalState}: EditUser
 
         setLoading(true);
 
-        try {
-            console.log("asdf")
-        } catch (e) {
-            console.error(e);
-        }
         await updateUser(userId, updates)
             .then(_ => {
+
                 if (updateLocalState) {
-                    updateLocalState({
-                        holidays: Number((document.getElementById("vacationDays") as HTMLInputElement).value),
-                        workload: Number((document.getElementById("workload") as HTMLInputElement).value)
-                    });
+                    updateLocalState(updates);
                 }
             })
             .catch(e => {

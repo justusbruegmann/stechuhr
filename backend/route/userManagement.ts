@@ -1,4 +1,5 @@
 import {NextFunction, Request, Response, Router} from "express";
+import * as service from "../service/userManagement";
 import {
     authUser,
     managerGet,
@@ -8,10 +9,12 @@ import {
     roleUpdate,
     userCreation,
     userDelete,
-    usersGet,
-    usersGetById
+    usersGet
 } from "../service/userManagement";
 import {authMiddleware} from "../middleware/auth";
+import {EmploymentRequest, employmentRequestSchema} from "../schemas/employment";
+import {isLoggedInUser, isUserManagedByManager} from "../utils/authorization";
+import {isValidUserId} from "../utils/inputValidation";
 
 const router = Router();
 
@@ -58,27 +61,6 @@ router.get('/users/', authMiddleware("admin"), async (req, res) => {
     try {
         const users = await usersGet();
         return res.status(200).send(users);
-    } catch (e) {
-        res.status(500).send("internal error");
-    }
-})
-
-router.get('/users/:id', authMiddleware("user", true), async (req, res) => {
-    const userId = Number(req.params.id)
-
-    try {
-        const user = await usersGetById(userId);
-
-        if (!user) {
-            return res.status(404).send("user not found");
-        }
-
-        if (user.id == res.locals.user.id || user.managerid == res.locals.user.id) {
-            return res.status(200).send(user);
-        } else {
-            return res.status(401).send("unauthorized");
-        }
-
     } catch (e) {
         res.status(500).send("internal error");
     }
@@ -140,6 +122,7 @@ router.put('/users/:id/role', authMiddleware("admin"), async (req, res) => {
     return res.sendStatus(204);
 })
 
+
 function validateBody(req: Request, res: Response, next: NextFunction) {
     const body = req.body;
     if (!body) {
@@ -176,5 +159,74 @@ function validateBody(req: Request, res: Response, next: NextFunction) {
     }
     next()
 }
+
+
+router.get('/users/:id', authMiddleware("user", true), async (req, res) => {
+
+    // Validate inputs
+    if (!isValidUserId(req.params.id)) {
+        return res.status(400).send("invalid user id");
+    }
+    const userId = Number(req.params.id)
+
+
+    // Check permissions
+    let user;
+    try {
+        user = await service.getUserById(userId);
+    } catch (e) {
+        res.status(500).send("internal error");
+    }
+
+    if (!user) {
+        return res.status(404).send("user not found");
+    }
+
+    if (!isLoggedInUser(user, res.locals.user.id) && !isUserManagedByManager(user, res.locals.user.id))
+        return res.status(401).send("unauthorized");
+
+
+    // Action
+    return res.status(200).send(user);
+})
+
+
+router.put('/users/:id/employment', authMiddleware("manager"), async (req, res) => {
+
+    // Validate inputs
+    if (!isValidUserId(req.params.id)) {
+        return res.status(400).send("invalid user id");
+    }
+    const userId = Number(req.params.id)
+
+    const bodyParseResult = employmentRequestSchema.safeParse(req.body);
+    if (!bodyParseResult.success) {
+        return res.status(400).send(bodyParseResult.error);
+    }
+    const updateFields: EmploymentRequest = bodyParseResult.data;
+
+
+    // Check permissions
+    let user;
+    try {
+        user = await service.getUserById(userId);
+    } catch (e) {
+        res.status(500).send("internal error");
+    }
+
+    if (!user) {
+        return res.status(404).send("user not found");
+    }
+
+    if (!isUserManagedByManager(user, res.locals.user.id))
+        return res.status(401).send("unauthorized");
+
+
+    // Action
+    await service.updateEmploymentDetails(userId, updateFields).catch(_ => {
+        res.status(500).send("internal error");
+    });
+    return res.sendStatus(204);
+})
 
 export default router;
