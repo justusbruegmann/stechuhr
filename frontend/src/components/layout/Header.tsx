@@ -6,11 +6,11 @@ import Button from "@/components/layout/Button";
 import {usePathname, useRouter} from "next/navigation";
 import Image from "next/image";
 
-type Headerprops = {
+type HeaderProps = {
     name?: string;
 }
 
-export default function Header({name}: Headerprops) {
+export default function Header({name}: HeaderProps) {
 
     const LOGIN = "/login"
     const DASHBOARD = "/dashboard";
@@ -18,8 +18,6 @@ export default function Header({name}: Headerprops) {
     const MANAGER_VIEW = "/manager_view";
 
     const currentPath = usePathname();
-    console.log(`Pathname: ${currentPath}`);
-
 
     const router = useRouter();
     const [userRole, setUserRole] = React.useState<string | null>(null);
@@ -28,7 +26,7 @@ export default function Header({name}: Headerprops) {
         setUserRole(localStorage.getItem("role"));
     }, []);
     const logout = () => {
-        // Logout Logik
+        // Logout logic
         router.push(LOGIN);
         localStorage.clear();
     }
