@@ -2,6 +2,7 @@ import {db} from '../app'
 import {users} from '../drizzle/schema';
 import {hashPassword} from "../utils/hashing";
 import {eq} from "drizzle-orm";
+import User from "../types/users";
 
 
 export async function createUser(username: string, role: string, managerId: number, password: string, workload: number, holidays: number) {
@@ -53,8 +54,8 @@ export async function getUsers() {
     return result;
 }
 
-export async function getUserById(userId: number) {
-    return db.select({
+export async function getUserById(userId: number): Promise<User | null> {
+    const result = await db.select({
         id: users.id,
         role: users.role,
         username: users.username,
@@ -62,6 +63,9 @@ export async function getUserById(userId: number) {
         workload: users.workload,
         holidays: users.holidays,
     }).from(users).where(eq(users.id, userId));
+
+    if (result.length === 0) return null
+    else return result [0]
 }
 
 export async function deleteUser(userId: number) {

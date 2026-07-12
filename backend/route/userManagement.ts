@@ -15,6 +15,7 @@ import {authMiddleware} from "../middleware/auth";
 import {EmploymentRequest, employmentRequestSchema} from "../schemas/employment";
 import {isLoggedInUser, isUserManagedByManager} from "../utils/authorization";
 import {isValidUserId} from "../utils/inputValidation";
+import User from "../types/users";
 
 const router = Router();
 
@@ -171,7 +172,7 @@ router.get('/users/:id', authMiddleware("user", true), async (req, res) => {
 
 
     // Check permissions
-    let user;
+    let user: User | null = null;
     try {
         user = await service.getUserById(userId);
     } catch (e) {
@@ -207,7 +208,7 @@ router.put('/users/:id/employment', authMiddleware("manager"), async (req, res) 
 
 
     // Check permissions
-    let user;
+    let user: User | null = null;
     try {
         user = await service.getUserById(userId);
     } catch (e) {

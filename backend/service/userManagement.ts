@@ -1,3 +1,4 @@
+import * as repo from "../repository/userManagement";
 import {
     changeOTP,
     createUser,
@@ -11,10 +12,10 @@ import {
     updateManager,
     updateRole
 } from "../repository/userManagement";
-import * as repo from "../repository/userManagement";
 import {deleteSessionsOfUser} from "../repository/auth";
 import {generateRandomString, isValidPassword} from "../utils/utils";
 import {verifyPassword} from "../utils/hashing";
+import User from "../types/users";
 
 export async function userCreation(username: string, role: string, managerId: number, workload: number, holidays: number) {
     try {
@@ -85,12 +86,9 @@ export async function usersGet() {
     }
 }
 
-export async function getUserById(userId: number) {
+export async function getUserById(userId: number): Promise<User | null> {
     try {
-        const result = await repo.getUserById(userId);
-
-        if (!result || !Array.isArray(result) || result.length == 0) return null
-        else return result[0]
+        return await repo.getUserById(userId)
     } catch (e) {
         console.error(e);
         throw e;
