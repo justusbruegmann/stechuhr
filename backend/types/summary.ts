@@ -1,4 +1,4 @@
-import {DayString} from "./misc";
+import {DateString} from "./misc";
 
 /**
  * Represents a summary of a user's logged TimeEntries and (approved) requests such as sick leave and vacation days
@@ -6,8 +6,8 @@ import {DayString} from "./misc";
  */
 export default interface Summary {
     userId: number;
-    startTime: DayString;
-    endTime: DayString;
+    startDate: DateString;
+    endDate: DateString;
 
     vacationDaysTaken: number;
     sickDaysTaken: number;

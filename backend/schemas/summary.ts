@@ -4,14 +4,12 @@ export const summaryRequestParameterSchema = z.object(
     {
         userId: z
             .coerce.number(),
-        startTime: z
-            .iso.datetime()
-            .pipe(z.coerce.date()),
-        endTime: z
-            .iso.datetime()
+        startDate: z
+            .iso.date(),
+        endDate: z
+            .iso.date()
             .optional()
-            .default(() => new Date().toISOString())
-            .pipe(z.coerce.date()),
+            .default(() => new Date().toISOString().slice(0, 10)),
     }
 )
 

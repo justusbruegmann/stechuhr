@@ -1,16 +1,18 @@
 import * as service from "../service/userManagement";
+import Summary from "../types/summary";
+import {DateString} from "../types/misc";
 
-export async function generateSummary(userId: number, startTime: Date, endTime: Date): Promise<Record<string, any>> {
+export async function generateSummary(userId: number, startDate: DateString, endDate: DateString): Promise<Summary> {
 
     const user = await service.getUserById(userId);
 
     return {
-        information: `Hier ist eine Summary für den user ${userId} von ${startTime} bis ${endTime}`,
-        timeEntries: [
-            "hi",
-            "asdf",
-            2
-        ],
-        user: user,
+        userId: userId,
+        startDate: "2026-06-01",
+        endDate: "2026-06-30",
+
+        vacationDaysTaken: 2,
+        sickDaysTaken: 3,
+        timeWorkedInMinutes: 1234,
     }
 }
