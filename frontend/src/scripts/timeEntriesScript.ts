@@ -11,8 +11,8 @@ export async function createTimeEntry(token: string,userid: number, startTime: D
         "userid": `${userid}`
     };
     const body = {
-        "startTime": startTime,
-        "endTime": endTime,
+        "starttime": startTime,
+        "endtime": endTime,
         "type": type
     };
     const response = await fetch(url, {method:"POST", body: JSON.stringify(body), headers: headers});
