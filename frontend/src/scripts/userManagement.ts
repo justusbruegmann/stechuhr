@@ -140,5 +140,5 @@ export async function getUsersForManager(): Promise<User[]> {
 
 export async function updateUser(userId: number, changes: Record<string, any>): Promise<User> {
     const url = `${BASE_URL}/users/${userId}/employment`;
-    return await sendRequest("PUT", url, changes);
+    return await sendRequest("PATCH", url, changes);
 }

@@ -192,7 +192,7 @@ router.get('/users/:id', authMiddleware("user", true), async (req, res) => {
 })
 
 
-router.put('/users/:id/employment', authMiddleware("manager"), async (req, res) => {
+router.patch('/users/:id/employment', authMiddleware("manager"), async (req, res) => {
 
     // Validate inputs
     if (!isValidUserId(req.params.id)) {
