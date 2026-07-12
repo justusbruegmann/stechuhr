@@ -100,20 +100,6 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
         }
     }
 
-    async function getAllTimeEntries(){
-        const token = localStorage.getItem("token");
-        const userid = localStorage.getItem("userid");
-        if(!token || !userid){
-            console.error("Nicht eingeloggt oder kein Token");
-            return;
-        }
-        const result = await getTimeEntries(token, parseInt(userid));
-        console.log("DEBUG result:", JSON.stringify(result));
-        if(result == 401 || !result){
-            console.error("Fehler beim holen der Zeiteinträge", result);
-        }
-    }
-
     async function getLastTimeEntryFromUser(){
         const token = localStorage.getItem("token");
         const userid = localStorage.getItem("userid");
@@ -163,14 +149,13 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
                     console.log("aus"+clicked);
                     setEndTimeEntry();
                 }
-                //setTimeEntry();
-                //getAllTimeEntries();
-                //getLastTimeEntryFromUser();
             }} label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked ? "success" : "error"} height={2.5}
                     width={"100%"}></Button>
             <hr className={Styles["gap"]}></hr>
             <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"}
-                    onClick={() => openOverview()}></Button>
+                    onClick={
+                        () => openOverview()
+                    }></Button>
         </Card>
     );
 }

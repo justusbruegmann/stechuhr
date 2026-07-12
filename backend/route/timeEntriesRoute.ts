@@ -55,7 +55,13 @@ router.patch('/timeEntries/:id', authMiddleware("user"), async (req, res) => {
 router.get('/timeEntries/', authMiddleware("user"), async (req, res) => {
     try{
         const userid = res.locals.user.id;
-        const timeEntries = await getTimeEntriesService(userid);
+        const {type, startDate, endDate} = req.query;
+        if (!type || !["work", "holiday", "sick"].includes(type as string)) {
+            return res.status(400).send("type is required and must: work, holiday, sick");
+        }
+        const start = startDate ? new Date(startDate as string) : undefined;
+        const end = endDate ? new Date(endDate as string) : undefined;
+        const timeEntries = await getTimeEntriesService(userid, type as "work"|"holiday"|"sick", start, end);
         return res.status(200).send(timeEntries);
     }
     catch(error){

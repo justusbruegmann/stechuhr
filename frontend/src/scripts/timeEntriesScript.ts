@@ -49,14 +49,22 @@ export async function setEndTime(token: string, userid: number, timeEntryId: num
     }
 }
 
-export async function getTimeEntries(token: string, userid: number){
-    const url = `${BASE_URL}/timeEntries/`;
+export async function getTimeEntries(token: string, userid: number, type: "work"|"holiday"|"sick", startDate?: string, endDate?: string){
+    const params = new URLSearchParams();
+    params.append("type", type);
+    if (startDate){
+        params.append("startDate", startDate);
+    } 
+    if (endDate){
+        params.append("endDate", endDate);
+    }
+    const url = `${BASE_URL}/timeEntries/?${params.toString()}`;
     const headers = {
         "content-type": "application/json",
         "Authorization": token,
         "userid": `${userid}`
     };
-    const response = await fetch(url, {method:"GET", headers: headers})
+    const response = await fetch(url, {method:"GET", headers: headers});
     if(response.status == 400){
         return 400;
     }
@@ -65,7 +73,6 @@ export async function getTimeEntries(token: string, userid: number){
     }
     if(response.status == 200){
         const result = await response.json();
-        // console.log("GET timeEntries status:", response.status, "| data:", result); //tmp
         return result;
     }
 }
@@ -106,7 +113,6 @@ export async function getLastTimeEntry(token: string, userid: number){
     }
     if(response.status == 200){
         const result = await response.json();
-        // console.log("GET timeLastEntry status:", response.status, "| data:", result); //tmp
         return result;
     }
 }

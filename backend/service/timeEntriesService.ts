@@ -49,9 +49,9 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date){
     }
 }
 
-export async function getTimeEntriesService(userid: number){
+export async function getTimeEntriesService(userid: number, type: "work" | "holiday" | "sick", startDate?: Date, endDate?: Date){
     try{
-        const timeEntries = await getTimeEntries(userid);
+        const timeEntries = await getTimeEntries(userid, type, startDate, endDate);
         return timeEntries;
     }
     catch(e){
