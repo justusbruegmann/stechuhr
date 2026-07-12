@@ -7,6 +7,7 @@ import Image from "next/image";
 import React, {useEffect, useState} from "react";
 import TimeEntry from "@/types/TimeEntry";
 import {createTimeEntry, getTimeEntries, getLastTimeEntry, setEndTime} from "@/scripts/timeEntriesScript";
+import { useRouter } from "next/navigation";
 
 
 interface PopupProps {
@@ -21,6 +22,7 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
     const working = "Im Dienst";
     const notWorking = "Nicht im Dienst";
     const [inOrOut, setInOrOut] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
         setTime(new Date());
@@ -37,15 +39,24 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
 
     const [startTime, setStartTime] = useState<Date | null>(null);
 
-    async function checkCurrentStatus() {
+    function checkAuth(router: ReturnType<typeof useRouter>){
         const token = localStorage.getItem("token");
         const userid = localStorage.getItem("userid");
         if (!token || !userid) {
-            console.error("Nicht eingeloggt oder kein Token");
+            router.push("/login");
+            return null;
+        }
+        return{token, userid: parseInt(userid)};
+    }
+
+    async function checkCurrentStatus() {
+        const auth = checkAuth(router);
+        if(!auth){
             return;
         }
+        const {token, userid} = auth;
 
-        const lastTimeEntry = (await getLastTimeEntry(token, parseInt(userid)))[0];
+        const lastTimeEntry = (await getLastTimeEntry(token, userid))[0];
 
         if (lastTimeEntry == 401 || !lastTimeEntry) {
             setClicked(true);
@@ -65,13 +76,12 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
 
     async function setTimeEntry() {
         const buttonClickedTime = new Date();
-        const token = localStorage.getItem("token");
-        const userid = localStorage.getItem("userid");
-        if(!token || !userid){
-            console.error("Nicht eingeloggt oder kein Token");
+        const auth = checkAuth(router);
+        if(!auth){
             return;
         }
-        const result = await createTimeEntry(token, parseInt(userid), buttonClickedTime, "work");
+        const {token, userid} = auth;
+        const result = await createTimeEntry(token, userid, buttonClickedTime, "work");
         if(result == 401 || !result?.id){
             console.error("Fehler beim Einstempeln", result);
             return;
@@ -80,20 +90,19 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
     }
 
     async function setEndTimeEntry() {
-        const token = localStorage.getItem("token");
-        const userid = localStorage.getItem("userid");
-        if(!token || !userid){
-            console.error("Nicht eingeloggt oder kein Token");
+        const auth = checkAuth(router);
+        if(!auth){
             return;
         }
-        const lastTimeEntry = (await getLastTimeEntry(token, parseInt(userid)))[0];
+        const {token, userid} = auth;
+        const lastTimeEntry = (await getLastTimeEntry(token, userid))[0];
         console.log("DEBUG lastEntry:", JSON.stringify(lastTimeEntry));
         if(lastTimeEntry == 401 || !lastTimeEntry){
             console.error("Fehler beim holen des letzten Zeiteintrags", lastTimeEntry);
             return;
         }
         const buttonClickedTime = new Date();
-        const result = await setEndTime(token, parseInt(userid), parseInt(lastTimeEntry.id), buttonClickedTime);
+        const result = await setEndTime(token, userid, parseInt(lastTimeEntry.id), buttonClickedTime);
         if(result == 401 || !result?.id){
             console.error("Fehler beim Ausstempeln", result);
             return;
@@ -101,13 +110,12 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
     }
 
     async function getLastTimeEntryFromUser(){
-        const token = localStorage.getItem("token");
-        const userid = localStorage.getItem("userid");
-        if(!token || !userid){
-            console.error("Nicht eingeloggt oder kein Token");
+        const auth = checkAuth(router);
+        if(!auth){
             return;
         }
-        const result = await getLastTimeEntry(token, parseInt(userid));
+        const {token, userid} = auth;
+        const result = await getLastTimeEntry(token, userid);
         console.log("DEBUG result:", JSON.stringify(result));
         if(result == 401 || !result){
             console.error("Fehler beim holen der Zeiteinträge", result);
