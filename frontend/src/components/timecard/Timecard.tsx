@@ -95,30 +95,17 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             return;
         }
         const {token, userid} = auth;
-        const lastTimeEntry = (await getLastTimeEntry(token, userid))[0];
-        console.log("DEBUG lastEntry:", JSON.stringify(lastTimeEntry));
-        if(lastTimeEntry == 401 || !lastTimeEntry){
-            console.error("Fehler beim holen des letzten Zeiteintrags", lastTimeEntry);
+        const result = await getLastTimeEntry(token, userid);
+        if(result == 401 || !result || !Array.isArray(result)){
+            console.error("Fehler beim holen des letzten Zeiteintrags", result);
             return;
         }
+        const lastTimeEntry = result[0];
         const buttonClickedTime = new Date();
-        const result = await setEndTime(token, userid, parseInt(lastTimeEntry.id), buttonClickedTime);
-        if(result == 401 || !result?.id){
+        const update = await setEndTime(token, userid, parseInt(lastTimeEntry.id), buttonClickedTime);
+        if(update == 401 || !update?.id){
             console.error("Fehler beim Ausstempeln", result);
             return;
-        }
-    }
-
-    async function getLastTimeEntryFromUser(){
-        const auth = checkAuth(router);
-        if(!auth){
-            return;
-        }
-        const {token, userid} = auth;
-        const result = await getLastTimeEntry(token, userid);
-        console.log("DEBUG result:", JSON.stringify(result));
-        if(result == 401 || !result){
-            console.error("Fehler beim holen der Zeiteinträge", result);
         }
     }
 

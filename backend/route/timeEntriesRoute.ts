@@ -8,7 +8,7 @@ const router = Router();
 router.post('/timeEntries/', authMiddleware("user"), async (req, res) => {
     try{
         const reqBody: any = req.body;
-        if(!reqBody){
+        if(!reqBody?.starttime || !reqBody?.type){
             return res.status(400).send("bad request");
         }
         const validTypes = ["work", "holiday", "sick"];
