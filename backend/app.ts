@@ -13,7 +13,7 @@ import cors from "cors";
 
 app.use(
     cors({
-        origin: ["http://localhost:3000", "https://how2centeradiv.dev"],
+        origin: ["http://localhost:3000", "https://how2centeradiv.dev", "https://staging.how2centeradiv.dev"],
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization", "userid"],
     })
@@ -45,6 +45,7 @@ app.use(express.json());
 import userMangement from "./route/userManagement";
 import auth from "./route/auth"
 import summary from "./route/summary";
+import {authMiddleware} from "./middleware/auth";
 
 app.use(userMangement);
 app.use(auth);
