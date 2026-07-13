@@ -34,7 +34,7 @@ router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
         ){
             return res.status(400).json({"error": createdTimeEntry});
         }
-        return res.status(201).send(createdTimeEntry);
+        return res.status(201).json(createdTimeEntry);
     }
     catch(error){
         console.error(error);
@@ -136,4 +136,4 @@ router.delete('/timeentries/:id', authMiddleware("user", true),async (req,res) =
     }
 })
 
-export default router;
+export default router; //add entry
