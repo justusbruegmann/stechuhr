@@ -136,4 +136,4 @@ router.delete('/timeentries/:id', authMiddleware("user", true),async (req,res) =
     }
 })
 
-export default router; //add entry
+export default router;
