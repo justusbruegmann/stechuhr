@@ -5,7 +5,7 @@ import { authMiddleware } from "../middleware/auth";
 const router = Router();
 
 //create time entry
-router.post('/timeentries/', authMiddleware("user"), async (req, res) => {
+router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
     try{
         const reqBody: any = req.body;
         const validTypes = ["work", "holiday", "sick"];
@@ -43,7 +43,7 @@ router.post('/timeentries/', authMiddleware("user"), async (req, res) => {
 })
 
 //add end time
-router.patch('/timeentries/:id', authMiddleware("user"), async (req, res) => {
+router.patch('/timeentries/:id', authMiddleware("user", true), async (req, res) => {
     try{
         const reqBody: any = req.body;
         if(!reqBody?.endtime){
@@ -72,7 +72,7 @@ router.patch('/timeentries/:id', authMiddleware("user"), async (req, res) => {
 })
 
 //get all time entries
-router.get('/users/:userId/timeentries', authMiddleware("user"), async (req, res) => {
+router.get('/users/:userId/timeentries', authMiddleware("user", true), async (req, res) => {
     try{
         const userid = Number(req.params.userId);
         const {type, startDate, endDate} = req.query;
@@ -90,7 +90,7 @@ router.get('/users/:userId/timeentries', authMiddleware("user"), async (req, res
 })
 
 //get last time entry
-router.get('/timeentries/last', authMiddleware("user"), async (req, res) => {
+router.get('/timeentries/last', authMiddleware("user", true), async (req, res) => {
     try{
         const userid = res.locals.user.id;
         const timeEntry = await getLastTimeEntryService(userid);
@@ -102,7 +102,7 @@ router.get('/timeentries/last', authMiddleware("user"), async (req, res) => {
 })
 
 //get single time entry
-router.get('/timeentries/:id', authMiddleware("user"), async (req, res) => {
+router.get('/timeentries/:id', authMiddleware("user", true), async (req, res) => {
     try{
         const timeEntryId = Number(req.params.id);
         const userid = res.locals.user.id;
@@ -121,7 +121,7 @@ router.get('/timeentries/:id', authMiddleware("user"), async (req, res) => {
 })
 
 //delete time entry
-router.delete('/timeentries/:id', authMiddleware("user"),async (req,res) => {
+router.delete('/timeentries/:id', authMiddleware("user", true),async (req,res) => {
     try{
         const deletedTimeEntry = Number(req.params.id);
         const userid = res.locals.user.id;
