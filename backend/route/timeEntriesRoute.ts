@@ -75,6 +75,9 @@ router.patch('/timeentries/:id', authMiddleware("user", true), async (req, res) 
 router.get('/users/:userId/timeentries', authMiddleware("user", true), async (req, res) => {
     try{
         const userid = Number(req.params.userId);
+        if (userid !== res.locals.user.id) {
+            return res.status(403).send("not allowed");
+        }
         const {type, startDate, endDate} = req.query;
         if (!type || !["work", "holiday", "sick"].includes(type as string)) {
             return res.status(400).send("type is required and must: work, holiday, sick");
