@@ -1,6 +1,3 @@
-import sendRequest from "@/utils/requestWrapper";
-import User from "@/types/User";
-
 const BASE_URL: string | undefined = process.env.NEXT_PUBLIC_BACKEND_URL;
 if (!BASE_URL) {
     throw new Error("no BASE_URL provided");
@@ -125,20 +122,4 @@ export async function updateManager(userId: number, managerId: number, tokenOfAd
     } else {
         return 400
     }
-}
-
-
-export async function getUserById(userId: number):Promise<User> {
-    const url = `${BASE_URL}/users/${userId}`;
-    return await sendRequest("GET", url);
-}
-
-export async function getUsersForManager(): Promise<User[]> {
-    const url = `${BASE_URL}/users/managers/users`;
-    return await sendRequest("GET", url);
-}
-
-export async function updateUser(userId: number, changes: Record<string, any>): Promise<User> {
-    const url = `${BASE_URL}/users/${userId}/employment`;
-    return await sendRequest("PUT", url, changes);
 }
