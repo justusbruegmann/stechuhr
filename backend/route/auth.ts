@@ -3,7 +3,7 @@ import {auth} from "../service/auth";
 
 const router = Router();
 
-router.get('/auth/', async (req, res) => {
+router.post('/auth/', async (req, res) => {
     const body: any = req.body;
     let token: string | undefined = req.headers.authorization;
     let userId: number | undefined = Number(req.headers.userid);
@@ -26,14 +26,11 @@ router.get('/auth/', async (req, res) => {
             }
         }
     }
-});
 
-router.post("/login/", async (req, res) => {
-    const body = req.body;
     if (!body) {
         return res.status(400).send("Not Found Body");
     }
-    if (body.username && body.password && typeof body.username === "string" && typeof body.password === "string") {
+    if (body.username && body.password) {
         const authUser = await auth(body.username, body.password, undefined, undefined);
         if (!authUser) {
             return res.status(404).send("Not Found");
@@ -54,6 +51,9 @@ router.post("/login/", async (req, res) => {
             }
         }
     }
+
+
 })
+;
 
 export default router;

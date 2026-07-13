@@ -11,7 +11,7 @@ export async function loginToken(token: string, userId: string) {
         "authorization": token,
         "userid": userId
     };
-    const response = await fetch(url, {method: "get", headers: headers});
+    const response = await fetch(url, {method: "post", headers: headers});
     if (response.status === 200) {
         return await response.json();
     }
@@ -27,7 +27,7 @@ export async function loginToken(token: string, userId: string) {
 }
 
 export async function loginUsername(username: string, password: string) {
-    const url = `${BASE_URL}/login`;
+    const url = `${BASE_URL}/auth`;
     const headers = {"content-type": "application/json"};
     const body = {"username": username.toLowerCase(), "password": password};
     const response = await fetch(url, {method: "post", body: JSON.stringify(body), headers: headers});

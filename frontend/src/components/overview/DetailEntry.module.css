@@ -91,12 +91,11 @@
 .edit-button-icon {
     margin-left: 1rem;
     overflow: hidden;
-    filter: brightness(1);
-    transition: filter 0.3s ease;
+    color: blue;
 
     border-radius: 10px;
 }
 
-.edit-button-icon:hover {
-    filter: brightness(0.5);
-}
+/*.edit-button-icon:hover {*/
+/*    background: rgba(var(--sick-blue-rgb), 0.2)*/
+/*}*/

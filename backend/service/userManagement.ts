@@ -1,23 +1,12 @@
-import * as repo from "../repository/userManagement";
 import {
-    changeOTP,
-    createUser,
-    deleteUser,
-    getHash,
-    getManagerById,
-    getManagers,
-    getUserFromUserName,
-    getUsers,
-    getUsersForManager,
-    updateManager,
-    updateRole
+    createUser, changeOTP, getHash, getUsers, deleteUser, getManagers, getManagerById, getUserFromUserName,
+    updateRole, updateManager
 } from "../repository/userManagement";
 import {deleteSessionsOfUser} from "../repository/auth";
 import {generateRandomString, isValidPassword} from "../utils/utils";
 import {verifyPassword} from "../utils/hashing";
-import User from "../types/users";
 
-export async function userCreation(username: string, role: string, managerId: number, workload: number, holidays: number) {
+export async function userCreation(username: string, role: string, managerId: number, workload: number,holidays: number) {
     try {
         //check if managerId is a manager
         const manager = await getManagerById(managerId);
@@ -76,19 +65,10 @@ export async function authUser(userId: number, password: string) {
     }
 }
 
-export async function usersGet() {
+export async function usersGet(limit: number, offset: number) {
     try {
-        const users = await getUsers();
+        const users = await getUsers(limit, offset);
         return users;
-    } catch (e) {
-        console.error(e);
-        throw e;
-    }
-}
-
-export async function getUserById(userId: number): Promise<User | null> {
-    try {
-        return await repo.getUserById(userId)
     } catch (e) {
         console.error(e);
         throw e;
@@ -103,11 +83,6 @@ export async function userDelete(userId: number) {
 
 export async function managerGet() {
     const result = await getManagers();
-    return result;
-}
-
-export async function managerGetOwnUsers(managerId: number) {
-    const result = await getUsersForManager(managerId);
     return result;
 }
 
@@ -129,8 +104,4 @@ export async function managerUpdate(userId: number, managerId: number) {
     }
     const result = await updateManager(userId, managerId);
     return "succes";
-}
-
-export async function updateEmploymentDetails(userId: number, updateFields: {workload?: number, holidays?: number}) {
-    return await repo.updateEmploymentDetails(userId, updateFields);
 }
