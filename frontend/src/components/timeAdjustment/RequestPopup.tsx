@@ -42,6 +42,24 @@ export default function RequestPopup({ date, onCreate }: Props) {
     "Krankheit": <AbsenceForm type="Sick" date={formatDate(date)} setType={setType} updateFromDate={upadateFromDate} updateToDate={upadateToDate} updateRemark={updateRemark} />
   };
 
+  function checkDateFormat(dateString: string): boolean {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (!regex.test(dateString)) {
+      return false;
+    }
+
+    const [year, month, day] = dateString.split("-").map(Number);
+
+    const date = new Date(year, month - 1, day);
+
+    return (
+      date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day
+    );
+  }
+
   return (
     <div className={styles["container"]}>
       <h2>Antrag erstellen</h2>
@@ -65,10 +83,20 @@ export default function RequestPopup({ date, onCreate }: Props) {
           height={2.5}
           width={9}
           onClick={() => {
-            console.log(`Type: ${type}`)
-            console.log(`From: ${fromDate}`)
-            console.log(`To: ${toDate}`)
-            console.log(`Remark: ${remark}`)
+            if (checkDateFormat(fromDate) && checkDateFormat(toDate)) {
+              if (fromDate <= toDate) {
+                console.log(`Type: ${type}`)
+                console.log(`From: ${fromDate}`)
+                console.log(`To: ${toDate}`)
+                console.log(`Remark: ${remark}`)
+              } else {
+                alert("Die Abwesenheit darf nicht enden bevor sie angefangen hat")
+              }
+
+            } else {
+              alert("Bitte beide Daten in korrektem Format angeben")
+            }
+
           }}
         />
       </div>
