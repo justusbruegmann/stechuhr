@@ -4,7 +4,7 @@ if (!BASE_URL) {
 }
 
 export async function createTimeEntry(token: string,userid: number, startTime: Date, type: "work" | "holiday" | "sick", endTime?:Date){
-    const url = `${BASE_URL}/timeEntries/`;
+    const url = `${BASE_URL}/timeentries/`;
     const headers = {
         "content-type": "application/json",
         "Authorization": token,
@@ -28,7 +28,7 @@ export async function createTimeEntry(token: string,userid: number, startTime: D
 }
 
 export async function setEndTime(token: string, userid: number, timeEntryId: number, endtime: Date){
-    const url = `${BASE_URL}/timeEntries/${timeEntryId}`;
+    const url = `${BASE_URL}/timeentries/${timeEntryId}`;
     const headers = {
         "content-type": "application/json",
         "Authorization": token,
@@ -58,7 +58,7 @@ export async function getTimeEntries(token: string, userid: number, type: "work"
     if (endDate){
         params.append("endDate", endDate);
     }
-    const url = `${BASE_URL}/timeEntries/?${params.toString()}`;
+    const url = `${BASE_URL}/users/${userid}/timeentries?${params.toString()}`;
     const headers = {
         "content-type": "application/json",
         "Authorization": token,
@@ -78,7 +78,7 @@ export async function getTimeEntries(token: string, userid: number, type: "work"
 }
 
 export async function getSingleTimeEntry(token: string, userid: number, timeEntryId: number){
-    const url = `${BASE_URL}/timeEntries/${timeEntryId}`;
+    const url = `${BASE_URL}/timeentries/${timeEntryId}`;
     const headers = {
         "content-type": "application/json",
         "Authorization": token,
@@ -98,7 +98,7 @@ export async function getSingleTimeEntry(token: string, userid: number, timeEntr
 }
 
 export async function getLastTimeEntry(token: string, userid: number){
-    const url = `${BASE_URL}/timeEntries/last`;
+    const url = `${BASE_URL}/timeentries/last`;
     const headers = {
         "content-type": "application/json",
         "Authorization": token,
@@ -118,7 +118,7 @@ export async function getLastTimeEntry(token: string, userid: number){
 }
 
 export async function deleteTimeEntry(token: string, userid: number, timeEntryId: number){
-    const url = `${BASE_URL}/timeEntries/${timeEntryId}`;
+    const url = `${BASE_URL}/timeentries/${timeEntryId}`;
     const headers = {
         "content-type": "application/json",
         "Authorization": token,
