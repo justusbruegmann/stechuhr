@@ -6,6 +6,8 @@ import Card from "@/components/layout/Card";
 import Image from "next/image";
 import React, {useEffect, useState} from "react";
 import TimeEntry from "@/types/TimeEntry";
+import {createTimeEntry, getTimeEntries, getLastTimeEntry, setEndTime} from "@/scripts/timeEntriesScript";
+import { useRouter } from "next/navigation";
 
 
 interface PopupProps {
@@ -20,6 +22,7 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
     const working = "Im Dienst";
     const notWorking = "Nicht im Dienst";
     const [inOrOut, setInOrOut] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
         setTime(new Date());
@@ -30,28 +33,79 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
         return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        checkCurrentStatus();
+    }, []);
+
     const [startTime, setStartTime] = useState<Date | null>(null);
 
+    function checkAuth(router: ReturnType<typeof useRouter>){
+        const token = localStorage.getItem("token");
+        const userid = localStorage.getItem("userid");
+        if (!token || !userid) {
+            router.push("/login");
+            return null;
+        }
+        return{token, userid: parseInt(userid)};
+    }
 
-    function returnTime() {
-        setInOrOut(!inOrOut);
-        const buttonClickedTime = new Date();
-        const action = inOrOut ? "Eingestochen: " : "Ausgestochen: ";
-        console.log(action + buttonClickedTime);
+    async function checkCurrentStatus() {
+        const auth = checkAuth(router);
+        if(!auth){
+            return;
+        }
+        const {token, userid} = auth;
 
-        if (!startTime) {
-            setStartTime(buttonClickedTime);
+        const lastTimeEntry = (await getLastTimeEntry(token, userid))[0];
+
+        if (lastTimeEntry == 401 || !lastTimeEntry) {
+            setClicked(true);
+            setInOrOut(true);
+            return;
+        }
+
+        if (!lastTimeEntry.endTime) {
+            setClicked(false);
+            setInOrOut(false);
+            setStartTime(new Date(lastTimeEntry.startTime));
         } else {
-            if (!startTime) throw new Error("startTime is null");
+            setClicked(true);
+            setInOrOut(true);
+        }
+    }
 
-            addEntry(buttonClickedTime, {
-                id: crypto.randomUUID(),
-                userId: "123",
-                startTime: startTime?.toISOString(),
-                endTime: buttonClickedTime.toISOString()
-            })
+    async function setTimeEntry() {
+        const buttonClickedTime = new Date();
+        const auth = checkAuth(router);
+        if(!auth){
+            return;
+        }
+        const {token, userid} = auth;
+        const result = await createTimeEntry(token, userid, buttonClickedTime, "work");
+        if(result == 401 || !result?.id){
+            console.error("Fehler beim Einstempeln", result);
+            return;
+        }
+        setStartTime(buttonClickedTime);
+    }
 
-            setStartTime(null);
+    async function setEndTimeEntry() {
+        const auth = checkAuth(router);
+        if(!auth){
+            return;
+        }
+        const {token, userid} = auth;
+        const result = await getLastTimeEntry(token, userid);
+        if(result == 401 || !result || !Array.isArray(result)){
+            console.error("Fehler beim holen des letzten Zeiteintrags", result);
+            return;
+        }
+        const lastTimeEntry = result[0];
+        const buttonClickedTime = new Date();
+        const update = await setEndTime(token, userid, parseInt(lastTimeEntry.id), buttonClickedTime);
+        if(update == 401 || !update?.id){
+            console.error("Fehler beim Ausstempeln", result);
+            return;
         }
     }
 
@@ -78,13 +132,25 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
                 <span className={`${Styles["workTimeTextBody"]}`}>0h 0m</span>
             </div>
             <Button onClick={() => {
+                setInOrOut(!inOrOut);
+                const action = inOrOut ? "Eingestochen: " : "Ausgestochen: ";
+                console.log(action + new Date());
                 setClicked(!clicked);
-                returnTime();
+                if(clicked){
+                    console.log("ein"+clicked);
+                    setTimeEntry();
+                }
+                else{
+                    console.log("aus"+clicked);
+                    setEndTimeEntry();
+                }
             }} label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked ? "success" : "error"} height={2.5}
                     width={"100%"}></Button>
             <hr className={Styles["gap"]}></hr>
             <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"}
-                    onClick={() => openOverview()}></Button>
+                    onClick={
+                        () => openOverview()
+                    }></Button>
         </Card>
     );
 }

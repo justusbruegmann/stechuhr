@@ -1,4 +1,4 @@
-import { pgTable, serial, text, varchar, timestamp, boolean, integer, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, varchar, timestamp, boolean, integer } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
     id: serial("id").primaryKey(),
@@ -39,6 +39,9 @@ export const notificationTypeEnum = pgEnum("notification_type", [
 ]);
 
 // Tables
+
+export const time_entry_type = pgEnum("time_entry_type", ["work", "holiday", "sick"]);
+
 export const timeEntries = pgTable("timeEntries", {
     id: serial("id").primaryKey(),
     userId: integer("userId").references(() => users.id, { onDelete: "cascade" }),
