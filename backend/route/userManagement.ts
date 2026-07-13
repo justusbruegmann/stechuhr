@@ -212,7 +212,7 @@ router.put('/users/:id/employment', authMiddleware("manager"), async (req, res) 
     try {
         user = await service.getUserById(userId);
     } catch (e) {
-        res.status(500).send("internal error");
+        return res.status(500).send("internal error");
     }
 
     if (!user) {
@@ -225,7 +225,7 @@ router.put('/users/:id/employment', authMiddleware("manager"), async (req, res) 
 
     // Action
     await service.updateEmploymentDetails(userId, updateFields).catch(_ => {
-        res.status(500).send("internal error");
+        return res.status(500).send("internal error");
     });
     return res.sendStatus(204);
 })

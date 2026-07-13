@@ -18,6 +18,8 @@ router.get(
             return res.status(500).json({error: "Missing parsed query parameters"});
         }
 
+        // ToDo: Add authorization. Copy e.g. from getUserById
+
         const {userId, startDate, endDate} = queryParams;
 
         const summary: Summary = await generateSummary(userId, startDate, endDate);

@@ -137,22 +137,22 @@ export default function ManagerView() {
             const user = users[Number(id)];
             return (
                 <tr key={user.id}>
-                    <td><b>{capitalize(user.username)}</b></td>
-                    <td className={(user.summaryEntries.vacationDaysThisYear || Number.MAX_VALUE) > user.holidays ? styles.warning : ""}>
-                        <b>{(user.summaryEntries.vacationDaysThisYear || "?")}</b> / <b>{user.holidays}</b> Tage
+                    <td><b>{capitalize(user.username ?? "")}</b></td>
+                    <td className={(user.summaryEntries.vacationDaysThisYear ?? Number.MAX_VALUE) > user.holidays ? styles.warning : ""}>
+                        <b>{(user.summaryEntries.vacationDaysThisYear ?? "?")}</b> / <b>{user.holidays}</b> Tage
                     </td>
                     <td>
-                        <b>{user.summaryEntries.sickDaysThisYear || "?"}</b>
+                        <b>{user.summaryEntries.sickDaysThisYear ?? "?"}</b>
                     </td>
                     <td className={(user.summaryEntries.hoursWorkedThisWeek ?? Number.MAX_VALUE) > user.workload ? styles.warning : ""}>
-                        <b>{(user.summaryEntries.hoursWorkedThisWeek || "?")}</b> / <b>{user.workload}</b> h
+                        <b>{(user.summaryEntries.hoursWorkedThisWeek ?? "?")}</b> / <b>{user.workload}</b> h
                     </td>
                     <td>
                         <div className={styles.buttonContainer}>
                             <Button label={"Bearbeiten"} type={"primary"}
                                     onClick={() => editUser(user.id)}/>
                             <Button label={"Anträge"} type={"accent"}
-                                    onClick={() => users[user.id].summaryEntries.hoursWorkedThisWeek = 20}/>
+                                    onClick={() => console.log("Darf ich bitte bitte früher gehen?")}/>
                         </div>
                     </td>
                 </tr>);

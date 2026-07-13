@@ -23,7 +23,7 @@ export default async function sendRequest(
     }
 
     let response;
-    if (body) {
+    if (body !== undefined && body !== null) {
         const bodyJson = JSON.stringify(body)
         response = await fetch(url, {method: method, body: bodyJson, headers: headers})
     } else {
