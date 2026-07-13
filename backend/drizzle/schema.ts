@@ -23,14 +23,14 @@ export const requestTypeEnum = pgEnum("request_type", ["vacation", "sick"]);
 export const notificationTypeEnum = pgEnum("notification_type", ["info", "warning"]);
 
 // Tables
-export const timeEntryType = pgEnum("time_entry_type", ["work", "holiday", "sick"]);
+export const time_entry_type = pgEnum("time_entry_type", ["work", "holiday", "sick"]);
 
 export const timeEntries = pgTable("timeEntries", {
     id: serial("id").primaryKey(),
     userId: integer("userId").references(() => users.id, {onDelete: "cascade"}),
     startTime: timestamp("startTime", {withTimezone: true}).notNull(),
     endTime: timestamp("endTime", {withTimezone: true}),
-    type: timeEntryType("type").notNull(),
+    type: time_entry_type("type").notNull(),
 });
 
 export const requests = pgTable("requests", {
