@@ -1,3 +1,5 @@
+import { error } from "node:console";
+
 const BASE_URL: string | undefined = process.env.NEXT_PUBLIC_BACKEND_URL;
 if (!BASE_URL) {
     throw new Error("no BASE_URL provided");
@@ -16,10 +18,9 @@ export async function createTimeEntry(token: string,userid: number, startTime: D
         "type": type
     };
     const response = await fetch(url, {method:"POST", body: JSON.stringify(body), headers: headers});
-    const text = await response.text();
-    if(text === "admins are not allowed to clock in"){
-        alert(text);
-        return;
+    const text = await response.json();
+    if(text.error === "Admins are not allowed to clock in."){
+        return {error: text.error};
     }
     if(response.status == 400){
         return 400;
@@ -28,7 +29,7 @@ export async function createTimeEntry(token: string,userid: number, startTime: D
         return 401;
     }
     if(response.status == 201){
-        return await response.json();
+        return text;
     }
 }
 

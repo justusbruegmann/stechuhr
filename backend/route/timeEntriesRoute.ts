@@ -13,7 +13,7 @@ router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
             return res.status(400).send("type is required and has to be work, holiday or sick");
         }
         if (res.locals.user.role === "admin") {
-            return res.status(400).send("admins are not allowed to clock in");
+            return res.status(400).json({error: "Admins are not allowed to clock in."});
         }
         if(!reqBody.starttime){
             return res.status(400).send("starttime is needed");
