@@ -22,7 +22,7 @@ export default function Page(){
     const [width, setWidth] = useState("20vw");
     const {showModal} = useModal();
 
-
+    //this useeffect AI geratet to center the card with window size
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 400) {
@@ -74,7 +74,7 @@ export default function Page(){
                     <PasswordChangeModal
                         password={password}
                         userId={result.response.userId}
-                        // einfach eine Function dem child übergeben
+                        // just give the chilt the function
                         onSuccess={() => {
                             close();
                             router.push("/login");

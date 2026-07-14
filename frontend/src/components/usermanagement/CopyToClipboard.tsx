@@ -1,4 +1,4 @@
-// `src/components/CopyToClipboard.tsx`
+// `src/components/CopyToClipboard.tsx` AI GENERATED!!! because just a QoL feature not needed
 'use client';
 
 import * as React from 'react';
