@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import styles from "./AbsenceForm.module.css";
 
 type Props = {
-    type: "Vacation" | "Sick";
+    type: "holiday" | "sick";
     date: string;
     setType: (type: string) => void;
     updateFromDate: (date: string) => void;

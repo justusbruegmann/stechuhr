@@ -38,8 +38,8 @@ export default function RequestPopup({ date, onCreate }: Props) {
   }
 
   const tabs = {
-    "Urlaub": <AbsenceForm type="Vacation" date={formatDate(date)} setType={setType} updateFromDate={upadateFromDate} updateToDate={upadateToDate} updateRemark={updateRemark} />,
-    "Krankheit": <AbsenceForm type="Sick" date={formatDate(date)} setType={setType} updateFromDate={upadateFromDate} updateToDate={upadateToDate} updateRemark={updateRemark} />
+    "Urlaub": <AbsenceForm type="holiday" date={formatDate(date)} setType={setType} updateFromDate={upadateFromDate} updateToDate={upadateToDate} updateRemark={updateRemark} />,
+    "Krankheit": <AbsenceForm type="sick" date={formatDate(date)} setType={setType} updateFromDate={upadateFromDate} updateToDate={upadateToDate} updateRemark={updateRemark} />
   };
 
   function checkDateFormat(dateString: string): boolean {
