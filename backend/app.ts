@@ -13,8 +13,9 @@ import cors from "cors";
 
 app.use(
     cors({
-        origin: ["http://localhost:3000", "https://how2centeradiv.dev"],
+        origin: ["http://localhost:3000", "https://how2centeradiv.dev", "https://staging.how2centeradiv.dev"],
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization", "userid"],
     })
 );
 const connectionString = process.env.DATABASE_URL

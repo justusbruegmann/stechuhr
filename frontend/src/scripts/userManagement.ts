@@ -1,9 +1,12 @@
+import sendRequest from "@/utils/requestWrapper";
+import User from "@/types/User";
+
 const BASE_URL: string | undefined = process.env.NEXT_PUBLIC_BACKEND_URL;
 if (!BASE_URL) {
     throw new Error("no BASE_URL provided");
 }
 
-export async function createUser(username: string, managerId: number, role: string, tokenOfAdmin: string, userIdOfAdmin: number) {
+export async function createUser(username: string, managerId: number, role: string,workload:number,holidays:number, tokenOfAdmin: string, userIdOfAdmin: number) {
     const url = `${BASE_URL}/users`;
     const headers = {
         "content-type": "application/json",
@@ -13,7 +16,9 @@ export async function createUser(username: string, managerId: number, role: stri
     const body = {
         "username": username,
         "managerId": managerId,
-        "role": role
+        "role": role,
+        "workload": workload,
+        "holidays": holidays,
     };
     const response = await fetch(url, {method: "POST", body: JSON.stringify(body), headers: headers});
     if (response.status === 401) {
@@ -97,6 +102,7 @@ export async function updateRole(userId: number, role: string, tokenOfAdmin: str
     } else if (result.status === 401) {
         return 401
     } else {
+
         return 400
     }
 }
@@ -119,4 +125,20 @@ export async function updateManager(userId: number, managerId: number, tokenOfAd
     } else {
         return 400
     }
+}
+
+
+export async function getUserById(userId: number):Promise<User> {
+    const url = `${BASE_URL}/users/${userId}`;
+    return await sendRequest("GET", url);
+}
+
+export async function getUsersForManager(): Promise<User[]> {
+    const url = `${BASE_URL}/users/managers/users`;
+    return await sendRequest("GET", url);
+}
+
+export async function updateUser(userId: number, changes: Record<string, any>): Promise<User> {
+    const url = `${BASE_URL}/users/${userId}/employment`;
+    return await sendRequest("PUT", url, changes);
 }

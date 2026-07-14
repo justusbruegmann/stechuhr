@@ -2,9 +2,10 @@ import {db} from '../app'
 import {users} from '../drizzle/schema';
 import {hashPassword} from "../utils/hashing";
 import {eq} from "drizzle-orm";
+import User from "../types/users";
 
 
-export async function createUser(username: string, role: string, managerId: number, password: string) {
+export async function createUser(username: string, role: string, managerId: number, password: string, workload: number, holidays: number) {
     const otpFlag: boolean = true
     const pw: string = await hashPassword(password);
     const result = await db.insert(users).values({
@@ -12,7 +13,9 @@ export async function createUser(username: string, role: string, managerId: numb
         "role": role,
         "managerid": managerId,
         "pw": pw,
-        "isotp": otpFlag
+        "isotp": otpFlag,
+        "workload": workload,
+        "holidays": holidays,
     });
 
     return password;
@@ -38,15 +41,31 @@ export async function getHash(userId: number) {
 
 }
 
-export async function getUsers(limit: number, offset: number) {
+export async function getUsers() {
     const result = await db.select({
         id: users.id,
         role: users.role,
         username: users.username,
         managerid: users.managerid,
+        workload: users.workload,
+        holidays: users.holidays,
 
-    }).from(users).limit(limit).offset(offset * limit)
+    }).from(users)
     return result;
+}
+
+export async function getUserById(userId: number): Promise<User | null> {
+    const result = await db.select({
+        id: users.id,
+        role: users.role,
+        username: users.username,
+        managerid: users.managerid,
+        workload: users.workload,
+        holidays: users.holidays,
+    }).from(users).where(eq(users.id, userId));
+
+    if (result.length === 0) return null
+    else return result [0]
 }
 
 export async function deleteUser(userId: number) {
@@ -68,6 +87,17 @@ export async function getManagers() {
     return result;
 }
 
+export async function getUsersForManager(managerId: number) {
+    const result = await db.select({
+        username: users.username,
+        role: users.role,
+        id: users.id,
+        workload: users.workload,
+        holidays: users.holidays
+    }).from(users).where(eq(users.managerid, managerId));
+    return result;
+}
+
 export async function getManagerById(managerId: number) {
     const result = await db.select({id: users.id, role: users.role}).from(users).where(eq(users.id, managerId))
     return result[0];
@@ -81,4 +111,8 @@ export async function updateManager(userId: number, managerId: number) {
 export async function updateRole(userId: number, role:string) {
     const result = await db.update(users).set({"role": role}).where(eq(users.id, userId))
     return result;
+}
+
+export async function updateEmploymentDetails(userId: number, updateFields: {workload?: number, holidays?: number}) {
+    return db.update(users).set(updateFields).where(eq(users.id, userId));
 }
