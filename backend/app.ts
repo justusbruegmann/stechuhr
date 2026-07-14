@@ -13,7 +13,7 @@ import cors from "cors";
 
 app.use(
     cors({
-        origin: ["http://localhost:3000", "https://how2centeradiv.dev"],
+        origin: ["http://localhost:3000", "https://how2centeradiv.dev", "https://staging.how2centeradiv.dev"],
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization", "userid"],
     })
@@ -46,11 +46,13 @@ import userMangement from "./route/userManagement";
 import auth from "./route/auth"
 import summary from "./route/summary";
 import notification from "./route/notification";
+import timeEntriesRoute from "./route/timeEntriesRoute";
 
 app.use(userMangement);
 app.use(auth);
 app.use(summary);
 app.use(notification);
+app.use(timeEntriesRoute);
 
 app.get("/", (req, res) => {
     res.send("hello world");
