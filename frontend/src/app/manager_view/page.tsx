@@ -6,7 +6,6 @@ import Header from "@/components/layout/Header";
 import {useModal} from "@/contexts/ModalContext";
 import styles from './manager_view.module.css';
 
-
 import {getUsersForManager} from "@/scripts/userManagement";
 import UserTable from "@/components/managerView/userTable";
 import Button from "@/components/layout/Button";
@@ -32,6 +31,10 @@ export default function ManagerView() {
     const router = useRouter();
 
 
+    console.log(todayDateString());
+    console.log(startOfTheWeekDateString());
+    console.log(startOfTheMonthDateString());
+
     /**
      * Loading and storing users
      */
@@ -45,7 +48,6 @@ export default function ManagerView() {
 
         loadUsers()
             .then(_ => {
-                console.log(users);
                 close();
                 setLoading(false);
             })
@@ -83,9 +85,6 @@ export default function ManagerView() {
             const summaryMonth = summariesMonth[index];
             const summaryWeek = summariesWeek[index];
 
-            console.log(`Loaded summary for user ${user.id}: ${JSON.stringify(summaryMonth)}`);
-            console.log(`Loaded summary for user ${user.id}: ${JSON.stringify(summaryWeek)}`);
-
             return {
                 ...user,
                 summaryEntries: {
@@ -95,8 +94,6 @@ export default function ManagerView() {
                 }
             };
         });
-
-        console.log(`Extended users object: ${JSON.stringify(extendedUser)}`);
 
         const extendedUsers = Object.fromEntries(extendedUser.map(user => [user.id, user]));
         setUsers(extendedUsers);
@@ -122,8 +119,6 @@ export default function ManagerView() {
      */
     function generateUserUpdateFunction(userId: number) {
         return (updates: Partial<Record<keyof User, any>>): void => {
-
-            console.log(`Saving changes ${updates} to user ${userId}`);
 
             setUsers(prevUsers => {
                 const updatedUser = {
@@ -170,7 +165,7 @@ export default function ManagerView() {
                             <Button label={"Bearbeiten"} type={"primary"}
                                     onClick={() => editUser(user.id)}/>
                             <Button label={"Anträge"} type={"accent"}
-                                    onClick={() => console.log("Darf ich bitte bitte früher gehen?")}/>
+                                    onClick={() => alert("Darf ich bitte bitte früher gehen?")}/>
                         </div>
                     </td>
                 </tr>);
