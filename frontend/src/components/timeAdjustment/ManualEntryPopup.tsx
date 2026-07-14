@@ -17,8 +17,8 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
 
   const { close } = useCurrentModal();
 
-  const [fromTime, setFromTime] = useState("");
-  const [toTime, setToTime] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
 
   const [isChecked, setIsChecked] = useState(true);
 
@@ -29,23 +29,23 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
 
   function saveButton(isToTimeRequired: boolean = true) {
 
-    const [fromHours, fromMinutes] = fromTime.split(":").map(Number);
+    const [startHours, startMinutes] = startTime.split(":").map(Number);
 
     if (isToTimeRequired) {
-      const [toHours, toMinutes] = toTime.split(":").map(Number);
+      const [endHours, endMinutes] = endTime.split(":").map(Number);
 
       const entry: TimeEntry = {
         id: crypto.randomUUID(),
         userId: "456",
-        startTime: new Date(date.setHours(fromHours, fromMinutes)).toISOString(),
-        endTime: new Date(date.setHours(toHours, toMinutes)).toISOString()
+        startTime: new Date(date.setHours(startHours, startMinutes)).toISOString(),
+        endTime: new Date(date.setHours(endHours, endMinutes)).toISOString()
       };
       onCreate(entry);
     } else {
       const entry: TimeEntry = {
         id: crypto.randomUUID(),
         userId: "456",
-        startTime: new Date(date.setHours(fromHours, fromMinutes)).toISOString()
+        startTime: new Date(date.setHours(startHours, startMinutes)).toISOString()
       };
       onCreate(entry);
     }
@@ -62,7 +62,7 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
       </div>
 
       <TimeInput
-        onChange={(e) => setFromTime(e.target.value)}
+        onChange={(e) => setStartTime(e.target.value)}
         required={true}
         visible={true}
       />
@@ -81,7 +81,7 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
       <label htmlFor="addEndTime" className={styles["labels"]}>Austempelzeit hinzufügen</label>
 
       <TimeInput
-        onChange={(e) => setToTime(e.target.value)}
+        onChange={(e) => setEndTime(e.target.value)}
         required={true}
         visible={isChecked}
       />
@@ -104,8 +104,8 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
           width={9}
           onClick={() => {
             if (isChecked) {
-              if (checkTimeFormat(fromTime) && checkTimeFormat(toTime)) {
-                if (fromTime < toTime) {
+              if (checkTimeFormat(startTime) && checkTimeFormat(endTime)) {
+                if (startTime < endTime) {
                   saveButton();
                   close();
                 } else {
@@ -115,7 +115,7 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
                 alert("Bitte beide Zeiten in korrektem Format eingeben.");
               }
             } else {
-              if (checkTimeFormat(fromTime)) {
+              if (checkTimeFormat(startTime)) {
                 saveButton(false);
                 close();
               } else {

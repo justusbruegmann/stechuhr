@@ -5,12 +5,12 @@ type Props = {
     type: "holiday" | "sick";
     date: string;
     setType: (type: string) => void;
-    updateFromDate: (date: string) => void;
-    updateToDate: (date: string) => void;
+    updateStartDate: (date: string) => void;
+    updateEndDate: (date: string) => void;
     updateRemark: (remark: string) => void;
 };
 
-export default function AbsenceForm({ type, date, setType, updateFromDate, updateToDate, updateRemark }: Props) {
+export default function AbsenceForm({ type, date, setType, updateStartDate: updateStartDate, updateEndDate: updateEndDate, updateRemark }: Props) {
 
     useEffect(() => {
         setType && setType(type);
@@ -21,12 +21,12 @@ export default function AbsenceForm({ type, date, setType, updateFromDate, updat
             <div className={styles["date-input-container"]}>
                 <label className={styles["labels"]}>Von:</label>
                 <div className={styles["input-wrapper"]}>
-                    <input type="date" className={styles["date-input"]} defaultValue={date} onChange={(e) => updateFromDate(e.target.value)} />
+                    <input type="date" className={styles["date-input"]} defaultValue={date} onChange={(e) => updateStartDate(e.target.value)} />
                 </div>
 
                 <label className={styles["labels"]}>Bis:</label>
                 <div className={styles["input-wrapper"]}>
-                    <input type="date" className={styles["date-input"]} defaultValue={date} onChange={(e) => updateToDate(e.target.value)} />
+                    <input type="date" className={styles["date-input"]} defaultValue={date} onChange={(e) => updateEndDate(e.target.value)} />
                 </div>
 
             </div>

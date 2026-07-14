@@ -14,16 +14,16 @@ export default function RequestPopup({ date, onCreate }: Props) {
   const { close } = useCurrentModal();
 
   const [type, setType] = useState("");
-  const [fromDate, setFromDate] = useState(formatDate(date));
-  const [toDate, setToDate] = useState(formatDate(date));
+  const [startDate, setStartDate] = useState(formatDate(date));
+  const [endDate, setEndDate] = useState(formatDate(date));
   const [remark, setRemark] = useState("");
 
-  function upadateFromDate(date: string) {
-    setFromDate(date);
+  function upadateStartDate(date: string) {
+    setStartDate(date);
   }
 
-  function upadateToDate(date: string) {
-    setToDate(date);
+  function upadateEndDate(date: string) {
+    setEndDate(date);
   }
 
   function updateRemark(remark: string) {
@@ -38,8 +38,8 @@ export default function RequestPopup({ date, onCreate }: Props) {
   }
 
   const tabs = {
-    "Urlaub": <AbsenceForm type="holiday" date={formatDate(date)} setType={setType} updateFromDate={upadateFromDate} updateToDate={upadateToDate} updateRemark={updateRemark} />,
-    "Krankheit": <AbsenceForm type="sick" date={formatDate(date)} setType={setType} updateFromDate={upadateFromDate} updateToDate={upadateToDate} updateRemark={updateRemark} />
+    "Urlaub": <AbsenceForm type="holiday" date={formatDate(date)} setType={setType} updateStartDate={upadateStartDate} updateEndDate={upadateEndDate} updateRemark={updateRemark} />,
+    "Krankheit": <AbsenceForm type="sick" date={formatDate(date)} setType={setType} updateStartDate={upadateStartDate} updateEndDate={upadateEndDate} updateRemark={updateRemark} />
   };
 
   function checkDateFormat(dateString: string): boolean {
@@ -83,11 +83,11 @@ export default function RequestPopup({ date, onCreate }: Props) {
           height={2.5}
           width={9}
           onClick={() => {
-            if (checkDateFormat(fromDate) && checkDateFormat(toDate)) {
-              if (fromDate <= toDate) {
+            if (checkDateFormat(startDate) && checkDateFormat(endDate)) {
+              if (startDate <= endDate) {
                 console.log(`Type: ${type}`)
-                console.log(`From: ${fromDate}`)
-                console.log(`To: ${toDate}`)
+                console.log(`From: ${startDate}`)
+                console.log(`To: ${endDate}`)
                 console.log(`Remark: ${remark}`)
               } else {
                 alert("Die Abwesenheit darf nicht enden bevor sie angefangen hat")
