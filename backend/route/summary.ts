@@ -2,7 +2,7 @@ import {Router} from "express";
 import {authMiddleware} from "../middleware/auth";
 import {validateQueryParameters} from "../middleware/validateQueryParameters";
 import {generateSummary} from "../service/summary";
-import {summaryRequestParameterSchema} from "../schemas/summary";
+import {SummaryRequestParameter, summaryRequestParameterSchema} from "../schemas/summary";
 import Summary from "../types/summary";
 import {isDateInCorrectTimeframe, isStartDateEarlierThanEndDate, isValidUserId} from "../utils/inputValidation";
 import User from "../types/users";
@@ -18,7 +18,8 @@ router.get(
     validateQueryParameters(summaryRequestParameterSchema),
 
     async (req, res) => {
-        const queryParams = res.locals.queryParams;
+        const queryParams = res.locals.queryParams as SummaryRequestParameter;
+
         if (!queryParams) {
             return res.status(500).json({error: "Missing parsed query parameters"});
         }
