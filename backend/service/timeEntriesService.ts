@@ -6,19 +6,19 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
     const holidays = new Holidays('DE', 'BW');
     try{
         const lastTimeEntry = (await getLastTimeEntry(userid))[0];
-        if(starttime.getDay() == 0 || starttime.getDay() == 6){ //keine arbeit am wochenende
+        if(starttime.getDay() == 0 || starttime.getDay() == 6){ //no work on weekends
             return "not able to work on weekends";
         }
-        if(holidays.isHoliday(new Date(starttime.getFullYear(), starttime.getMonth(), starttime.getDate()))){ //keine Arbeit an Feiertagen
+        if(holidays.isHoliday(new Date(starttime.getFullYear(), starttime.getMonth(), starttime.getDate()))){ //no work on holidays
             return "not able to work on holidays";
         }
-        if(starttime.getHours() >= 23 || starttime.getHours() < 6){ //nur arbeiten zwischen 6 und 23 Uhr möglich
+        if(starttime.getHours() >= 23 || starttime.getHours() < 6){ //only possible work between 6 and 23 o'clock
             return "out of working time";    
         }
-        if(lastTimeEntry && lastTimeEntry.endTime == null){ //überprüfen ob letzter Eintrag für den Benutzer noch kein Endzeitpunkt hat
+        if(lastTimeEntry && lastTimeEntry.endTime == null){ //show if last time entry has an end time
             return "last time entry has no endtime";     
         }       
-        if(endtime && endtime < starttime){
+        if(endtime && endtime < starttime){  //look if endtime is before starttime
             return "endtime is before starttime";
         }
         const timeEntry = await createTimeEntry(userid, starttime, type, endtime);
@@ -39,10 +39,10 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date, u
         if(timeEntry.userId !== userid){
             return "not authorized to modify this entry";
         }
-        if(timeEntry.endTime != null){//überprüfen ob es nicht schon einen endzeitpunkt gibt
+        if(timeEntry.endTime != null){
             return "end time is already set";
         }
-        if(timeEntry.startTime != null && timeEntry.startTime > newEndTime){ //überprüfen ob die endzeit nach der startzeit liegt
+        if(timeEntry.startTime != null && timeEntry.startTime > newEndTime){
             return "end time is before start time";
         }
         const endTime = await setEndTime(timeEntryId, newEndTime);
