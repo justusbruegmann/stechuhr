@@ -41,6 +41,11 @@
     background-color: #000;
 }
 
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .spinner {
     width: 1rem;
     height: 1rem;
