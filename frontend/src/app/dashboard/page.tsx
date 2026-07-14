@@ -62,7 +62,7 @@ export default function Dashboard() {
 
         localStorage.setItem("role", login.role);
         const notificationList = await getNotificationList(token, Number(userid));
-        if (notificationList && notificationList != 400 && notificationList != 401) {
+        if (notificationList && notificationList != 400 && notificationList != 401 && notificationList != 500) {
             setNotifications(notificationList);
         }
     }

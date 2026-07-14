@@ -77,8 +77,8 @@ export async function patchNotification(token: string, userId: number, notificat
     if (response.status === 400) {
         return 400;
     }
-    if (response.status === 200) {
-        return await response.json();
+    if (response.status === 204) {
+        return 204;
     }
 }
 
@@ -96,7 +96,7 @@ export async function deleteNotification(token: string, userId: number, notifica
     if (response.status === 400) {
         return 400;
     }
-    if (response.status === 200) {
-        return await response.json();
+    if (response.status === 204) {
+        return 204;
     }
 }
