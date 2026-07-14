@@ -37,7 +37,7 @@ router.post("/login/", async (req, res) => {
             return res.status(404).send("Not Found");
         }
         if (authUser?.succes) {
-            return res.status(200).json({
+            return res.status(201).json({
                 "id": authUser.userId,
                 "session": authUser.sessionToken,
                 "role": authUser.role
