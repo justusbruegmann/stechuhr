@@ -30,11 +30,6 @@ type UserWithSummaryEntries = User & {
 export default function ManagerView() {
     const router = useRouter();
 
-
-    console.log(todayDateString());
-    console.log(startOfTheWeekDateString());
-    console.log(startOfTheMonthDateString());
-
     /**
      * Loading and storing users
      */
@@ -171,7 +166,6 @@ export default function ManagerView() {
                 </tr>);
         }
     );
-
 
     return (
         <>
