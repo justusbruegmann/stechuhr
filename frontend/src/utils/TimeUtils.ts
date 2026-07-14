@@ -1,4 +1,4 @@
-import TimeEntry from "@/types/TimeEntry";
+import {TimeEntry} from "@/types/TimeEntry";
 
 export function formatDate(date: Date): string {
     return `${String(date.getDate()).padStart(2, '0')}.${
@@ -65,4 +65,28 @@ export function getTimeEntriesByTimespan(
     return Object.entries(entries)
         .filter(([dateString]) => isInRange(dateString))
         .flatMap(([, timeEntries]) => timeEntries);
+}
+
+function generateDateString(date: Date): string {
+    return date.toISOString().slice(0, 10);
+}
+
+export function todayDateString() {
+    return generateDateString(new Date());
+}
+
+
+export function startOfTheWeekDateString() {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - daysToMonday);
+    return generateDateString(startOfWeek);
+}
+
+export function startOfTheMonthDateString() {
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    return generateDateString(startOfMonth);
 }

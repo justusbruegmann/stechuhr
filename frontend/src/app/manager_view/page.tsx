@@ -15,6 +15,8 @@ import {capitalize} from "@/utils/StringUtils";
 import EditUserModal from "@/components/managerView/editUserModal";
 import Summary from "@/types/summary";
 import {getSummaryForUser} from "@/scripts/summary";
+import {startOfTheMonthDateString, startOfTheWeekDateString, todayDateString} from "@/utils/TimeUtils";
+import {DateString} from "@/types/misc";
 
 
 type UserWithSummaryEntries = User & {
@@ -59,21 +61,37 @@ export default function ManagerView() {
 
         if (!Array.isArray(response)) return;
 
-        const summaries = await Promise.all(
-            response.map((user: User) => loadSummary(user.id))
+        const summariesMonth = await Promise.all(
+            response.map((user: User) => loadSummary(user.id, startOfTheMonthDateString(), todayDateString())
+                .catch((e) => {
+                        console.error(e);
+                        return undefined;
+                    }
+                ))
+        );
+
+        const summariesWeek = await Promise.all(
+            response.map((user: User) => loadSummary(user.id, startOfTheWeekDateString(), todayDateString())
+                .catch((e) => {
+                        console.error(e);
+                        return undefined;
+                    }
+                ))
         );
 
         const extendedUser: UserWithSummaryEntries[] = response.map((user: User, index: number) => {
-            const summary = summaries[index];
+            const summaryMonth = summariesMonth[index];
+            const summaryWeek = summariesWeek[index];
 
-            console.log(`Loaded summary for user ${user.id}: ${JSON.stringify(summary)}`);
+            console.log(`Loaded summary for user ${user.id}: ${JSON.stringify(summaryMonth)}`);
+            console.log(`Loaded summary for user ${user.id}: ${JSON.stringify(summaryWeek)}`);
 
             return {
                 ...user,
                 summaryEntries: {
-                    vacationDaysThisYear: summary?.vacationDaysTaken ?? null,
-                    sickDaysThisYear: summary?.sickDaysTaken ?? null,
-                    hoursWorkedThisWeek: summary ? Math.floor(summary.timeWorkedInMinutes / 60) : null
+                    vacationDaysThisYear: summaryMonth?.vacationDaysTaken ?? null,
+                    sickDaysThisYear: summaryMonth?.sickDaysTaken ?? null,
+                    hoursWorkedThisWeek: summaryWeek ? Math.floor(summaryWeek.timeWorkedInMinutes / 60) : null
                 }
             };
         });
@@ -90,8 +108,8 @@ export default function ManagerView() {
      */
     const currentYear = new Date().getFullYear();
 
-    async function loadSummary(userId: number): Promise<Summary | undefined> {
-        return await getSummaryForUser(userId, "2026-01-01", "2026-07-01")
+    async function loadSummary(userId: number, startDate: DateString, endDate: DateString): Promise<Summary | undefined> {
+        return await getSummaryForUser(userId, startDate, endDate)
             .catch((e) => {
                 console.error(e);
                 return undefined;
