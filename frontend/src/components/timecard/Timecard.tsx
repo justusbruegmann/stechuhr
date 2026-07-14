@@ -18,6 +18,7 @@ interface PopupProps {
 export default function Timecard({openOverview, addEntry}: PopupProps) {
     const [time, setTime] = useState<Date | null>(null);
     const [clicked, setClicked] = useState(true);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -80,11 +81,14 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             return;
         }
         const {token, userid} = auth;
+        setLoading(true);
         const result = await createTimeEntry(token, userid, buttonClickedTime, "work");
+        setLoading(false);
         if(result == 401 || !result?.id){
             console.error("Fehler beim Einstempeln", result);
             return;
         }
+        setClicked(false);
         addEntry(new Date(result.startTime), mapEntry(result));
     }
 
@@ -94,18 +98,22 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             return;
         }
         const {token, userid} = auth;
+        setLoading(true);
         const result = await getLastTimeEntry(token, userid);
         if(result == 401 || !result || !Array.isArray(result)){
             console.error("Fehler beim holen des letzten Zeiteintrags", result);
+            setLoading(false);
             return;
         }
         const lastTimeEntry = result[0];
         const buttonClickedTime = new Date();
         const update = await setEndTime(token, userid, parseInt(lastTimeEntry.id), buttonClickedTime);
+        setLoading(false);
         if(update == 401 || !update?.id){
             console.error("Fehler beim Ausstempeln", result);
             return;
         }
+        setClicked(true);
         addEntry(new Date(update.startTime), mapEntry(update));
     }
 
@@ -132,18 +140,17 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
                 <span className={`${Styles["workTimeTextBody"]}`}>0h 0m</span>
             </div>
             <Button onClick={() => {
-                const newClicked = !clicked;
-                setClicked(newClicked);
-                const action = newClicked ? "Ausgestochen: " : "Eingestochen: ";
-                console.log(action + new Date());
-                if(!newClicked){
+                if(loading){
+                    return;
+                }
+                if(clicked){
                     setTimeEntry();
                 }
                 else{
                     setEndTimeEntry();
                 }
             }}
-            label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked ? "success" : "error"} height={2.5} width={"100%"}>
+            label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked ? "success" : "error"} height={2.5} width={"100%"} loading={loading}>
             </Button>
             <hr className={Styles["gap"]}></hr>
             <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"}
