@@ -1,4 +1,4 @@
-import {TimeEntry} from "@/types/TimeEntry";
+import TimeEntry from "@/types/TimeEntry";
 
 export function formatDate(date: Date): string {
     return `${String(date.getDate()).padStart(2, '0')}.${
