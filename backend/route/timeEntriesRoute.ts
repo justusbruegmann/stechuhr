@@ -53,6 +53,9 @@ router.patch('/timeentries/:id', authMiddleware("user", true), async (req, res) 
             return res.status(400).send("endtime is not valid");
         }
         const timeEntryId = Number(req.params.id);
+        if (isNaN(timeEntryId)) {
+            return res.status(400).send("invalid id");
+        }
         const userid = res.locals.user.id;
         const patchEndTime = await setEndTimeService(timeEntryId, new Date(reqBody.endtime), userid);
         if(patchEndTime == "time entry not found"){
@@ -75,6 +78,9 @@ router.patch('/timeentries/:id', authMiddleware("user", true), async (req, res) 
 router.get('/users/:userId/timeentries', authMiddleware("user", true), async (req, res) => {
     try{
         const userid = Number(req.params.userId);
+        if(isNaN(userid)){
+            return res.status(400).send("invalid id");
+        }
         if (userid !== res.locals.user.id) {
             return res.status(403).send("not allowed");
         }
@@ -108,6 +114,9 @@ router.get('/timeentries/last', authMiddleware("user", true), async (req, res) =
 router.get('/timeentries/:id', authMiddleware("user", true), async (req, res) => {
     try{
         const timeEntryId = Number(req.params.id);
+        if (isNaN(timeEntryId)) {
+            return res.status(400).send("invalid id");
+        }
         const userid = res.locals.user.id;
         const singleTimeEntry = await getSingleTimeEntryService(timeEntryId, userid);
         if(singleTimeEntry=="no time entry found"){
@@ -127,6 +136,9 @@ router.get('/timeentries/:id', authMiddleware("user", true), async (req, res) =>
 router.delete('/timeentries/:id', authMiddleware("user", true),async (req,res) => {
     try{
         const deletedTimeEntry = Number(req.params.id);
+        if (isNaN(deletedTimeEntry)) {
+            return res.status(400).send("invalid id");
+        }
         const userid = res.locals.user.id;
         const result = await deleteTimeEntryService(deletedTimeEntry, userid);
         if(result == "time entry not found" || result == "not authorized to delete this entry"){
