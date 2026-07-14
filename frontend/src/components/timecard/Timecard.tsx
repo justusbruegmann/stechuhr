@@ -6,7 +6,7 @@ import Card from "@/components/layout/Card";
 import Image from "next/image";
 import React, {useEffect, useState} from "react";
 import TimeEntry from "@/types/TimeEntry";
-import {createTimeEntry, getLastTimeEntry, setEndTime} from "@/scripts/timeEntriesScript";
+import {createTimeEntry, getLastTimeEntry, setEndTime, getTimeEntries} from "@/scripts/timeEntriesScript";
 import { useRouter } from "next/navigation";
 
 
@@ -14,11 +14,12 @@ interface PopupProps {
     openOverview: () => void;
     addEntry: (date: Date, entry: TimeEntry) => void;
 }
-
+//
 export default function Timecard({openOverview, addEntry}: PopupProps) {
     const [time, setTime] = useState<Date | null>(null);
     const [clicked, setClicked] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [todaysWorkTime, setTodaysWorkTime] = useState<{hours: number, minutes: number}>({hours: 0, minutes: 0});
     const router = useRouter();
 
     useEffect(() => {
@@ -26,12 +27,16 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
         const interval = setInterval(() => {
             setTime(new Date());
         }, 1000);
-
         return () => clearInterval(interval);
     }, []);
 
-    useEffect(() => {
+    useEffect(()=>{
+        getTodaysWorkTime();
         checkCurrentStatus();
+        const interval = setInterval(()=>{
+            getTodaysWorkTime();
+        }, 60000);
+        return() => clearInterval(interval);
     }, []);
 
     function checkAuth(){
@@ -117,6 +122,38 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
         addEntry(new Date(update.startTime), mapEntry(update));
     }
 
+    async function getTodaysWorkTime() {
+        const auth = checkAuth();
+        if (!auth){
+            return;
+        }
+        const { token, userid } = auth;
+
+        const todayString = new Date().toISOString().split("T")[0];
+        const result = await getTimeEntries(token, userid, "work", todayString);
+        if (result == 401 || !result || !Array.isArray(result)) {
+            console.error("Fehler beim Holen der Zeiteinträge.");
+            return;
+        }
+
+        let milisec = 0;
+
+        for (const entry of result) {
+            if (!entry.startTime){
+                continue;
+            }
+            const start = new Date(entry.startTime);
+            const end = entry.endTime ? new Date(entry.endTime) : new Date();
+            milisec += end.getTime() - start.getTime();
+        }
+
+        const totalMinutes = Math.floor(milisec / 60000);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        setTodaysWorkTime({ hours, minutes });
+    };
+
     return (
         <Card width={"22vw"} styleOverrides={{flexDirection: "column", padding: "1.5rem"}}>
             <div className={Styles["clock"]}><Image src={"/clock.svg"} width={40} height={40} alt={"Uhr"}></Image></div>
@@ -137,7 +174,7 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             </div>
             <div className={`${Styles["workTimeDiv"]}`}>
                 <span className={`${Styles["workTimeTextHeader"]}`}>Heute gearbeitet</span>
-                <span className={`${Styles["workTimeTextBody"]}`}>0h 0m</span>
+                <span className={`${Styles["workTimeTextBody"]}`}> {todaysWorkTime.hours}h {todaysWorkTime.minutes}m</span>
             </div>
             <Button onClick={() => {
                 if(loading){

@@ -28,9 +28,9 @@ router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
         if(
             createdTimeEntry == "not able to work on weekends"|| 
             createdTimeEntry == "out of working time" || 
-            createdTimeEntry == "last time entry has no end time" ||
+            createdTimeEntry == "last time entry has no endtime" ||
             createdTimeEntry == "not able to work on holidays" ||
-            createdTimeEntry == "end time is before startime"
+            createdTimeEntry == "endtime is before starttime"
         ){
             return res.status(400).json({"error": createdTimeEntry});
         }
