@@ -16,6 +16,7 @@ import {EmploymentRequest, employmentRequestSchema} from "../schemas/employment"
 import {isLoggedInUser, isUserManagedByManager} from "../utils/authorization";
 import {isValidUserId} from "../utils/inputValidation";
 import User from "../types/users";
+import {validateUserID} from "../middleware/validateUserID";
 
 const router = Router();
 
@@ -33,15 +34,18 @@ router.post('/users/', authMiddleware("admin"), validateBody, async (req, res) =
     }
 });
 
-router.put('/users/otp/:id', async (req, res) => {
+router.put('/users/otp/:id',validateUserID, async (req, res) => {
     try {
+
         const currentpwd: string = req.body.currentpwd;
         const newpwd: string = req.body.newpwd;
         const id = Number(req.params.id)
         if (!req.body) {
             return res.status(400).send("bad request");
         }
-        console.log({id, currentpwd, newpwd});
+        if (!currentpwd || !newpwd || typeof currentpwd !== "string" || typeof newpwd !== "string") {
+            return res.status(400).send("bad request");
+        }
         const isUser = await authUser(id, currentpwd);
         console.log(isUser);
         if (!isUser) {
@@ -58,7 +62,6 @@ router.put('/users/otp/:id', async (req, res) => {
 })
 
 router.get('/users/', authMiddleware("admin"), async (req, res) => {
-
     try {
         const users = await usersGet();
         return res.status(200).send(users);
@@ -67,7 +70,7 @@ router.get('/users/', authMiddleware("admin"), async (req, res) => {
     }
 })
 
-router.delete('/users/:id', authMiddleware("admin"), async (req, res) => {
+router.delete('/users/:id', validateUserID,authMiddleware("admin"), async (req, res) => {
     try {
         const deleteId = Number(req.params.id)
         const result = await userDelete(deleteId);
@@ -90,7 +93,7 @@ router.get('/users/managers/users', authMiddleware("manager"), async (req, res) 
     return res.status(200).send(result);
 })
 
-router.put('/users/:id/manager', authMiddleware("admin"), async (req, res) => {
+router.put('/users/:id/manager',validateUserID, authMiddleware("admin"), async (req, res) => {
     const userId: number = Number(req.params.id);
     if (!Number.isInteger(userId) || userId <= 0) {
         return res.status(400).send("invalid user id");
@@ -109,7 +112,7 @@ router.put('/users/:id/manager', authMiddleware("admin"), async (req, res) => {
     return res.sendStatus(204);
 })
 
-router.put('/users/:id/role', authMiddleware("admin"), async (req, res) => {
+router.put('/users/:id/role', validateUserID, authMiddleware("admin"), async (req, res) => {
 
     const userId: number = Number(req.params.id);
     if (!Number.isInteger(userId) || userId <= 0) {
