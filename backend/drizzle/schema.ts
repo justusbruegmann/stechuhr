@@ -41,7 +41,7 @@ export const timeEntries = pgTable("timeEntries", {
     userId: integer("userId").references(() => users.id, { onDelete: "cascade" }),
     startTime: timestamp("startTime", { withTimezone: true }).notNull(),
     endTime: timestamp("endTime", { withTimezone: true }),
-    type: timeEntryTypeEnum("type").notNull(),
+    type: time_entry_type("type").notNull(),
 });
 
 export const requests = pgTable("requests", {
