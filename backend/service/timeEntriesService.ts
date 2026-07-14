@@ -16,10 +16,10 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
             return "out of working time";    
         }
         if(lastTimeEntry && lastTimeEntry.endTime == null){ //überprüfen ob letzter Eintrag für den Benutzer noch kein Endzeitpunkt hat
-            return "last time entry has no end time";     
+            return "last time entry has no endtime";     
         }       
         if(endtime && endtime < starttime){
-            return "end time is before startime";
+            return "endtime is before starttime";
         }
         const timeEntry = await createTimeEntry(userid, starttime, type, endtime);
         return timeEntry;
