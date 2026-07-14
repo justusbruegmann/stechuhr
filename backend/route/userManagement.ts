@@ -34,7 +34,7 @@ router.post('/users/', authMiddleware("admin"), validateBody, async (req, res) =
     }
 });
 
-router.put('/users/otp/:id',validateUserID, async (req, res) => {
+router.put('/users/otp/:id', validateUserID, async (req, res) => {
     try {
 
         const currentpwd: string = req.body.currentpwd;
@@ -70,7 +70,7 @@ router.get('/users/', authMiddleware("admin"), async (req, res) => {
     }
 })
 
-router.delete('/users/:id', validateUserID,authMiddleware("admin"), async (req, res) => {
+router.delete('/users/:id', validateUserID, authMiddleware("admin"), async (req, res) => {
     try {
         const deleteId = Number(req.params.id)
         const result = await userDelete(deleteId);
@@ -82,9 +82,12 @@ router.delete('/users/:id', validateUserID,authMiddleware("admin"), async (req, 
 })
 
 router.get('/users/managers', authMiddleware("admin"), async (req, res) => {
-
-    const result = await managerGet();
-    return res.status(200).send(result);
+    try {
+        const result = await managerGet();
+        return res.status(200).send(result);
+    } catch (e) {
+        return res.status(500).send("internal error")
+    }
 })
 
 router.get('/users/managers/users', authMiddleware("manager"), async (req, res) => {
@@ -93,37 +96,44 @@ router.get('/users/managers/users', authMiddleware("manager"), async (req, res) 
     return res.status(200).send(result);
 })
 
-router.put('/users/:id/manager',validateUserID, authMiddleware("admin"), async (req, res) => {
-    const userId: number = Number(req.params.id);
-    if (!Number.isInteger(userId) || userId <= 0) {
-        return res.status(400).send("invalid user id");
+router.put('/users/:id/manager', validateUserID, authMiddleware("admin"), async (req, res) => {
+    try {
+        const userId: number = Number(req.params.id);
+        if (!Number.isInteger(userId) || userId <= 0) {
+            return res.status(400).send("invalid user id");
+        }
+        const managerid: number = Number(req.body.managerid);
+        if (!Number.isInteger(managerid) || managerid <= 0) {
+            return res.status(400).send("invalid managerid");
+        }
+        const update = await managerUpdate(userId, managerid)
+        if (update === "manager does not exist") {
+            return res.status(400).send("manager does not exist");
+        }
+        if (update === "is not a manager") {
+            return res.status(400).send("is not a manager");
+        }
+        return res.sendStatus(204);
+    } catch (e) {
+        return res.status(500).send("internal error")
     }
-    const managerid: number = Number(req.body.managerid);
-    if (!Number.isInteger(managerid) || managerid <= 0) {
-        return res.status(400).send("invalid managerid");
-    }
-    const update = await managerUpdate(userId, managerid)
-    if (update === "manager does not exist") {
-        return res.status(400).send("manager does not exist");
-    }
-    if (update === "is not a manager") {
-        return res.status(400).send("is not a manager");
-    }
-    return res.sendStatus(204);
 })
 
 router.put('/users/:id/role', validateUserID, authMiddleware("admin"), async (req, res) => {
-
-    const userId: number = Number(req.params.id);
-    if (!Number.isInteger(userId) || userId <= 0) {
-        return res.status(400).send("invalid user id");
+    try {
+        const userId: number = Number(req.params.id);
+        if (!Number.isInteger(userId) || userId <= 0) {
+            return res.status(400).send("invalid user id");
+        }
+        const role: string = req.body.role;
+        const update = await roleUpdate(userId, role)
+        if (update === "invalid role") {
+            return res.status(400).send("invalid role");
+        }
+        return res.sendStatus(204);
+    } catch (e) {
+        return res.status(500).send("internal error")
     }
-    const role: string = req.body.role;
-    const update = await roleUpdate(userId, role)
-    if (update === "invalid role") {
-        return res.status(400).send("invalid role");
-    }
-    return res.sendStatus(204);
 })
 
 
@@ -196,8 +206,8 @@ router.get('/users/:id', authMiddleware("user", true), async (req, res) => {
 
 
 /**
-* Update workload and holidays
-**/
+ * Update workload and holidays
+ **/
 
 router.put('/users/:id/employment', authMiddleware("manager"), async (req, res) => {
 
