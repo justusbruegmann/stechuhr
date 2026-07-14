@@ -9,7 +9,7 @@ import User from "../types/users";
 const router = Router();
 
 router.get(
-    '/requests/',
+    '/requests',
     authMiddleware("user", true),
     validateQueryParameters(requestsRequestParameterSchema),
     async (req, res) => {
@@ -35,6 +35,19 @@ router.get(
             } catch {
                 return res.status(401).send("Unauthorized");
             }
+        }
+    });
+
+router.get(
+    '/requests/manager/:managerId',
+    authMiddleware("manager"),
+    async (req, res) => {
+        try {
+            const managerId = Number(req.params.managerId);
+            const requests = await requestsService.getAllRequestsAManagerIsResponsibleFor(managerId);
+            return res.status(200).json(requests);
+        } catch {
+            return res.status(404).send("Not Found");
         }
     });
 

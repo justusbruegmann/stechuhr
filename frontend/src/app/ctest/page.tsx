@@ -3,11 +3,17 @@
 import Button from "@/components/layout/Button";
 import {useModal} from "@/contexts/ModalContext";
 import TestComponent from "@/app/ctest/TestComponent";
+import { getAllRequestsAManagerIsResponsibleFor } from "@/scripts/requests";
 
 //asd
 export default function Ctest() {
 
     const {showModal} = useModal();
+
+    async function a(){
+        const request = await getAllRequestsAManagerIsResponsibleFor();
+        console.log(request);
+    }
 
     return (
         <>
@@ -41,7 +47,8 @@ export default function Ctest() {
                         showModal("spinningLoader", <p>Logging in</p>)
                     }/>
             <br/>
-
+            
+            <Button label={"Get requests a manager is responsible for"} type="primary" height={3} width={15} onClick={() => a()}/>
         </>
     )
         ;

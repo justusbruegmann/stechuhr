@@ -10,3 +10,8 @@ export async function getAllRequestsForUser(userId: number): Promise<Request[]> 
     const url = `${BASE_URL}/requests?userId=${userId}`;
     return await sendRequest("GET", url);
 }
+
+export async function getAllRequestsAManagerIsResponsibleFor(): Promise<Request[]> {
+    const url = `${BASE_URL}/requests/manager/22`;
+    return await sendRequest("GET", url);
+}
