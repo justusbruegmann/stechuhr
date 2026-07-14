@@ -5,8 +5,6 @@ const router = Router();
 
 router.get('/auth/', async (req, res) => {
     try {
-
-
         let token: string | undefined = req.headers.authorization;
         let userId: number | undefined = Number(req.headers.userid);
         if (token && userId) {
@@ -34,8 +32,6 @@ router.get('/auth/', async (req, res) => {
 
 router.post("/login/", async (req, res) => {
     try {
-
-
         const body = req.body;
         if (!body) {
             return res.status(400).send("Not Found Body");
