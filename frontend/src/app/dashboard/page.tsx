@@ -12,6 +12,7 @@ import DailyDetailsPane from "@/components/timeAdjustment/DailyDetailsPane";
 import {useRouter} from "next/navigation";
 
 import {loginToken} from "@/scripts/auth";
+import {getTimeEntries} from "@/scripts/timeEntriesScript";
 
 
 export default function Dashboard() {
@@ -59,7 +60,30 @@ export default function Dashboard() {
     }
 
     useEffect( () => {
-        authCheck().then(r => console.log("Logged in"));
+        authCheck().then(async (r) => {
+            const token = localStorage.getItem("token")
+            const userid = localStorage.getItem("userid")
+
+            if (!token || !userid) {
+                router.push("/login")
+                return
+            }
+
+            const now = new Date();
+
+            const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const toLocalYMD = (d: Date) =>
+                `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+            const startDate = toLocalYMD(firstDayOfMonth);
+            const endDate = toLocalYMD(lastDayOfMonth);
+
+            //TODO: add for each type
+            const timeEntries = await getTimeEntries(token,Number(userid),"work",startDate,endDate);
+            setDailyEntries(timeEntries);
+        });
+
     }, [router])
 
 
