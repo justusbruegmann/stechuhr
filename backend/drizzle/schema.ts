@@ -20,8 +20,11 @@ export const sessions = pgTable("sessions", {
 });
 
 // Enums — replace values with your actual enum values
-export const time_entry_type = pgEnum("time_entry_type", ["work", "holiday", "sick"]);
-
+export const timeEntryTypeEnum = pgEnum("time_entry_type", [
+    "work",
+    "break",
+    // ... your actual values
+]);
 
 export const requestTypeEnum = pgEnum("request_type", [
     "vacation",
@@ -41,7 +44,7 @@ export const timeEntries = pgTable("timeEntries", {
     userId: integer("userId").references(() => users.id, { onDelete: "cascade" }),
     startTime: timestamp("startTime", { withTimezone: true }).notNull(),
     endTime: timestamp("endTime", { withTimezone: true }),
-    type: time_entry_type("type").notNull(),
+    type: timeEntryTypeEnum("type").notNull(),
 });
 
 export const requests = pgTable("requests", {
