@@ -72,7 +72,7 @@ function generateDateString(date: Date): string {
 }
 
 /**
- * This strange workaround only exists because timezones are a pain in the arse and javascript Dates can not be created
+ * This strange workaround only exists because timezones are a pain in the ass(rse) and javascript Dates can not be created
  * with an explicit timezone.
  */
 function dateInUTC(year: number, month: number, day: number): Date {
