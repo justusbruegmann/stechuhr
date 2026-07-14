@@ -7,7 +7,7 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
     try{
         const lastTimeEntry = (await getLastTimeEntry(userid))[0];
         if(starttime.getDay() == 0 || starttime.getDay() == 6){ //keine arbeit am wochenende
-            return "not able to work on weekends";  
+            return "not able to work on weekends";
         }
         if(holidays.isHoliday(new Date(starttime.getFullYear(), starttime.getMonth(), starttime.getDate()))){ //keine Arbeit an Feiertagen
             return "not able to work on holidays";

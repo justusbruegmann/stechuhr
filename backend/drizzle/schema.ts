@@ -11,6 +11,7 @@ export const users = pgTable("users", {
     holidays: integer("holidays").notNull().default(30),
 });
 
+
 export const sessions = pgTable("sessions", {
     id: serial("id").primaryKey(),
     userid: integer("userid").references(() => users.id),
@@ -18,7 +19,7 @@ export const sessions = pgTable("sessions", {
     expiresat: timestamp("expiresat"),
 });
 
-export const requestTypeEnum = pgEnum("request_type", ["vacation", "sick"]);
+export const requestTypeEnum = pgEnum("request_type", ["holiday", "sick"]);
 
 export const notificationTypeEnum = pgEnum("notification_type", ["info", "warning"]);
 

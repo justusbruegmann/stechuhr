@@ -46,7 +46,6 @@ import userMangement from "./route/userManagement";
 import auth from "./route/auth"
 import summary from "./route/summary";
 import timeEntriesRoute from "./route/timeEntriesRoute";
-import {authMiddleware} from "./middleware/auth";
 
 app.use(userMangement);
 app.use(auth);
