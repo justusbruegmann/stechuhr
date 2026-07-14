@@ -9,7 +9,6 @@ declare global {
     namespace Express {
         interface Locals {
             user: AuthUser;
-            queryParams?: SummaryRequestParameter;
         }
     }
 }

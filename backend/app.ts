@@ -45,11 +45,13 @@ app.use(express.json());
 import userMangement from "./route/userManagement";
 import auth from "./route/auth"
 import summary from "./route/summary";
+import requests from "./route/requests";
 import {authMiddleware} from "./middleware/auth";
 
 app.use(userMangement);
 app.use(auth);
 app.use(summary);
+app.use(requests);
 
 app.get("/", (req, res) => {
     res.send("hello world");

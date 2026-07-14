@@ -27,7 +27,7 @@ export const timeEntryTypeEnum = pgEnum("time_entry_type", [
 ]);
 
 export const requestTypeEnum = pgEnum("request_type", [
-    "vacation",
+    "holiday",
     "sick",
     // ... your actual values
 ]);
