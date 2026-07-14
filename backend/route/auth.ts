@@ -13,7 +13,6 @@ router.get('/auth/', async (req, res) => {
             return res.status(404).send("Not Found");
         }
         if (authUser?.succes) {
-            console.log(authUser.succes);
             return res.status(200).json({"role": authUser.role, "id": authUser.userId});
         } else {
             if (authUser.message === "Unauthorized") {
