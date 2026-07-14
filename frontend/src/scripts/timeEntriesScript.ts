@@ -16,6 +16,11 @@ export async function createTimeEntry(token: string,userid: number, startTime: D
         "type": type
     };
     const response = await fetch(url, {method:"POST", body: JSON.stringify(body), headers: headers});
+    const text = await response.text();
+    if(text === "admins are not allowed to clock in"){
+        alert(text);
+        return;
+    }
     if(response.status == 400){
         return 400;
     }
