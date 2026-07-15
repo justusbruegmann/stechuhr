@@ -89,6 +89,9 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
         setLoading(true);
         const result = await createTimeEntry(token, userid, buttonClickedTime, "work");
         setLoading(false);
+        if(!result || result.error === "Admins are not allowed to clock in."){
+            return alert(result.error);
+        }
         if(result == 401 || !result?.id){
             console.error("Fehler beim Einstempeln", result);
             return;

@@ -4,13 +4,16 @@ import { authMiddleware } from "../middleware/auth";
 
 const router = Router();
 
-//create time entry
+//create timeentry
 router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
     try{
         const reqBody: any = req.body;
         const validTypes = ["work", "holiday", "sick"];
         if(!reqBody?.type || !validTypes.includes(reqBody.type)){
             return res.status(400).send("type is required and has to be work, holiday or sick");
+        }
+        if (res.locals.user.role === "admin") {
+            return res.status(400).json({error: "Admins are not allowed to clock in."});
         }
         if(!reqBody.starttime){
             return res.status(400).send("starttime is needed");
