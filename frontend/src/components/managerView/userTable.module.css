@@ -22,18 +22,26 @@
 }
 
 .table th {
-    text-align: left;
+    text-align: center;
     padding: 12px 16px;
     font-weight: 600;
     font-size: 0.9rem;
     border-bottom: 1px solid rgba(var(--sick-blue-rgb), 0.05);
 }
 
+.table th:first-child {
+    text-align: left;
+}
+
 .table tbody td {
     padding: 14px 16px;
     font-size: 0.95rem;
-    color: #334155;
+    text-align: center;
     border-bottom: 1px solid rgba(var(--sick-blue-rgb), 0.05);
+}
+
+.table tbody td:first-child {
+    text-align: left;
 }
 
 .table tbody tr:hover {

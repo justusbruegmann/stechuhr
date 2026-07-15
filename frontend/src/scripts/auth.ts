@@ -31,7 +31,7 @@ export async function loginUsername(username: string, password: string) {
     const headers = {"content-type": "application/json"};
     const body = {"username": username.toLowerCase(), "password": password};
     const response = await fetch(url, {method: "post", body: JSON.stringify(body), headers: headers});
-    if (response.status === 200) {
+    if (response.status === 201) {
         return await response.json();
     }
     if (response.status === 401) {

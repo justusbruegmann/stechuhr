@@ -2,13 +2,12 @@
 import styles from "./manage.module.css";
 import User from "@/types/User";
 
-import React, {useEffect} from "react"
+import React, {useEffect,useState} from "react"
 
 import Button from "@/components/layout/Button";
 import Header from "@/components/layout/Header";
 import UserItem from "@/components/usermanagement/userItem";
 import UserItemHeader from "@/components/usermanagement/userItemHeader";
-import Image from "next/image";
 import {useModal} from "@/contexts/ModalContext";
 import CopyToClipboard from "@/components/usermanagement/CopyToClipboard";
 
@@ -16,8 +15,8 @@ import {getUsers, createUser, deleteUser, getManagers} from "@/scripts/userManag
 
 
 export default function Manage() {
-    const [users, setUsers] = React.useState<User[]>([]);
-    const [managers, setManagers] = React.useState<any>([]);
+    const [users, setUsers] = useState<User[]>([]);
+    const [managers, setManagers] = useState<any>([]);
     const {showModal, updateModalContent} = useModal();
 
     useEffect(() => {
@@ -113,7 +112,7 @@ export default function Manage() {
                         let createModalId: string;
                         let closeCreateUserModal: () => void;
 
-                        const handleAnlegen = async () => {
+                        const addUser = async () => {
                             updateModalContent(createModalId, buildCreateContent(true));
                             const onetimePassword = await handleAddUser();
                             if (!onetimePassword) {
@@ -154,7 +153,7 @@ export default function Manage() {
                                 <input type="number" id={"holidaysInput"} className={styles.inputs}
                                        placeholder={"Number of holidays in Days"}/>
                                 <Button label={"Anlegen"} type={"accent"} height={2} width={"calc(100% - .75rem)"}
-                                        className={styles.inputs} loading={loading} onClick={handleAnlegen}/>
+                                        className={styles.inputs} loading={loading} onClick={addUser}/>
                             </div>
                         );
 

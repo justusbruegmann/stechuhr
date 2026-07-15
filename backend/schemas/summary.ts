@@ -1,17 +1,19 @@
 import * as z from 'zod';
+import {generateTodayDateString} from "../utils/timeUtils";
+
+const dateStringSchema = z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/);
 
 export const summaryRequestParameterSchema = z.object(
     {
         userId: z
-            .coerce.number(),
-        startTime: z
-            .iso.datetime()
-            .pipe(z.coerce.date()),
-        endTime: z
-            .iso.datetime()
+            .coerce.number()
+            .positive(),
+        startDate: dateStringSchema,
+        endDate: dateStringSchema
             .optional()
-            .default(() => new Date().toISOString())
-            .pipe(z.coerce.date()),
+            .default(() => generateTodayDateString()),
     }
 )
 

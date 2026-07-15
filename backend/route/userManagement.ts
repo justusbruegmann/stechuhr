@@ -16,6 +16,7 @@ import {EmploymentRequest, employmentRequestSchema} from "../schemas/employment"
 import {isLoggedInUser, isUserManagedByManager} from "../utils/authorization";
 import {isValidUserId} from "../utils/inputValidation";
 import User from "../types/users";
+import {validateUserID} from "../middleware/validateUserID";
 
 const router = Router();
 
@@ -33,15 +34,18 @@ router.post('/users/', authMiddleware("admin"), validateBody, async (req, res) =
     }
 });
 
-router.put('/users/otp/:id', async (req, res) => {
+router.put('/users/otp/:id', validateUserID, async (req, res) => {
     try {
+
         const currentpwd: string = req.body.currentpwd;
         const newpwd: string = req.body.newpwd;
         const id = Number(req.params.id)
         if (!req.body) {
             return res.status(400).send("bad request");
         }
-        console.log({id, currentpwd, newpwd});
+        if (!currentpwd || !newpwd || typeof currentpwd !== "string" || typeof newpwd !== "string") {
+            return res.status(400).send("bad request");
+        }
         const isUser = await authUser(id, currentpwd);
         console.log(isUser);
         if (!isUser) {
@@ -58,7 +62,6 @@ router.put('/users/otp/:id', async (req, res) => {
 })
 
 router.get('/users/', authMiddleware("admin"), async (req, res) => {
-
     try {
         const users = await usersGet();
         return res.status(200).send(users);
@@ -67,7 +70,7 @@ router.get('/users/', authMiddleware("admin"), async (req, res) => {
     }
 })
 
-router.delete('/users/:id', authMiddleware("admin"), async (req, res) => {
+router.delete('/users/:id', validateUserID, authMiddleware("admin"), async (req, res) => {
     try {
         const deleteId = Number(req.params.id)
         const result = await userDelete(deleteId);
@@ -79,9 +82,12 @@ router.delete('/users/:id', authMiddleware("admin"), async (req, res) => {
 })
 
 router.get('/users/managers', authMiddleware("admin"), async (req, res) => {
-
-    const result = await managerGet();
-    return res.status(200).send(result);
+    try {
+        const result = await managerGet();
+        return res.status(200).send(result);
+    } catch (e) {
+        return res.status(500).send("internal error")
+    }
 })
 
 router.get('/users/managers/users', authMiddleware("manager"), async (req, res) => {
@@ -90,37 +96,44 @@ router.get('/users/managers/users', authMiddleware("manager"), async (req, res) 
     return res.status(200).send(result);
 })
 
-router.put('/users/:id/manager', authMiddleware("admin"), async (req, res) => {
-    const userId: number = Number(req.params.id);
-    if (!Number.isInteger(userId) || userId <= 0) {
-        return res.status(400).send("invalid user id");
+router.put('/users/:id/manager', validateUserID, authMiddleware("admin"), async (req, res) => {
+    try {
+        const userId: number = Number(req.params.id);
+        if (!Number.isInteger(userId) || userId <= 0) {
+            return res.status(400).send("invalid user id");
+        }
+        const managerid: number = Number(req.body.managerid);
+        if (!Number.isInteger(managerid) || managerid <= 0) {
+            return res.status(400).send("invalid managerid");
+        }
+        const update = await managerUpdate(userId, managerid)
+        if (update === "manager does not exist") {
+            return res.status(400).send("manager does not exist");
+        }
+        if (update === "is not a manager") {
+            return res.status(400).send("is not a manager");
+        }
+        return res.sendStatus(204);
+    } catch (e) {
+        return res.status(500).send("internal error")
     }
-    const managerid: number = Number(req.body.managerid);
-    if (!Number.isInteger(managerid) || managerid <= 0) {
-        return res.status(400).send("invalid managerid");
-    }
-    const update = await managerUpdate(userId, managerid)
-    if (update === "manager does not exist") {
-        return res.status(400).send("manager does not exist");
-    }
-    if (update === "is not a manager") {
-        return res.status(400).send("is not a manager");
-    }
-    return res.sendStatus(204);
 })
 
-router.put('/users/:id/role', authMiddleware("admin"), async (req, res) => {
-
-    const userId: number = Number(req.params.id);
-    if (!Number.isInteger(userId) || userId <= 0) {
-        return res.status(400).send("invalid user id");
+router.put('/users/:id/role', validateUserID, authMiddleware("admin"), async (req, res) => {
+    try {
+        const userId: number = Number(req.params.id);
+        if (!Number.isInteger(userId) || userId <= 0) {
+            return res.status(400).send("invalid user id");
+        }
+        const role: string = req.body.role;
+        const update = await roleUpdate(userId, role)
+        if (update === "invalid role") {
+            return res.status(400).send("invalid role");
+        }
+        return res.sendStatus(204);
+    } catch (e) {
+        return res.status(500).send("internal error")
     }
-    const role: string = req.body.role;
-    const update = await roleUpdate(userId, role)
-    if (update === "invalid role") {
-        return res.status(400).send("invalid role");
-    }
-    return res.sendStatus(204);
 })
 
 
@@ -212,7 +225,7 @@ router.patch('/users/:id/employment', authMiddleware("manager"), async (req, res
     try {
         user = await service.getUserById(userId);
     } catch (e) {
-        res.status(500).send("internal error");
+        return res.status(500).send("internal error");
     }
 
     if (!user) {
@@ -225,7 +238,7 @@ router.patch('/users/:id/employment', authMiddleware("manager"), async (req, res
 
     // Action
     await service.updateEmploymentDetails(userId, updateFields).catch(_ => {
-        res.status(500).send("internal error");
+        return res.status(500).send("internal error");
     });
     return res.sendStatus(204);
 })

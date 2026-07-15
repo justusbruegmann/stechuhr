@@ -12,6 +12,7 @@ type Props = {
     className?: string;
     style?: React.CSSProperties;
     loading?: boolean;
+    disabled?: boolean;
 };
 
 export default function Button({
@@ -22,7 +23,8 @@ export default function Button({
                                    onClick,
                                    className,
                                    style,
-                                   loading
+                                   loading,
+                                   disabled
                                }: Props) {
     const variantClass =
         type === 'primary' ? styles['button-normal']
@@ -40,7 +42,7 @@ export default function Button({
     // @ts-ignore
     return (
         <div className={styles.wrapper} style={mergedStyle}>
-            <button className={mergedClassName} style={{height: '100%', width: '100%'}} onClick={onClick}>
+            <button className={mergedClassName} style={{height: '100%', width: '100%'}} onClick={onClick} disabled={disabled || loading}>
                 {loading ? <span className={styles.spinner} /> : label}
             </button>
         </div>

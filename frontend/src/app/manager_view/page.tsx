@@ -6,13 +6,16 @@ import Header from "@/components/layout/Header";
 import {useModal} from "@/contexts/ModalContext";
 import styles from './manager_view.module.css';
 
-
 import {getUsersForManager} from "@/scripts/userManagement";
 import UserTable from "@/components/managerView/userTable";
 import Button from "@/components/layout/Button";
 import {useRouter} from "next/navigation";
 import {capitalize} from "@/utils/StringUtils";
 import EditUserModal from "@/components/managerView/editUserModal";
+import Summary from "@/types/summary";
+import {getSummaryForUser} from "@/scripts/summary";
+import {startOfTheMonthDateString, startOfTheWeekDateString, todayDateString} from "@/utils/TimeUtils";
+import {DateString} from "@/types/misc";
 
 
 type UserWithSummaryEntries = User & {
@@ -26,7 +29,6 @@ type UserWithSummaryEntries = User & {
 
 export default function ManagerView() {
     const router = useRouter();
-
 
     /**
      * Loading and storing users
@@ -56,17 +58,40 @@ export default function ManagerView() {
 
         if (!Array.isArray(response)) return;
 
-        const extendedUser: UserWithSummaryEntries[] = response.map((user: User) => ({
-            ...user,
-            summaryEntries: {
-                vacationDaysThisYear: null,
-                sickDaysThisYear: null,
-                hoursWorkedThisWeek: null
-            }
-        }));
+        const summariesMonth = await Promise.all(
+            response.map((user: User) => loadSummary(user.id, startOfTheMonthDateString(), todayDateString())
+                .catch((e) => {
+                        console.error(e);
+                        return undefined;
+                    }
+                ))
+        );
 
-        const usersRecord = Object.fromEntries(extendedUser.map(user => [user.id, user]));
-        setUsers(usersRecord);
+        const summariesWeek = await Promise.all(
+            response.map((user: User) => loadSummary(user.id, startOfTheWeekDateString(), todayDateString())
+                .catch((e) => {
+                        console.error(e);
+                        return undefined;
+                    }
+                ))
+        );
+
+        const extendedUser: UserWithSummaryEntries[] = response.map((user: User, index: number) => {
+            const summaryMonth = summariesMonth[index];
+            const summaryWeek = summariesWeek[index];
+
+            return {
+                ...user,
+                summaryEntries: {
+                    vacationDaysThisYear: summaryMonth?.vacationDaysTaken ?? null,
+                    sickDaysThisYear: summaryMonth?.sickDaysTaken ?? null,
+                    hoursWorkedThisWeek: summaryWeek ? Math.floor(summaryWeek.timeWorkedInMinutes / 60) : null
+                }
+            };
+        });
+
+        const extendedUsers = Object.fromEntries(extendedUser.map(user => [user.id, user]));
+        setUsers(extendedUsers);
     }
 
 
@@ -75,14 +100,20 @@ export default function ManagerView() {
      */
     const currentYear = new Date().getFullYear();
 
+    async function loadSummary(userId: number, startDate: DateString, endDate: DateString): Promise<Summary | undefined> {
+        return await getSummaryForUser(userId, startDate, endDate)
+            .catch((e) => {
+                console.error(e);
+                return undefined;
+            });
+    }
+
 
     /**
      * Editing users
      */
     function generateUserUpdateFunction(userId: number) {
         return (updates: Partial<Record<keyof User, any>>): void => {
-
-            console.log(`Saving changes ${updates} to user ${userId}`);
 
             setUsers(prevUsers => {
                 const updatedUser = {
@@ -114,22 +145,27 @@ export default function ManagerView() {
             const user = users[Number(id)];
             return (
                 <tr key={user.id}>
-                    <td><b>{capitalize(user.username)}</b></td>
-                    <td><b>{(user.summaryEntries.vacationDaysThisYear || "?")}</b> / <b>{user.holidays}</b> Tage</td>
-                    <td><b>{user.summaryEntries.sickDaysThisYear || "?"}</b></td>
-                    <td><b>{(user.summaryEntries.hoursWorkedThisWeek || "?")}</b> / <b>{user.workload}</b> h</td>
+                    <td><b>{capitalize(user.username ?? "")}</b></td>
+                    <td className={(user.summaryEntries.vacationDaysThisYear ?? Number.MAX_VALUE) > user.holidays ? styles.warning : ""}>
+                        <b>{(user.summaryEntries.vacationDaysThisYear ?? "?")}</b> / <b>{user.holidays}</b> Tage
+                    </td>
+                    <td>
+                        <b>{user.summaryEntries.sickDaysThisYear ?? "?"}</b>
+                    </td>
+                    <td className={(user.summaryEntries.hoursWorkedThisWeek ?? Number.MAX_VALUE) > user.workload ? styles.warning : ""}>
+                        <b>{(user.summaryEntries.hoursWorkedThisWeek ?? "?")}</b> / <b>{user.workload}</b> h
+                    </td>
                     <td>
                         <div className={styles.buttonContainer}>
                             <Button label={"Bearbeiten"} type={"primary"}
                                     onClick={() => editUser(user.id)}/>
                             <Button label={"Anträge"} type={"accent"}
-                                    onClick={() => alert(`Mitarbeiter ${user.username} wird gefeuert!`)}/>
+                                    onClick={() => alert("Darf ich bitte bitte früher gehen?")}/>
                         </div>
                     </td>
                 </tr>);
         }
     );
-
 
     return (
         <>

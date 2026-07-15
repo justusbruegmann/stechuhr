@@ -22,7 +22,7 @@ export default function Page(){
     const [width, setWidth] = useState("20vw");
     const {showModal} = useModal();
 
-
+    //this useeffect AI geratet to center the card with window size
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 400) {
@@ -46,6 +46,12 @@ export default function Page(){
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
+    const handleEnter = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter" && !isDoing) {
+            await login();
+        }
+    };
+
     const login = async () => {
         setIsDoing(true);
         if (username.trim() && password.trim()) {
@@ -68,7 +74,7 @@ export default function Page(){
                     <PasswordChangeModal
                         password={password}
                         userId={result.response.userId}
-                        // einfach eine Function dem child übergeben
+                        // just give the chilt the function
                         onSuccess={() => {
                             close();
                             router.push("/login");
@@ -106,15 +112,16 @@ export default function Page(){
                     Login
                 </div>
                 <input type="text" id="usernameInput" className={`${styles["login-input"]}`} placeholder="  Username"
-                       onChange={(e) => setUsername(e.target.value)}/>
+                       onChange={(e) => setUsername(e.target.value)}   onKeyDown={handleEnter}/>
                 <input type="password" id="passwordInput" className={`${styles["login-input"]}`}
-                       placeholder="  Password" onChange={(e) => setPassword(e.target.value)}/>
+                       placeholder="  Password" onChange={(e) => setPassword(e.target.value)}   onKeyDown={handleEnter}/>
                 <div className={`${styles["login-center"]}`}>
                     {!validInputs && <p className={styles.invalidUsername}>Nutzername und Passwort sind ungültig </p>}
                 </div>
                 <Button style={{margin: '.75rem'}} label={"Login"} type={"accent"} height={2.5}
                         width={"calc(100% - 1rem)"}
-                        onClick={login} loading={isDoing}/>
+                        onClick={login} loading={isDoing}
+                />
             </Card>
         </div>
     );
