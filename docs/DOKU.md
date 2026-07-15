@@ -1,18 +1,117 @@
 # How2CenterADiv Stechuhr
 ## Matrikelnummern:
     - justusbruegmann: 4865545
-    - SebastianAnhalt: nummer Einfügen
+    - SebastianAnhalt: 7020807
     - mika630 : nummer Einfügen
     - FHG : nummer Einfügen Bitte beachten Github Email und git Email unterschiedlich da Firmen Laptop
     - brdly06: Nummer einfügen
 # Was macht die Anwendung? (Mika)
-# Setup der Dev Umgehbung
-# Starten der Anwendung
-# Struktur des Repo
+# Struktur des Repo (Sebastian)
+# Setup der Dev Umgebung (Justus)
+# Starten der Anwendung (Justus)
 # Webdesign (Aaron & Felix)
+
+
+
+# Struktur des Repositories
+Das Repository ist als Monorepo in zwei Hauptteilen aufgebaut: Backend und Frontend. Zusätzlich liegt die Dokumentation des gesamten Monorepos im Ordner /docs.
+
+Frontend und Backend sind eigenständige und voneinander losgelöste npm packages.
+
+## Frontend
+Das Frontend ist ein Next.js-Projekt, das auf der Vorlesungsvorlage mit React und TypeScript basiert.
+
+Dementsprechend beinhaltet der Root Ordner Konfigurationsdateien wie *.env*, *.gitignore*, *package.json*, etc., sowie die Assets in **/public** und den Quellcode-Ordner **/src**.
+Der Quellcode der Anwendung ist in folgenden Ordnern strukturiert:
+
+### /src/app
+Die Web-Anwendung verwendet den AppRouter, deshalb entspricht die Ordnerstruktur in /src/app den URL-Pfaden der Webseite.
+
+Im Allgemeinen hat jede Route zwingend eine page.tsx-Datei, deren Inhalt unter dieser URL gerendert und angezeigt wird.
+Außerdem können hier weitere Dateien wie z.B. CSS-Stylesheets (seitenname.module.css) oder lokal verwendete Components abgelegt sein.
+
+#### Routen
+**/**
+Enthält eine page.tsx, die nur eine Umleitung auf **/dashboard** auslöst.
+Zusätzlich dazu liegen hier auch allgemeine Konfigurationen der Webseite:
+- Das Favicon
+- Ein Stylesheet, das globale Variablen definiert
+- layout.tsx, welches den äußeren HTML-Rahmen der Seite definiert und benötigte Kontexte (hier nur ModalProvider) einbindet
+- Eine not-found Seite, die als catch-all auf alle nicht definierten Routen reagiert
+
+**/dashboard**
+Das Dashboard ist die Hauptseite der Anwendung.
+Sie enthält die Einstempelfunktion und einen Kalender.
+
+**/login**
+Die Login-Seite.
+
+**/admin_view**
+Eine Seite zur Benutzerverwaltung, auf die nur Admin-Accounts Zugriff haben.
+Hier können neue Benutzer angelegt, bestehende Benutzer gelöscht, und ihre Rollen und die Zuordnung zu Vorgesetzten (Managern) verändert werden.
+
+**/manager_view**
+Diese Seite wird nur für Manager-Accounts mit Inhalt befüllt, alle anderen sehen eine Fehlermeldung.
+Hierauf können Manager die Arbeitszeiten, Urlaubstage ihrer Mitarbeiter einsehen und bearbeiten, sowie eine Zusammenfassung der geleisteten Wochenarbeitszeit, genehmigter Urlaubstage und eingetragener Krankheitstage sehen.
+Außerdem können offene Anträge hier anzeigen lassen und akzeptieren / ablehnen.
+
+
+### /src/components
+Hier befinden sich alle React-Components.
+// ToDo
+
+
+
+## Backend
+Das Backend ist als Express-Server in TypeScript realisiert.
+
+Die Design-Philosophie des Backends ist ein Drei-Schichten-Modell, bestehend aus 
+1. HTTP-Layer in **./route**
+2. Domainlogik-Layer in **./service**
+3. Datenbank-Layer in **./repository**
+
+### HTTP Layer
+Hier werden die router-Objekte mitsamt Routen und Handler-Funktionen definiert.
+Authentifizierung wird hauptsächlich durch eingebundene Middleware aus dem Ordner **/middleware** umgesetzt.
+Autorisierung und Input-Validierung werden in den Handler-Funktionen geprüft.
+Nach erfolgreicher Prüfung wird die Domain-Logik aufgerufen.
+
+### Domainlogik-Layer
+Die Logik und eigentliche Backend-Funktionalität der Anwendung wird in den Services (**/service**) implementiert.
+Diese rufen die Repository-Funktionen auf, um mit der PostgreSQL-Datenbank auf Supabase zu kommunizieren.
+
+### Datenbank-Layer
+Die Datenbank-Konnektoren in /repository sind dünne Wrapper-Funktionen, die je eine einzelne SQL-Anfrage an die Datenbank beinhalten.
+Sie kennen keine Logik oder Validierung und sind ausschließlich für die strukturierte und einfach wartbare Kommunikation mit der Datenbank zuständig.
+
+### Sonstiges
+
+**/**
+Die Project Root beinhaltet die üblichen Konfigurationsdateien wie *.env*, *.gitignore*, *Dockerfile*, *package.json*, etc., sowie den Einstiegspunkt *app.ts* der Anwendung.
+
+**/drizzle**
+Der Drizzle-Ordner beinhaltet nur das ORM-Schema, auf dem die Datenbankverbindung der repository-Funktionen basiert.
+
+**/middleware**
+In diesem Ordner sind die Middleware-Funktionen abgelegt, die von mehreren Routen verwendet werden.
+
+**/schemas**
+Hier sind Zod-Schemas zur Input-Validierung definiert.
+
+**/types**
+Geteilte TypeScript types und interfaces sind hier abgelegt.
+
+**/utils**
+Hier befinden sich geteilte Hilfsfunktionen, die an verschiedenen Stellen in der Anwendung Verwendung finden.
+Sie sind grob nach Anwendungsgebiet gruppiert.
+
+
+
 # Eigenleistung
 ## Auth 4865545
 ### Ideen
+TODO: Ein Grund für eigene Auth und Login-Funktionalität war auch, dass zu spät kommuniziert wurde, welche Fremdpakete und Frameworks erlaubt waren. Dadurch hatten Arbeiten an den Funktionen bereits begonnen.
+
 Es wurde sich Aktiv gegen JWTs entschieden da dort der Zugang nicht schnell entfernt werden kann.
 Ebenfalls soll ein Admin als Verwalter Accounts erstellen da kein Mitarbeiter sein Account selbst anlegen soll.
 Im fall einer Kündigung oder ähnliches kann der Admin sehr schnell Zugang zur Zeiterfassung entfernen damit kein Unsinn getrieben wird.

@@ -14,7 +14,7 @@ export default function Header({name}: HeaderProps) {
 
     const LOGIN = "/login"
     const DASHBOARD = "/dashboard";
-    const ADMIN_VIEW = "/login/manage";
+    const ADMIN_VIEW = "/admin_view";
     const MANAGER_VIEW = "/manager_view";
 
     const currentPath = usePathname();
