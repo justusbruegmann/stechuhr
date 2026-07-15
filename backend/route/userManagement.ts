@@ -96,7 +96,7 @@ router.get('/users/managers/users', authMiddleware("manager"), async (req, res) 
     return res.status(200).send(result);
 })
 
-router.put('/users/:id/manager', validateUserID, authMiddleware("admin"), async (req, res) => {
+router.patch('/users/:id/manager', validateUserID, authMiddleware("admin"), async (req, res) => {
     try {
         const userId: number = Number(req.params.id);
         if (!Number.isInteger(userId) || userId <= 0) {
@@ -119,7 +119,7 @@ router.put('/users/:id/manager', validateUserID, authMiddleware("admin"), async 
     }
 })
 
-router.put('/users/:id/role', validateUserID, authMiddleware("admin"), async (req, res) => {
+router.patch('/users/:id/role', validateUserID, authMiddleware("admin"), async (req, res) => {
     try {
         const userId: number = Number(req.params.id);
         if (!Number.isInteger(userId) || userId <= 0) {
