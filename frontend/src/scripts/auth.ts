@@ -1,4 +1,4 @@
-
+import sendRequest from "@/utils/requestWrapper";
 const BASE_URL: string | undefined = process.env.NEXT_PUBLIC_BACKEND_URL;
 if (!BASE_URL) {
     throw new Error("no BASE_URL provided");
@@ -48,6 +48,8 @@ export async function loginUsername(username: string, password: string) {
 export async function otpChange(userid: number,currentpwd: string, newpwd: string) {
     const url = `${BASE_URL}/users/otp/${userid}`;
     const body = {"currentpwd": currentpwd, "newpwd": newpwd};
+    return await sendRequest("PATCH", url, body, undefined,true);
+    /*
     const headers = {"content-type": "application/json"};
     const response = await fetch(url, {method: "put", body: JSON.stringify(body), headers: headers});
     if (response.status === 200) {
@@ -58,6 +60,6 @@ export async function otpChange(userid: number,currentpwd: string, newpwd: strin
     }
     if (response.status === 400) {
         return 400;
-    }
+    }*/
 }
 

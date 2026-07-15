@@ -42,6 +42,7 @@ export function PasswordChangeModal({ password, userId, onSuccess }: any) {
                             let otpResult: any;
                             try {
                                 otpResult = await otpChange(Number(userId), password.trim(), newPassword.trim());
+                                otpResult = JSON.stringify(otpResult);
                             } catch (e) {
                                 console.log(e);
                             }
