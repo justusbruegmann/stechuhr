@@ -85,8 +85,8 @@ router.get('/users/:userId/timeentries', authMiddleware("user", true), async (re
             return res.status(403).send("not allowed");
         }
         const {type, startDate, endDate} = req.query;
-        if (!type || !["work", "holiday", "sick"].includes(type as string)) {
-            return res.status(400).send("type is required and must: work, holiday, sick");
+        if (type && !["work", "holiday", "sick"].includes(type as string)) {
+            return res.status(400).send("type must be: work, holiday, sick");
         }
         const start = startDate ? new Date(startDate as string) : undefined;
         const end = endDate ? new Date(endDate as string) : undefined;

@@ -17,8 +17,11 @@ export async function setEndTime(timeEntryId: number, endTime: Date) {
     return result[0];
 }
 
-export async function getTimeEntries(userId: number, type: string, startDate?: Date, endDate?: Date) {
-    const conditions = [eq(timeEntries.userId, userId), eq(timeEntries.type, type as "work" | "holiday" | "sick")];
+export async function getTimeEntries(userId: number, type?: string, startDate?: Date, endDate?: Date) {
+    const conditions = [eq(timeEntries.userId, userId)];
+    if(type){
+        conditions.push(eq(timeEntries.type, type as "work" | "holiday" | "sick"));
+    }
     if(startDate){
         conditions.push(gte(timeEntries.startTime, startDate));
     } 

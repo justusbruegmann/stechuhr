@@ -49,9 +49,11 @@ export async function setEndTime(token: string, userid: number, timeEntryId: num
     }
 }
 
-export async function getTimeEntries(token: string, userid: number, type: "work"|"holiday"|"sick", startDate?: string, endDate?: string){
+export async function getTimeEntries(token: string, userid: number, type?: "work"|"holiday"|"sick", startDate?: string, endDate?: string){
     const params = new URLSearchParams();
-    params.append("type", type);
+    if(type){
+        params.append("type", type);
+    }
     if (startDate){
         params.append("startDate", startDate);
     } 
