@@ -13,7 +13,7 @@ import {
     updateRole
 } from "../repository/userManagement";
 import {deleteSessionsOfUser} from "../repository/auth";
-import {generateRandomString, isValidPassword} from "../utils/utils";
+import {generateRandomString, isValidPassword} from "../utils/auth";
 import {verifyPassword} from "../utils/hashing";
 import User from "../types/users";
 
