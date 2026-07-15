@@ -14,6 +14,7 @@ const allowedOrigins = new Set([
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://how2centeradiv.dev",
+    "https://staging.how2centeradiv.dev",
 ]);
 
 app.use((req, res, next) => {
