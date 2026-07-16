@@ -2,13 +2,60 @@
 ## Matrikelnummern:
     - justusbruegmann: 4865545
     - SebastianAnhalt: 7020807
-    - mika630 : nummer Einfügen
+    - mika630: 1586623
     - FHG : nummer Einfügen Bitte beachten Github Email und git Email unterschiedlich da Firmen Laptop
     - brdly06: Nummer einfügen
 # Was macht die Anwendung? (Mika)
 # Struktur des Repo (Sebastian)
 # Setup der Dev Umgebung (Justus)
+
+Zuerst das Projekt Klonen
+
+``git clone https://github.com/justusbruegmann/stechuhr.git``
+
+## Frontend
+
+Für das Frontend
+
+````cmd
+    cd frontend
+    npm install
+````
+
+Dann muss eine ".env.local" im frontend Ordner ein mit
+``NEXT_PUBLIC_BACKEND_URL=<BACKENDURL EINSETZEN>
+`` vorhandensein.  
+Mögliche werte:
+- Lokales backend:   http://localhost:3500
+- Hosted backend:   https://stechuhr-production-2a78.up.railway.app
+
+Zum Starten ``npm run dev``
+
+
+### Backend
+
+Für das Backend
+
+````cmd
+    cd backend
+    npm install
+````
+
+Dann muss eine ".env" im Backend Ordner ein mit
+``DATABASE_URL=<DATENBANK_URL EINSETZEN>
+`` vorhandensein.
+
+Datenbank_URL wird noch bereit gestellt
+
+zum Starten ``npm run dev``
+nach jeder Änderung muss der command neu ausgeführt werden (kein HMR) und gewartet werden bis ``✓ Database connection successful
+`` in der Console auftaucht dann ist das Backend bereit. 
+
+
+
 # Starten der Anwendung (Justus)
+
+Gibt 2 scripte 1x win 1x linux starten muss ich noch gucken
 # Webdesign (Aaron & Felix)
 
 
@@ -110,15 +157,18 @@ Sie sind grob nach Anwendungsgebiet gruppiert.
 # Eigenleistung
 ## Auth 4865545
 ### Ideen
-TODO: Ein Grund für eigene Auth und Login-Funktionalität war auch, dass zu spät kommuniziert wurde, welche Fremdpakete und Frameworks erlaubt waren. Dadurch hatten Arbeiten an den Funktionen bereits begonnen.
+Aufgrund von Kommunikation aus dem ersten Semester, dass nur das absolute Minimum an Fremdpakete verwendet werden soll, wurde angenommen das auch Login usw selbst gebaut werden müssen.
+Deshalb wurde bereits vor der Kommunikation, dass solche Pakete erlaubt sind, das Feature schon fertiggestellt.
+
+
 
 Es wurde sich Aktiv gegen JWTs entschieden da dort der Zugang nicht schnell entfernt werden kann.
 Ebenfalls soll ein Admin als Verwalter Accounts erstellen da kein Mitarbeiter sein Account selbst anlegen soll.
 Im fall einer Kündigung oder ähnliches kann der Admin sehr schnell Zugang zur Zeiterfassung entfernen damit kein Unsinn getrieben wird.
 
 Es gibt 3 Rollen in er Anwendung:
-- User: Ein ganznormaler Mitarbeiter
-- Manager: Ein vorgesetzter von einem Nutzer welcher Urlaubsanträge oder ähnliches bearbeiten kann sowie Arbeitszeiten seiner untergebenen sehen kann.
+- User: Ein ganz normaler Mitarbeiter
+- Manager: Ein vorgesetzter von einem Nutzer welcher Urlaubsanträge oder ähnliches bearbeiten kann sowie Arbeitszeiten seiner untergebenen sehen kann. User + zusatz Rechte
 - Admin: Reiner Verwaltungsaccount kann keine timeEntries erstellen.
 
 ### Gesamtprojekt
@@ -163,6 +213,41 @@ export function authMiddleware(requiredRole: UserRole, rolesAboveAllowed: boolea
 rolesAboveAllowed sagt aus ob eine Route welche ein user zugreifen darf auch ein Manager oder Admin zugreifen darf
 
 
+### Code
+
+Backend Code ist im Ordner "backend" zu finden.  
+Dabei gibt es in /route,/service,/repository die Datein Auth.ts und der OTPchange liegt in Usermanagement.ts  
+Dazu sind in /utils hashing.ts und auth.ts  
+Ebenfalls gibt es in /middleware die authmiddleware().
+
+Frontend code ist im Ordner "frontend" zu finden.  
+Für das Loginform sind in src/app/login die relevante css und page.tsx zu finden.  
+Für die Passwortänderung das Popup ist in src/components/login die PasswordChangeModal.tsx zu finden
+
+Alle drei fetch calls die für die Auth verantwortlich ist sind in src/scripts/auth.ts zu finden.
+
+Es gibt auch noch die authCheck() Methode das Prinzip von der wird öfters im Frontend von allen verwendet.  
+Diese hier ist spziell in src/app/dashboard/page.tsx zufinden
+````typescript
+async function authCheck() {
+    const token = localStorage.getItem("token")
+    const userid = localStorage.getItem("userid")
+
+    if (!token || !userid) {
+        router.push("/login")
+        return
+    }
+
+    const login = await loginToken(token, userid);
+
+    if (!login || login === 401 || login === 485 || login === 400) {
+        router.push("/login")
+        return;
+    }
+
+    localStorage.setItem("role", login.role);
+}
+````
 ### Backend
 Die Auth hat 3 Routen 
 1. GET /auth/ nimmt den session token und checkt ob dieser valid ist für den User  
