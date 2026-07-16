@@ -59,10 +59,7 @@ export default function DailyDetailsPane({ date, entries, onAddEntry, deleteEntr
                         width={10}
                         onClick={() =>
                             showModal("popup",
-                                <RequestPopup
-                                    date={date}
-                                    onCreate={onAddEntry}
-                                />
+                                <RequestPopup date={date} />
                             )
                         }
                     />

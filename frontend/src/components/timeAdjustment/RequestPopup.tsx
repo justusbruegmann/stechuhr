@@ -4,16 +4,17 @@ import styles from "./RequestPopup.module.css";
 import Tabs from "../layout/Tabs";
 import AbsenceForm from "./AbsenceForm";
 import { useState } from "react";
+import * as script from "@/scripts/requests";
 
-type Props = {
+type RequestPopupProps = {
   date: Date;
-  onCreate: (entry: any) => void; // Add request as a new type
 }
-export default function RequestPopup({ date, onCreate }: Props) {
+
+export default function RequestPopup({ date }: RequestPopupProps) {
 
   const { close } = useCurrentModal();
 
-  const [type, setType] = useState("");
+  const [type, setType] = useState<"holiday" | "sick">("holiday");
   const [startDate, setStartDate] = useState(formatDate(date));
   const [endDate, setEndDate] = useState(formatDate(date));
   const [remark, setRemark] = useState("");
@@ -60,6 +61,10 @@ export default function RequestPopup({ date, onCreate }: Props) {
     );
   }
 
+  async function createRequest(){
+    const createdRequest = await script.createRequest(type, startDate, endDate, remark);
+  }
+
   return (
     <div className={styles["container"]}>
       <h2>Antrag erstellen</h2>
@@ -89,6 +94,8 @@ export default function RequestPopup({ date, onCreate }: Props) {
                 console.log(`From: ${startDate}`)
                 console.log(`To: ${endDate}`)
                 console.log(`Remark: ${remark}`)
+                createRequest();
+                // toDo: add close() when successful and Error text when not
               } else {
                 alert("Die Abwesenheit darf nicht enden bevor sie angefangen hat")
               }

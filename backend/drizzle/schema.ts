@@ -49,13 +49,15 @@ export const timeEntries = pgTable("timeEntries", {
 
 export const requests = pgTable("requests", {
     id: serial("id").primaryKey(),
-    userId: integer("userId").references(() => users.id, { onDelete: "cascade" }),
-    managerId: integer("managerId").references(() => users.id, {
-        onDelete: "set null",
-    }),
+    userId: integer("userId")
+        .notNull()
+        .references(() => users.id, { onDelete: "cascade" }),
+    managerId: integer("managerId")
+        .references(() => users.id, { onDelete: "set null" }),
     type: requestTypeEnum("type").notNull(),
-    startTime: timestamp("startTime", { withTimezone: true }).notNull(),
-    endTime: timestamp("endTime", { withTimezone: true }).notNull(),
+    startDate: varchar("startDate").notNull(),
+    endDate: varchar("endDate").notNull(),
+    remark: text("remark"),
     isApproved: boolean("isApproved"),
 });
 

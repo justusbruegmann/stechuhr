@@ -15,3 +15,8 @@ export async function getAllRequestsAManagerIsResponsibleFor(): Promise<Request[
     const url = `${BASE_URL}/requests/manager/22`;
     return await sendRequest("GET", url);
 }
+
+export async function createRequest(type: "holiday" | "sick", startDate: string, endDate: string, remark?: string) {
+    const url = `${BASE_URL}/requests?type=${type}&startDate=${startDate}&endDate=${endDate}&remark=${remark}`;
+    return await sendRequest("POST", url)
+}

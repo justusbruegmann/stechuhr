@@ -1,22 +1,26 @@
 import * as z from 'zod';
 
-const requestType = z.literal(["vacation", "sick"]);
+const requestType = z.literal(["holiday", "sick"]);
 
 const dateStringSchema = z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/);
 
-export const requestsRequestParameterSchema = z.object(
+export const getRequestsRequestParameterSchema = z.object(
     {
         userId: z
             .coerce.number()
-            .positive(),
-        type: requestType
-            .optional(),
-        startDate: dateStringSchema
-            .optional(),
-        endDate: dateStringSchema
-            .optional(),
+            .positive()
+    }
+)
+
+export type getRequestsRequestParameter = z.infer<typeof getRequestsRequestParameterSchema>;
+
+export const requestsRequestParameterSchema = z.object(
+    {
+        type: requestType,
+        startDate: dateStringSchema,
+        endDate: dateStringSchema,
         remark: z.string()
             .max(512)
             .optional()

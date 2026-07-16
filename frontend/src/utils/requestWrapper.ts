@@ -34,5 +34,6 @@ export default async function sendRequest(
         throw new Error(response.statusText);
     }
 
-    return response.status === 204 ? null : await response.json();
+    const text = await response.text();
+    return text ? JSON.parse(text) : null;
 }

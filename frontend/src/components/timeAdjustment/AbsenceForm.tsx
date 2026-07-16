@@ -4,7 +4,7 @@ import styles from "./AbsenceForm.module.css";
 type Props = {
     type: "holiday" | "sick";
     date: string;
-    setType: (type: string) => void;
+    setType: (type: "holiday" | "sick") => void;
     updateStartDate: (date: string) => void;
     updateEndDate: (date: string) => void;
     updateRemark: (remark: string) => void;

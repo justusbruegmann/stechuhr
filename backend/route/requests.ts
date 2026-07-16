@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/auth";
 import { validateQueryParameters } from "../middleware/validateQueryParameters";
-import { requestsRequestParameterSchema, requestsRequestParameter } from "../schemas/requests";
+import { getRequestsRequestParameterSchema, getRequestsRequestParameter, requestsRequestParameterSchema, requestsRequestParameter } from "../schemas/requests";
 import * as requestsService from "../service/requests";
-import * as userManagementService from "../service/userManagement"
+import * as userManagementService from "../service/userManagement";
 import User from "../types/users";
 
 const router = Router();
@@ -11,9 +11,9 @@ const router = Router();
 router.get(
     '/requests',
     authMiddleware("user", true),
-    validateQueryParameters(requestsRequestParameterSchema),
+    validateQueryParameters(getRequestsRequestParameterSchema),
     async (req, res) => {
-        const queryParams = res.locals.queryParams as requestsRequestParameter;
+        const queryParams = res.locals.queryParams as getRequestsRequestParameter;
 
         const userId = queryParams.userId;
 
@@ -48,6 +48,25 @@ router.get(
             return res.status(200).json(requests);
         } catch {
             return res.status(404).send("Not Found");
+        }
+    });
+
+router.post(
+    '/requests',
+    authMiddleware("user", true),
+    validateQueryParameters(requestsRequestParameterSchema),
+    async (req, res) => {
+        const queryParams = res.locals.queryParams as requestsRequestParameter;
+
+        const { type, startDate, endDate, remark } = queryParams;
+
+        const userId = res.locals.user.id;
+        try {
+            const createdRequest = await requestsService.createRequest(userId, type, startDate, endDate, remark);
+
+            return res.status(201).send();
+        } catch {
+            return res.status(400).send("Bad Request");
         }
     });
 
