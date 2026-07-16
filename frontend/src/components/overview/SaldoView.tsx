@@ -4,21 +4,26 @@ import * as React from 'react';
 import Styles from "./SaldoView.module.css";
 import Card from "@/components/layout/Card";
 import TimeEntry from "@/types/TimeEntry";
-import {formatMsTime} from "@/utils/TimeUtils";
+import {formatMsTime, getWorkdaysInCurrentMonth} from "@/utils/TimeUtils";
+import User from "@/types/User";
 
-type Props = {
+type SaldoViewProps = {
     timespan: "day" | "week" | "month";
     timeEntries: TimeEntry[];
+    user: User;
 }
 
 
 export default function SaldoView({
                                       timespan,
-                                      timeEntries
-                                  }: Props) {
+                                      timeEntries,
+                                      user,
+                                  }: SaldoViewProps) {
 
     const hour = 60 * 60 * 1000;
-    const requiredWorkTime = timespan == "day" ? 8 * hour : timespan == "week" ? 40 * hour : 160 * hour; // ToDo: Get from user endpoint
+    const workloadPerDay = user.workload * hour / 5
+    const workdaysInCurrentMonth = getWorkdaysInCurrentMonth();
+    const requiredWorkTime = timespan == "day" ? workloadPerDay : timespan == "week" ? workloadPerDay * 5 : workloadPerDay * workdaysInCurrentMonth;
 
     const totalWorkedTime: number = timeEntries.reduce((total, entry) => {
         const startTime = new Date(entry.startTime);

@@ -14,10 +14,11 @@ import {generateDateString} from "@/utils/TimeUtils";
 
 interface PopupProps {
     openOverview: () => void;
+    isOverviewOpenable: boolean;
     addEntry: (date: DateString, entry: TimeEntry) => void;
 }
 //
-export default function Timecard({openOverview, addEntry}: PopupProps) {
+export default function Timecard({openOverview, isOverviewOpenable = false, addEntry}: PopupProps) {
     const [time, setTime] = useState<Date | null>(null);
     const [clicked, setClicked] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -196,9 +197,7 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             </Button>
             <hr className={Styles["gap"]}></hr>
             <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"}
-                    onClick={
-                        () => openOverview()
-                    }></Button>
+                    onClick={() => openOverview()} loading={isOverviewOpenable}></Button>
         </Card>
     );
 }

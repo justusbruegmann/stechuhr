@@ -82,3 +82,17 @@ export function startOfTheMonthDateString() {
     const startOfMonth = dateInUTC(today.getFullYear(), today.getMonth() + 1, 1);
     return generateDateString(startOfMonth);
 }
+
+export function getWorkdaysInCurrentMonth(): number {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate(); // Last day of the previous month
+
+    let count = 0;
+    for (let day = 1; day <= daysInMonth; day++) {
+        const weekday = new Date(year, month, day).getDay();
+        if (weekday !== 0 && weekday !== 6) count++; // 0 is Sunday in Javascript, 6 is saturday
+    }
+    return count;
+}

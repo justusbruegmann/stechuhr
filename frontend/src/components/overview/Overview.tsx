@@ -8,15 +8,17 @@ import DetailEntry from "@/components/overview/DetailEntry";
 import TimeEntry from "@/types/TimeEntry";
 import {getTimeEntriesByTimespan} from "@/utils/TimeUtils";
 import {DateString} from "@/types/misc";
+import User from "@/types/User";
 
 
 interface Props {
     entries: Record<DateString, TimeEntry[]>;
     deleteEntry: (id: string) => void;
+    user: User;
 }
 
 
-export default function Overview({entries, deleteEntry}: Props) {
+export default function Overview({entries, deleteEntry, user}: Props) {
 
     const timeEntries: Record<DateString, TimeEntry[]> = {
         "day": getTimeEntriesByTimespan(entries, "day"),
@@ -35,7 +37,7 @@ export default function Overview({entries, deleteEntry}: Props) {
         return (
             <div className={styles.tabContentArea}>
                 <h1>{titles[timespan] || "Unbekannt"}</h1>
-                <SaldoView timespan={timespan} timeEntries={timeEntries[timespan]}/>
+                <SaldoView timespan={timespan} timeEntries={timeEntries[timespan]} user={user}/>
                 <br/>
 
                 <div className={styles.detailEntryContainer}>
