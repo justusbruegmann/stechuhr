@@ -7,17 +7,18 @@ import SaldoView from "@/components/overview/SaldoView";
 import DetailEntry from "@/components/overview/DetailEntry";
 import TimeEntry from "@/types/TimeEntry";
 import {getTimeEntriesByTimespan} from "@/utils/TimeUtils";
+import {DateString} from "@/types/misc";
 
 
 interface Props {
-    entries: Record<string, TimeEntry[]>;
+    entries: Record<DateString, TimeEntry[]>;
     deleteEntry: (id: string) => void;
 }
 
 
 export default function Overview({entries, deleteEntry}: Props) {
 
-    const timeEntries: Record<string, TimeEntry[]> = {
+    const timeEntries: Record<DateString, TimeEntry[]> = {
         "day": getTimeEntriesByTimespan(entries, "day"),
         "week": getTimeEntriesByTimespan(entries, "week"),
         "month": getTimeEntriesByTimespan(entries, "month")

@@ -13,6 +13,8 @@ import {useRouter} from "next/navigation";
 
 import {loginToken} from "@/scripts/auth";
 import {getTimeEntries} from "@/scripts/timeEntriesScript";
+import {DateString} from "@/types/misc";
+import {generateDateString} from "@/utils/TimeUtils";
 
 
 export default function Dashboard() {
@@ -22,10 +24,10 @@ export default function Dashboard() {
 
     /**
      * The dailyEntries state is used as a central state to store a relevant section of all logged time entries for the frontend.
-     * It is structured as a map where the key is the date string (Date.toDateString())
+     * It is structured as a map where the key is the DateString (TimeUtils.generateDateString())
      * and the value is an array of TimeEntry objects.
      */
-    const [dailyEntries, setDailyEntries] = useState<Record<string, TimeEntry[]>>({});
+    const [dailyEntries, setDailyEntries] = useState<Record<DateString, TimeEntry[]>>({});
 
     const currentlyOpenModal = useRef<
         { id: string; type: "OverviewModal" } |
@@ -36,7 +38,7 @@ export default function Dashboard() {
     const addEntryForDate = (datum: Date, entry: TimeEntry) => {
         setDailyEntries((prev) => ({
             ...prev,
-            [datum.toDateString()]: [...(prev[datum.toDateString()] || []), entry]
+            [generateDateString(datum)]: [...(prev[datum.toDateString()] || []), entry]
         }));
     };
 
@@ -59,7 +61,7 @@ export default function Dashboard() {
         localStorage.setItem("role", login.role);
     }
 
-    useEffect( () => {
+    useEffect(() => {
         authCheck().then(async (r) => {
             const token = localStorage.getItem("token")
             const userid = localStorage.getItem("userid")
@@ -79,9 +81,18 @@ export default function Dashboard() {
             const startDate = toLocalYMD(firstDayOfMonth);
             const endDate = toLocalYMD(lastDayOfMonth);
 
-            //TODO: add for each type
-            const timeEntries = await getTimeEntries(token,Number(userid),"work",startDate,endDate);
-            setDailyEntries(timeEntries);
+            const timeEntries: TimeEntry[] = await getTimeEntries(token, Number(userid), "work", startDate, endDate);
+
+            const grouped = timeEntries.reduce<Record<DateString, TimeEntry[]>>(
+                (collection, timeEntry) => {
+                    const key = generateDateString(new Date(timeEntry.startTime));
+                    if (!collection[key]) collection[key] = [];
+                    collection[key].push(timeEntry);
+                    return collection;
+                },
+                {},
+            );
+            setDailyEntries(grouped);
         });
 
     }, [router])
@@ -92,8 +103,8 @@ export default function Dashboard() {
 
         setDailyEntries((prev) =>
             Object.fromEntries(
-                Object.entries(prev).map(([date, entries]) => [
-                    date,
+                Object.entries(prev).map(([dateString, entries]) => [
+                    dateString,
                     entries.filter((entry) => entry.id !== id)
                 ])
             )

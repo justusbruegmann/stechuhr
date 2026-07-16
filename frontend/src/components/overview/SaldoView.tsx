@@ -18,7 +18,7 @@ export default function SaldoView({
                                   }: Props) {
 
     const hour = 60 * 60 * 1000;
-    const requiredWorkTime = timespan == "day" ? 8 * hour : timespan == "week" ? 40 * hour : 160 * hour;
+    const requiredWorkTime = timespan == "day" ? 8 * hour : timespan == "week" ? 40 * hour : 160 * hour; // ToDo: Get from user endpoint
 
     const totalWorkedTime: number = timeEntries.reduce((total, entry) => {
         const startTime = new Date(entry.startTime);
