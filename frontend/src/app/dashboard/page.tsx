@@ -34,6 +34,7 @@ export default function Dashboard() {
     const currentlyOpenModal = useRef<
         { id: string; type: "OverviewModal" } |
         { id: string; type: "DailyDetails"; date: Date } |
+        { id: string; type: "NotificationsModal" } |
         null
     >(null);
 
@@ -61,6 +62,7 @@ export default function Dashboard() {
         }
 
         localStorage.setItem("role", login.role);
+
         const notificationList = await getNotificationList(token, Number(userid));
         if (notificationList && notificationList != 400 && notificationList != 401 && notificationList != 500) {
             setNotifications(notificationList);
@@ -112,6 +114,11 @@ export default function Dashboard() {
                     currentlyOpenModal.current.id,
                     createOverviewContent()
                 );
+            } else if (currentlyOpenModal.current.type === "NotificationsModal") {
+                updateModalContent(
+                    currentlyOpenModal.current.id,
+                    <Notifications notifications={notifications} />
+                );
             }
         }
     }, [dailyEntries, updateModalContent]);
@@ -126,19 +133,23 @@ export default function Dashboard() {
         currentlyOpenModal.current = { id, type: "DailyDetails", date: datum };
     }, [dailyEntries, showModal, addEntryForDate]);
 
+    const openNotificationModal = useCallback(() => {
+        const { id } = showModal("sidepane", <Notifications notifications={notifications} />)
+        currentlyOpenModal.current = { id, type: "NotificationsModal" };
+    }, [notifications, showModal]);
+
+
 
     return (
         <div className={styles.wrapper}>
             <div className={styles.headerBar}>
-                <Header name={"dashboard"} />
+                <Header name={"dashboard"} onNotificationsClick={openNotificationModal} />
             </div>
             <div className={styles.viewArea}>
                 <Timecard openOverview={openOverviewModal} addEntry={addEntryForDate} />
                 <div className={styles.calendarWrapper}>
                     <Calendar showDailyDetails={showDailyDetails} timeEntries={dailyEntries} />
                 </div>
-                {
-                    <Notifications notifications={notifications} />}
             </div>
         </div>
     );

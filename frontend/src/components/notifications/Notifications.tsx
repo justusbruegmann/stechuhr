@@ -13,6 +13,8 @@ type Props = {
 export default function Notifications({ notifications }: Props) {
     return (
         <div>
+            <h3 className={styles.title}>Benachrichtigungen</h3>
+            <hr className={styles.separator} />
             {
                 notifications.map((notifications, index) =>
                 (
