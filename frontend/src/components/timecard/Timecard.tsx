@@ -8,11 +8,13 @@ import React, {useEffect, useState} from "react";
 import TimeEntry from "@/types/TimeEntry";
 import {createTimeEntry, getLastTimeEntry, setEndTime, getTimeEntries} from "@/scripts/timeEntriesScript";
 import { useRouter } from "next/navigation";
+import {DateString} from "@/types/misc";
+import {generateDateString} from "@/utils/TimeUtils";
 
 
 interface PopupProps {
     openOverview: () => void;
-    addEntry: (date: Date, entry: TimeEntry) => void;
+    addEntry: (date: DateString, entry: TimeEntry) => void;
 }
 //
 export default function Timecard({openOverview, addEntry}: PopupProps) {
@@ -97,7 +99,7 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             return;
         }
         setClicked(false);
-        addEntry(new Date(result.startTime), mapEntry(result));
+        addEntry(generateDateString(new Date(result.startTime)), mapEntry(result));
     }
 
     async function setEndTimeEntry() {
@@ -122,7 +124,7 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             return;
         }
         setClicked(true);
-        addEntry(new Date(update.startTime), mapEntry(update));
+        addEntry(generateDateString(new Date(update.startTime)), mapEntry(update));
     }
 
     async function getTodaysWorkTime() {

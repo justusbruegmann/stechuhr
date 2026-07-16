@@ -14,7 +14,7 @@ import {useRouter} from "next/navigation";
 import {loginToken} from "@/scripts/auth";
 import {getTimeEntries} from "@/scripts/timeEntriesScript";
 import {DateString} from "@/types/misc";
-import {generateDateString} from "@/utils/TimeUtils";
+import {generateDateString, startOfTheMonthDateString, todayDateString} from "@/utils/TimeUtils";
 
 
 export default function Dashboard() {
@@ -31,14 +31,14 @@ export default function Dashboard() {
 
     const currentlyOpenModal = useRef<
         { id: string; type: "OverviewModal" } |
-        { id: string; type: "DailyDetails"; date: Date } |
+        { id: string; type: "DailyDetails"; date: DateString } |
         null
     >(null);
 
-    const addEntryForDate = (datum: Date, entry: TimeEntry) => {
+    const addEntryForDate = (date: DateString, entry: TimeEntry) => {
         setDailyEntries((prev) => ({
             ...prev,
-            [generateDateString(datum)]: [...(prev[datum.toDateString()] || []), entry]
+            [date]: [...(prev[date] || []), entry]
         }));
     };
 
@@ -71,17 +71,13 @@ export default function Dashboard() {
                 return
             }
 
-            const now = new Date();
-
-            const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-            const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-            const toLocalYMD = (d: Date) =>
-                `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-
-            const startDate = toLocalYMD(firstDayOfMonth);
-            const endDate = toLocalYMD(lastDayOfMonth);
-
-            const timeEntries: TimeEntry[] = await getTimeEntries(token, Number(userid), "work", startDate, endDate);
+            const timeEntries: TimeEntry[] = await getTimeEntries(
+                token,
+                Number(userid),
+                "work",
+                startOfTheMonthDateString(),
+                todayDateString()
+            );
 
             const grouped = timeEntries.reduce<Record<DateString, TimeEntry[]>>(
                 (collection, timeEntry) => {
@@ -94,7 +90,6 @@ export default function Dashboard() {
             );
             setDailyEntries(grouped);
         });
-
     }, [router])
 
 
@@ -115,11 +110,11 @@ export default function Dashboard() {
         <Overview entries={dailyEntries} deleteEntry={deleteEntry}/>
     );
 
-    const createDailyDetailsContent = (datum: Date) => (
+    const createDailyDetailsContent = (date: DateString) => (
         <DailyDetailsPane
-            date={datum}
-            entries={dailyEntries[datum.toDateString()] || []}
-            onAddEntry={(entry: TimeEntry) => addEntryForDate(datum, entry)}
+            date={date}
+            entries={dailyEntries[date] || []}
+            onAddEntry={(entry: TimeEntry) => addEntryForDate(date, entry)}
             deleteEntry={deleteEntry}
         />
     );
@@ -147,7 +142,8 @@ export default function Dashboard() {
         currentlyOpenModal.current = {id, type: "OverviewModal"};
     }, [dailyEntries, showModal, addEntryForDate]);
 
-    const showDailyDetails = useCallback((datum: Date) => {
+    const showDailyDetails = useCallback((datum: DateString) => {
+        console.log("show daily details for " + datum);
         const {id} = showModal("sidepane", createDailyDetailsContent(datum));
         currentlyOpenModal.current = {id, type: "DailyDetails", date: datum};
     }, [dailyEntries, showModal, addEntryForDate]);
