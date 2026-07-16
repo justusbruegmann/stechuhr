@@ -41,15 +41,17 @@ export default function Overview({entries, deleteEntry, user}: Props) {
                 <br/>
 
                 <div className={styles.detailEntryContainer}>
-                    {timeEntries[timespan].length > 0 && timeEntries[timespan].map((entry) => (
-                        <DetailEntry
-                            key={entry.id}
-                            timeEntry={entry}
-                            deleteFunc={() => {
-                                deleteEntry(entry.id)
-                            }}
-                        />
-                    ))}
+                    {timeEntries[timespan].length > 0 && timeEntries[timespan]
+                        .sort((a, b) => a.startTime.localeCompare(b.startTime)) // Sort in ascending order (oldest first)
+                        .map((entry) => (
+                            <DetailEntry
+                                key={entry.id}
+                                timeEntry={entry}
+                                deleteFunc={() => {
+                                    deleteEntry(entry.id)
+                                }}
+                            />
+                        ))}
                     {timeEntries[timespan].length == 0 &&
                         <div className={styles.noEntriesMessage}>
                             <p>Keine Buchungen für diesen Zeitraum vorhanden.</p>
