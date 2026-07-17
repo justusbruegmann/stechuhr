@@ -95,7 +95,7 @@ export default function Dashboard() {
 
             // Load user
             // Since this is currently only needed for the <Overview>, we preload it but need not await for the site to
-            // be usable
+            // be usable 
             loadCurrentUser();
         });
     }, [router])
