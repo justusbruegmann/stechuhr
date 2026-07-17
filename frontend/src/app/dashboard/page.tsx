@@ -13,6 +13,10 @@ import {useRouter} from "next/navigation";
 
 import {loginToken} from "@/scripts/auth";
 import {getTimeEntries} from "@/scripts/timeEntriesScript";
+import {DateString} from "@/types/misc";
+import {generateDateString, startOfTheMonthDateString, todayDateString} from "@/utils/TimeUtils";
+import User from "@/types/User";
+import {getUserById} from "@/scripts/userManagement";
 
 
 export default function Dashboard() {
@@ -22,21 +26,22 @@ export default function Dashboard() {
 
     /**
      * The dailyEntries state is used as a central state to store a relevant section of all logged time entries for the frontend.
-     * It is structured as a map where the key is the date string (Date.toDateString())
+     * It is structured as a map where the key is the DateString (TimeUtils.generateDateString())
      * and the value is an array of TimeEntry objects.
      */
-    const [dailyEntries, setDailyEntries] = useState<Record<string, TimeEntry[]>>({});
+    const [dailyEntries, setDailyEntries] = useState<Record<DateString, TimeEntry[]>>({});
+    const [currentUser, setCurrentUser] = useState<User>();
 
     const currentlyOpenModal = useRef<
         { id: string; type: "OverviewModal" } |
-        { id: string; type: "DailyDetails"; date: Date } |
+        { id: string; type: "DailyDetails"; date: DateString } |
         null
     >(null);
 
-    const addEntryForDate = (datum: Date, entry: TimeEntry) => {
+    const addEntryForDate = (date: DateString, entry: TimeEntry) => {
         setDailyEntries((prev) => ({
             ...prev,
-            [datum.toDateString()]: [...(prev[datum.toDateString()] || []), entry]
+            [date]: [...(prev[date] || []), entry]
         }));
     };
 
@@ -59,7 +64,7 @@ export default function Dashboard() {
         localStorage.setItem("role", login.role);
     }
 
-    useEffect( () => {
+    useEffect(() => {
         authCheck().then(async (r) => {
             const token = localStorage.getItem("token")
             const userid = localStorage.getItem("userid")
@@ -69,22 +74,41 @@ export default function Dashboard() {
                 return
             }
 
-            const now = new Date();
+            const timeEntries: TimeEntry[] = await getTimeEntries(
+                token,
+                Number(userid),
+                "work",
+                startOfTheMonthDateString(),
+                todayDateString()
+            );
 
-            const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-            const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-            const toLocalYMD = (d: Date) =>
-                `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+            const grouped = timeEntries.reduce<Record<DateString, TimeEntry[]>>(
+                (collection, timeEntry) => {
+                    const key = generateDateString(new Date(timeEntry.startTime));
+                    if (!collection[key]) collection[key] = [];
+                    collection[key].push(timeEntry);
+                    return collection;
+                },
+                {},
+            );
+            setDailyEntries(grouped);
 
-            const startDate = toLocalYMD(firstDayOfMonth);
-            const endDate = toLocalYMD(lastDayOfMonth);
-
-            //TODO: add for each type
-            const timeEntries = await getTimeEntries(token,Number(userid),"work",startDate,endDate);
-            setDailyEntries(timeEntries);
+            // Load user
+            // Since this is currently only needed for the <Overview>, we preload it but need not await for the site to
+            // be usable 
+            loadCurrentUser();
         });
-
     }, [router])
+
+
+    async function loadCurrentUser() {
+        try {
+            const user: User = await getUserById(Number(localStorage.getItem("userid")))
+            setCurrentUser(user);
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
 
     const deleteEntry = (id: string) => {
@@ -92,23 +116,28 @@ export default function Dashboard() {
 
         setDailyEntries((prev) =>
             Object.fromEntries(
-                Object.entries(prev).map(([date, entries]) => [
-                    date,
+                Object.entries(prev).map(([dateString, entries]) => [
+                    dateString,
                     entries.filter((entry) => entry.id !== id)
                 ])
             )
         );
     }
 
-    const createOverviewContent = () => (
-        <Overview entries={dailyEntries} deleteEntry={deleteEntry}/>
-    );
+    function createOverviewContent() {
+        if (!currentUser) {
+            console.log("Failed to load user");
+            return;
+        }
 
-    const createDailyDetailsContent = (datum: Date) => (
+        return <Overview entries={dailyEntries} deleteEntry={deleteEntry} user={currentUser}/>
+    }
+
+    const createDailyDetailsContent = (date: DateString) => (
         <DailyDetailsPane
-            date={datum}
-            entries={dailyEntries[datum.toDateString()] || []}
-            onAddEntry={(entry: TimeEntry) => addEntryForDate(datum, entry)}
+            date={date}
+            entries={dailyEntries[date] || []}
+            onAddEntry={(entry: TimeEntry) => addEntryForDate(date, entry)}
             deleteEntry={deleteEntry}
         />
     );
@@ -123,20 +152,23 @@ export default function Dashboard() {
                     createDailyDetailsContent(currentlyOpenModal.current.date)
                 );
             } else if (currentlyOpenModal.current.type === "OverviewModal") {
-                updateModalContent(
-                    currentlyOpenModal.current.id,
-                    createOverviewContent()
-                );
+                if (currentUser) {
+                    updateModalContent(
+                        currentlyOpenModal.current.id,
+                        createOverviewContent()
+                    );
+                }
             }
         }
     }, [dailyEntries, updateModalContent]);
 
     const openOverviewModal = useCallback(() => {
-        const {id} = showModal("sidepane", <Overview entries={dailyEntries} deleteEntry={deleteEntry}/>)
+        const {id} = showModal("sidepane", createOverviewContent())
         currentlyOpenModal.current = {id, type: "OverviewModal"};
     }, [dailyEntries, showModal, addEntryForDate]);
 
-    const showDailyDetails = useCallback((datum: Date) => {
+    const showDailyDetails = useCallback((datum: DateString) => {
+        console.log("show daily details for " + datum);
         const {id} = showModal("sidepane", createDailyDetailsContent(datum));
         currentlyOpenModal.current = {id, type: "DailyDetails", date: datum};
     }, [dailyEntries, showModal, addEntryForDate]);
@@ -148,7 +180,7 @@ export default function Dashboard() {
                 <Header name={"dashboard"}/>
             </div>
             <div className={styles.viewArea}>
-                <Timecard openOverview={openOverviewModal} addEntry={addEntryForDate}/>
+                <Timecard openOverview={openOverviewModal} isOverviewOpenable={!currentUser} addEntry={addEntryForDate} />
 
                 <div className={styles.calendarWrapper}>
                     <Calendar showDailyDetails={showDailyDetails} timeEntries={dailyEntries}/>

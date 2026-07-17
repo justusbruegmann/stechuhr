@@ -5,22 +5,17 @@ import {useModal} from "@/contexts/ModalContext";
 import TimeEntry from "@/types/TimeEntry";
 
 import styles from "./DailyDetailsPane.module.css";
+import {DateString} from "@/types/misc";
+import {formatDate} from "@/utils/TimeUtils";
 
 export default function DailyDetailsPane({date, entries, onAddEntry, deleteEntry}: {
-    date: Date; entries: TimeEntry[]; onAddEntry: (entry: TimeEntry) => void; deleteEntry: (id: string) => void;
+    date: DateString; entries: TimeEntry[]; onAddEntry: (entry: TimeEntry) => void; deleteEntry: (id: string) => void;
 }) {
     const {showModal, hideModal} = useModal();
 
-    function dateToString(date: Date) {
-        const day = String(date.getDate()).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const year = date.getFullYear();
-        return `${day}.${month}.${year}`;
-    }
-
     return (
         <div className={styles["container"]}>
-            <h2>Zeiteinträge für {dateToString(date)}</h2>
+            <h2>Zeiteinträge für {formatDate(new Date(date))}</h2>
             <br/>
             <hr/>
             <br/>
@@ -45,7 +40,7 @@ export default function DailyDetailsPane({date, entries, onAddEntry, deleteEntry
                         onClick={() =>
                             showModal("popup",
                                 <ManualEntryPopup
-                                    date={date}
+                                    date={new Date(date)}
                                     onClose={() => hideModal()}
                                     onCreate={onAddEntry}
                                 />
