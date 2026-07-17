@@ -20,3 +20,8 @@ export async function createRequest(userId: number, type: "holiday" | "sick", st
         throw new Error("Server Error");
     }
 }
+
+export async function updateRequest(requestId: number, approved?: boolean) {
+    //toDo: Validation
+    return await repository.updateRequest(requestId, approved);
+}

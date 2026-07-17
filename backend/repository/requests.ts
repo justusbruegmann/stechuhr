@@ -22,3 +22,11 @@ export async function createRequest(userId: number, managerId: number, type: "ho
         "isApproved": isApproved
     } as Request);
 }
+
+export async function updateRequest(requestId: number, approved?: boolean) {
+    return await db
+        .update(requests)
+        .set({ isApproved: approved })
+        .where(eq(requests.id, requestId))
+        .returning()
+}

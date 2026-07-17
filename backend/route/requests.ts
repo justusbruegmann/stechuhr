@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/auth";
 import { validateQueryParameters } from "../middleware/validateQueryParameters";
-import { getRequestsRequestParameterSchema, getRequestsRequestParameter, requestsRequestParameterSchema, requestsRequestParameter } from "../schemas/requests";
+import { getRequestsRequestParameterSchema, getRequestsRequestParameter, requestsRequestParameterSchema, requestsRequestParameter, updateRequestsRequestParameterSchema, updateRequestsRequetParameter } from "../schemas/requests";
 import * as requestsService from "../service/requests";
 import * as userManagementService from "../service/userManagement";
 import User from "../types/users";
@@ -69,5 +69,27 @@ router.post(
             return res.status(400).send("Bad Request");
         }
     });
+
+router.patch(
+    '/requests/:id',
+    authMiddleware("manager", true),
+    validateQueryParameters(updateRequestsRequestParameterSchema),
+    async (req, res) => {
+
+        const queryParams = res.locals.queryParams as updateRequestsRequetParameter;
+
+        try {
+            const id = Number(req.params.id);
+
+            const approved = queryParams.approved;
+
+            const updatedRequest = await requestsService.updateRequest(id, approved);
+
+            return res.status(200).json(updatedRequest);
+        } catch {
+            return res.status(400).send("Bad request");
+        }
+    }
+)
 
 export default router;
