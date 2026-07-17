@@ -47,6 +47,9 @@ router.patch('/users/otp/:id', validateUserID, async (req, res) => {
         if (!currentpwd || !newpwd || typeof currentpwd !== "string" || typeof newpwd !== "string") {
             return res.status(400).send("bad request");
         }
+        if(newpwd.length >48) {
+            return res.status(400).send("bad request");
+        }
         const isUser = await authUser(id, currentpwd);
         console.log(isUser);
         if (!isUser) {
