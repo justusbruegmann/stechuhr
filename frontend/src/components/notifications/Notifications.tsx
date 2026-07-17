@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Card from "@/components/layout/Card";
 import styles from "./Notifications.module.css"
 import Notification from "@/types/Notification";
@@ -12,18 +12,30 @@ type Props = {
 
 
 export default function Notifications({ notifications }: Props) {
-    // Lokale Kopie, damit der isRead-Status per Dropdown umschaltbar ist,
-    // ohne die Elternkomponente/Backend anzufassen.
     const [localNotifications, setLocalNotifications] = useState<Notification[]>(notifications);
+    const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+    const wrapperRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setLocalNotifications(notifications);
     }, [notifications]);
 
-    const handleReadStatusChange = (id: number, value: string) => {
+    // Dropdown schließen, wenn irgendwo außerhalb geklickt wird
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+                setOpenDropdownId(null);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleReadStatusChange = (id: number, isRead: boolean) => {
         setLocalNotifications((prev) =>
-            prev.map((n) => n.id === id ? { ...n, isRead: value === "read" } : n)
+            prev.map((n) => n.id === id ? { ...n, isRead } : n)
         );
+        setOpenDropdownId(null);
     };
 
     const formatDate = (dateString: string) => {
@@ -37,7 +49,7 @@ export default function Notifications({ notifications }: Props) {
     };
 
     return (
-        <div>
+        <div ref={wrapperRef}>
             <h3 className={styles.title}>Benachrichtigungen</h3>
             <hr className={styles.separator} />
             {
@@ -55,16 +67,33 @@ export default function Notifications({ notifications }: Props) {
                                     <span className={notification.isRead ? styles.status_read : styles.status_unread}>
                                         {notification.isRead ? "Gelesen" : "Ungelesen"}
                                     </span>
+
                                     <div className={styles.status_dropdown_wrapper}>
-                                        <span className={styles.status_arrow}>▾</span>
-                                        <select
-                                            className={styles.status_select}
-                                            value={notification.isRead ? "read" : "unread"}
-                                            onChange={(e) => handleReadStatusChange(notification.id, e.target.value)}
+                                        <span
+                                            className={styles.status_arrow}
+                                            onClick={() =>
+                                                setOpenDropdownId(openDropdownId === notification.id ? null : notification.id)
+                                            }
                                         >
-                                            <option value="unread">Ungelesen</option>
-                                            <option value="read">Gelesen</option>
-                                        </select>
+                                            ▾
+                                        </span>
+
+                                        {openDropdownId === notification.id && (
+                                            <div className={styles.status_menu}>
+                                                <div
+                                                    className={styles.status_menu_item}
+                                                    onClick={() => handleReadStatusChange(notification.id, false)}
+                                                >
+                                                    Ungelesen
+                                                </div>
+                                                <div
+                                                    className={styles.status_menu_item}
+                                                    onClick={() => handleReadStatusChange(notification.id, true)}
+                                                >
+                                                    Gelesen
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
