@@ -5,9 +5,15 @@
     - mika630: 1586623
     - FHG : nummer Einfügen Bitte beachten Github Email und git Email unterschiedlich da Firmen Laptop
     - brdly06: Nummer einfügen
+AI als Formulierungshilfe verwendet
 # Was macht die Anwendung? (Mika)
 # Struktur des Repo (Sebastian)
 # Setup der Dev Umgebung (Justus)
+
+> Wichtig:  
+> node und npm sind vorrausgesetzt sowie ein postgresSQL DBconnectionlink  
+> Es gibt das Ganze SQL DB Script als sql Datei im docs Verzeichnis
+
 
 Zuerst das Projekt Klonen
 
@@ -55,7 +61,61 @@ nach jeder Änderung muss der command neu ausgeführt werden (kein HMR) und gewa
 
 # Starten der Anwendung (Justus)
 
-Gibt 2 scripte 1x win 1x linux starten muss ich noch gucken
+> Wichtig:  
+> node und npm sind vorrausgesetzt sowie ein postgresSQL DBconnectionlink  
+> Es gibt das Ganze SQL DB Script als sql Datei im docs Verzeichnis
+
+Zuerst das Projekt Klonen
+
+``git clone https://github.com/justusbruegmann/stechuhr.git``
+
+### Bauen
+Zum Bauen muss das ``build.ps1`` script ausgeführt werden oder eins der Scripte ausgeführt werden aus dem root directory:
+
+Beim build muss eine ".env.local" im frontend Ordner ein mit
+``NEXT_PUBLIC_BACKEND_URL=<BACKENDURL EINSETZEN>
+`` vorhandensein.  
+Mögliche werte:
+- Lokales backend:   http://localhost:3500
+- Hosted backend:   https://stechuhr-production-2a78.up.railway.app
+
+
+Cross-Plattform pwsh:  
+``./build.ps1``
+
+
+
+Windows:  
+``.\build.bat``
+
+Linux:  
+``bash build.sh``
+
+Zum Starten muss eine ".env" im Backend Ordner ein mit
+``DATABASE_URL=<DATENBANK_URL EINSETZEN>
+`` vorhandensein.
+
+Datenbank_URL wird noch bereit gestellt
+
+### Starten
+Backend und Frontend laufen als getrennte Prozesse und werden jeweils in einem eigenen Terminal gestartet:
+
+Backend (Terminal 1):
+```cmd
+   cd backend
+   npm start
+   ```   
+   
+  Warten bis ✓ Database connection successful in der Console erscheint, dann ist das Backend bereit.
+
+  Frontend (Terminal 2):
+
+      cd frontend
+      npm start
+
+  Die Anwendung ist danach unter http://localhost:3000 erreichbar.
+
+
 # Webdesign (Aaron & Felix)
 
 
