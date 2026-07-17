@@ -12,7 +12,7 @@ import DailyDetailsPane from "@/components/timeAdjustment/DailyDetailsPane";
 import {useRouter} from "next/navigation";
 
 import {loginToken} from "@/scripts/auth";
-import {getTimeEntries} from "@/scripts/timeEntriesScript";
+import {deleteTimeEntry, getTimeEntries} from "@/scripts/timeEntriesScript";
 import {DateString} from "@/types/misc";
 import {generateDateString, startOfTheMonthDateString, todayDateString} from "@/utils/TimeUtils";
 import User from "@/types/User";
@@ -61,9 +61,9 @@ export default function Dashboard() {
             if (index === -1) return prev;
 
             const updated = [...entries];
-            updated[index] = { ...updated[index], endTime: endTime.toISOString() };
+            updated[index] = {...updated[index], endTime: endTime.toISOString()};
 
-            return { ...prev, [dateString]: updated };
+            return {...prev, [dateString]: updated};
         });
     };
 
@@ -133,17 +133,23 @@ export default function Dashboard() {
     }
 
 
-    const deleteEntry = (id: string) => {
-        console.log(id);
+    const deleteEntry = async (id: string) => {
+        console.log("Delete " + id);
 
-        setDailyEntries((prev) =>
-            Object.fromEntries(
-                Object.entries(prev).map(([dateString, entries]) => [
-                    dateString,
-                    entries.filter((entry) => entry.id !== id)
-                ])
-            )
-        );
+        await deleteTimeEntry(Number(id)).then(
+            () => {
+                setDailyEntries((prev) =>
+                    Object.fromEntries(
+                        Object.entries(prev).map(([dateString, entries]) => [
+                            dateString,
+                            entries.filter((entry) => entry.id !== id)
+                        ])
+                    )
+                );
+            }
+        ).catch((error) => {
+            console.error(`Error deleting time entry ${id}: `, error);
+        })
     }
 
     function createOverviewContent() {
