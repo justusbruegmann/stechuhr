@@ -109,7 +109,7 @@
     display: grid;
     grid-template-rows: 4vh 1fr;
 
-    width: 4.5vw;
+    width: 100%;
     height: 10vh;
     align-items: center;
     justify-content: center;
@@ -129,7 +129,7 @@
     display: grid;
     grid-template-rows: 4vh 1fr;
 
-    width: 4.5vw;
+    width: 100%;
     height: 10vh;
     align-items: center;
     justify-content: center;
@@ -159,7 +159,7 @@
 }
 
 .calendar_empty {
-    width: 4.5vw;
+    width: 100%;
     height: 10vh;
     border: 2px solid rgb(180, 173, 173);
     border-radius: 1rem;
