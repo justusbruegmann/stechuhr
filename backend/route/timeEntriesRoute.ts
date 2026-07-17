@@ -4,7 +4,7 @@ import { authMiddleware } from "../middleware/auth";
 
 const router = Router();
 
-//create timeentry
+//create timeentry 
 router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
     try{
         const reqBody: any = req.body;
@@ -92,8 +92,11 @@ router.get('/users/:userId/timeentries', authMiddleware("user", true), async (re
             return res.status(400).send("type must be: work, holiday, sick");
         }
         const start = startDate ? new Date(startDate as string) : undefined;
-        const end = endDate ? new Date(endDate as string) : undefined;
+        const end = endDate ? new Date(endDate+"T23:59:59") : undefined;
         const timeEntries = await getTimeEntriesService(userid, type as "work"|"holiday"|"sick", start, end);
+        if(timeEntries == "end date is before start date"){
+            return res.status(400).json(timeEntries);
+        }
         return res.status(200).json(timeEntries);
     }
     catch(error){

@@ -159,7 +159,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         const minutes = totalMinutes % 60;
 
         setTodaysWorkTime({ hours, minutes });
-    };
+    }
 
     return (
         <Card width={"22vw"} styleOverrides={{flexDirection: "column", padding: "1.5rem"}}>

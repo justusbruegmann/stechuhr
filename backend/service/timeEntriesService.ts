@@ -56,6 +56,9 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date, u
 
 export async function getTimeEntriesService(userid: number, type?: "work" | "holiday" | "sick", startDate?: Date, endDate?: Date){
     try{
+        if(startDate && endDate && startDate > endDate){
+            return "end date is before start date";
+        }
         const timeEntries = await getTimeEntries(userid, type, startDate, endDate);
         return timeEntries;
     }
