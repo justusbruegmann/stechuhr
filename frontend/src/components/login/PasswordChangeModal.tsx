@@ -3,7 +3,6 @@ import {useState} from 'react';
 import styles from "@/app/login/Login.module.css"
 import {otpChange} from "@/scripts/auth";
 
-//UI import
 import Button from "@/components/layout/Button";
 
 
