@@ -8,14 +8,18 @@ import React, {useEffect, useState} from "react";
 import TimeEntry from "@/types/TimeEntry";
 import {createTimeEntry, getLastTimeEntry, setEndTime, getTimeEntries} from "@/scripts/timeEntriesScript";
 import { useRouter } from "next/navigation";
+import {DateString} from "@/types/misc";
+import {generateDateString} from "@/utils/TimeUtils";
 
 
 interface PopupProps {
     openOverview: () => void;
-    addEntry: (date: Date, entry: TimeEntry) => void;
+    isOverviewOpenable: boolean;
+    addEntry: (date: DateString, entry: TimeEntry) => void;
+    updateEntry: (endTime: Date) => void;
 }
 //
-export default function Timecard({openOverview, addEntry}: PopupProps) {
+export default function Timecard({openOverview, isOverviewOpenable = false, addEntry, updateEntry}: PopupProps) {
     const [time, setTime] = useState<Date | null>(null);
     const [clicked, setClicked] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -97,7 +101,7 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             return;
         }
         setClicked(false);
-        addEntry(new Date(result.startTime), mapEntry(result));
+        addEntry(generateDateString(new Date(result.startTime)), mapEntry(result));
     }
 
     async function setEndTimeEntry() {
@@ -122,7 +126,7 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             return;
         }
         setClicked(true);
-        addEntry(new Date(update.startTime), mapEntry(update));
+        updateEntry(buttonClickedTime);
     }
 
     async function getTodaysWorkTime() {
@@ -155,7 +159,7 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
         const minutes = totalMinutes % 60;
 
         setTodaysWorkTime({ hours, minutes });
-    };
+    }
 
     return (
         <Card width={"22vw"} styleOverrides={{flexDirection: "column", padding: "1.5rem"}}>
@@ -194,9 +198,7 @@ export default function Timecard({openOverview, addEntry}: PopupProps) {
             </Button>
             <hr className={Styles["gap"]}></hr>
             <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"}
-                    onClick={
-                        () => openOverview()
-                    }></Button>
+                    onClick={() => openOverview()} loading={isOverviewOpenable}></Button>
         </Card>
     );
 }
