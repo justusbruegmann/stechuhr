@@ -1,5 +1,6 @@
 import TimeEntry from "@/types/TimeEntry";
 import {DateString} from "@/types/misc";
+import Holidays from "date-holidays";
 
 /**
  * Returns a string in the format DD.MM.YYYY
@@ -87,12 +88,40 @@ export function getWorkdaysInCurrentMonth(): number {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
-    const daysInMonth = new Date(year, month + 1, 0).getDate(); // Last day of the previous month
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const holidays = new Holidays('DE', 'BW');
 
     let count = 0;
     for (let day = 1; day <= daysInMonth; day++) {
-        const weekday = new Date(year, month, day).getDay();
-        if (weekday !== 0 && weekday !== 6) count++; // 0 is Sunday in Javascript, 6 is saturday
+        const weekday = new Date(year, month, day);
+        // 0 is Sunday in Javascript, 6 is saturday
+        if (weekday.getDay() !== 0 && weekday.getDay() !== 6 && !holidays.isHoliday(weekday)) count++;
     }
     return count;
+}
+
+export function getWorkdaysInCurrentWeek(): number {
+    const now = new Date();
+    // Find Monday of the current week. getDay(): 0 = Sunday ... 6 = Saturday.
+    // Treat Sunday (0) as day 7 so the week runs Monday–Sunday, per ISO 8601.
+    const dayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
+    const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (dayOfWeek - 1));
+    const holidays = new Holidays('DE', 'BW');
+
+    let count = 0;
+    // Only Monday–Friday can be workdays, so iterate 5 days from Monday.
+    for (let i = 0; i < 5; i++) {
+        const day = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
+        if (!holidays.isHoliday(day)) count++;
+    }
+    return count;
+}
+
+export function isTodayWorkday(): boolean {
+    const today = new Date();
+    const day = today.getDay();
+    if (day === 0 || day === 6) return false;
+
+    const holidays = new Holidays('DE', 'BW');
+    return !holidays.isHoliday(today);
 }
