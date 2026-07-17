@@ -1,6 +1,6 @@
 import {createSession, getSessionsFromUser, deleteOldSession} from "../repository/auth";
 import {getUserFromUserName, getHash} from "../repository/userManagement";
-import {generateRandomString} from "../utils/utils";
+import {generateRandomString} from "../utils/auth";
 import {verifyPassword} from "../utils/hashing";
 import {users} from "../drizzle/schema";
 
