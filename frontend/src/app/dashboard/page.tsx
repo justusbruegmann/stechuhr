@@ -45,6 +45,28 @@ export default function Dashboard() {
         }));
     };
 
+    const updateEntryEndTime = (endTime: Date) => {
+        // By design, it should not be possible for a TimeEntry to have a startTime before today and not have an endTime.
+        const dateString = generateDateString(endTime);
+        const todaysEntries = dailyEntries[dateString] ?? [];
+
+        const hasUnfinished = todaysEntries.some(entry => !entry.endTime);
+        if (!hasUnfinished) {
+            throw new Error("There are no unfinished TimeEntries");
+        }
+
+        setDailyEntries(prev => {
+            const entries = prev[dateString] ?? [];
+            const index = entries.findIndex(entry => !entry.endTime);
+            if (index === -1) return prev;
+
+            const updated = [...entries];
+            updated[index] = { ...updated[index], endTime: endTime.toISOString() };
+
+            return { ...prev, [dateString]: updated };
+        });
+    };
+
     async function authCheck() {
         const token = localStorage.getItem("token")
         const userid = localStorage.getItem("userid")
@@ -180,7 +202,8 @@ export default function Dashboard() {
                 <Header name={"dashboard"}/>
             </div>
             <div className={styles.viewArea}>
-                <Timecard openOverview={openOverviewModal} isOverviewOpenable={!currentUser} addEntry={addEntryForDate} />
+                <Timecard openOverview={openOverviewModal} isOverviewOpenable={!currentUser}
+                          addEntry={addEntryForDate} updateEntry={updateEntryEndTime}/>
 
                 <div className={styles.calendarWrapper}>
                     <Calendar showDailyDetails={showDailyDetails} timeEntries={dailyEntries}/>

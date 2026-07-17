@@ -16,9 +16,10 @@ interface PopupProps {
     openOverview: () => void;
     isOverviewOpenable: boolean;
     addEntry: (date: DateString, entry: TimeEntry) => void;
+    updateEntry: (endTime: Date) => void;
 }
 //
-export default function Timecard({openOverview, isOverviewOpenable = false, addEntry}: PopupProps) {
+export default function Timecard({openOverview, isOverviewOpenable = false, addEntry, updateEntry}: PopupProps) {
     const [time, setTime] = useState<Date | null>(null);
     const [clicked, setClicked] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -125,7 +126,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
             return;
         }
         setClicked(true);
-        addEntry(generateDateString(new Date(update.startTime)), mapEntry(update));
+        updateEntry(buttonClickedTime);
     }
 
     async function getTodaysWorkTime() {
