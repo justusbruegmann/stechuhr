@@ -62,15 +62,15 @@ export async function getNotification(token: string, userId: number, notificatio
     }
 }
 
-export async function patchNotification(token: string, userId: number, notificationId: number) {
+export async function patchNotification(token: string, userId: number, notificationId: number, isRead: boolean) {
     const url = `${BASE_URL}/notifications/${notificationId}`;
     const headers = {
         "content-type": "application/json",
         "Authorization": `${token}`,
         "userid": `${userId}`
     };
-    const body = { "read": true };
-    const response = await fetch(url, { method: "patch", body: JSON.stringify(body), headers: headers })
+    const body = { "read": isRead };
+    const response = await fetch(url, { method: "PATCH", body: JSON.stringify(body), headers: headers })
     if (response.status === 401) {
         return 401;
     }

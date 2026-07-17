@@ -4,23 +4,19 @@ import { useEffect, useRef, useState } from "react";
 import Card from "@/components/layout/Card";
 import styles from "./Notifications.module.css"
 import Notification from "@/types/Notification";
+import { patchNotification } from "@/scripts/notifications";
 
 
 type Props = {
     notifications: Notification[]
+    updateNotification: (id:number, isRead: boolean) => void
 }
 
 
-export default function Notifications({ notifications }: Props) {
-    const [localNotifications, setLocalNotifications] = useState<Notification[]>(notifications);
+export default function Notifications({ notifications, updateNotification  }: Props) {
     const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        setLocalNotifications(notifications);
-    }, [notifications]);
-
-    // Dropdown schließen, wenn irgendwo außerhalb geklickt wird
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
@@ -31,11 +27,22 @@ export default function Notifications({ notifications }: Props) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const handleReadStatusChange = (id: number, isRead: boolean) => {
-        setLocalNotifications((prev) =>
-            prev.map((n) => n.id === id ? { ...n, isRead } : n)
-        );
+    const handleReadStatusChange = async (id: number, isRead: boolean) => {
         setOpenDropdownId(null);
+
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("userid");
+        if (!token || !userId) {
+            return;
+        }
+
+        const result = await patchNotification(token, Number(userId), id, isRead);
+        if (!result || result == 400 || result == 401) {
+            console.error("Notification update fehlgeschlagen", result);
+            return;
+        }
+
+        updateNotification(id, isRead);
     };
 
     const formatDate = (dateString: string) => {
@@ -53,7 +60,7 @@ export default function Notifications({ notifications }: Props) {
             <h3 className={styles.title}>Benachrichtigungen</h3>
             <hr className={styles.separator} />
             {
-                localNotifications.map((notification) => (
+                notifications.map((notification) => (
                     <Card key={notification.id}>
                         <div className={styles.notifications_container}>
                             <div className={styles.notifications_header}>

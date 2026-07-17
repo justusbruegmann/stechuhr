@@ -62,16 +62,33 @@ export default function Dashboard() {
         }
 
         localStorage.setItem("role", login.role);
+    }
+    useEffect(() => {
+        authCheck().then(r => console.log("Logged in"));
+    }, [router])
+
+    async function loadNotifications() {
+        const token = localStorage.getItem("token")
+        const userid = localStorage.getItem("userid")
+
+        if (!token || !userid) {
+            return
+        }
 
         const notificationList = await getNotificationList(token, Number(userid));
         if (notificationList && notificationList != 400 && notificationList != 401 && notificationList != 500) {
             setNotifications(notificationList);
         }
     }
-
     useEffect(() => {
-        authCheck().then(r => console.log("Logged in"));
-    }, [router])
+        loadNotifications();
+    }, [])
+    const updateNotification = (id: number, isRead: boolean) => {
+        setNotifications((prev) =>
+            prev.map((n) => n.id === id ? { ...n, isRead } : n)
+        );
+    }
+
 
 
     const deleteEntry = (id: string) => {
@@ -117,11 +134,14 @@ export default function Dashboard() {
             } else if (currentlyOpenModal.current.type === "NotificationsModal") {
                 updateModalContent(
                     currentlyOpenModal.current.id,
-                    <Notifications notifications={notifications} />
+                    <Notifications
+                        notifications={notifications}
+                        updateNotification={updateNotification}
+                    />
                 );
             }
         }
-    }, [dailyEntries, updateModalContent]);
+    }, [dailyEntries, notifications, updateModalContent]);
 
     const openOverviewModal = useCallback(() => {
         const { id } = showModal("sidepane", <Overview entries={dailyEntries} deleteEntry={deleteEntry} />)
@@ -134,7 +154,11 @@ export default function Dashboard() {
     }, [dailyEntries, showModal, addEntryForDate]);
 
     const openNotificationModal = useCallback(() => {
-        const { id } = showModal("sidepane", <Notifications notifications={notifications} />)
+        const { id } = showModal("sidepane",
+            <Notifications
+                notifications={notifications}
+                updateNotification={updateNotification}
+            />)
         currentlyOpenModal.current = { id, type: "NotificationsModal" };
     }, [notifications, showModal]);
 
