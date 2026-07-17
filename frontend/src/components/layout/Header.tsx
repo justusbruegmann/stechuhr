@@ -61,11 +61,11 @@ export default function Header({name}: HeaderProps) {
                 <div className={styles['navigation']}>
                     {currentPath !== LOGIN && userRole === "admin" &&
                         <Button label={name === "admin" ? "Dashboard" : "Admin-Ansicht"} type={"primary"} height={2}
-                                width={6} onClick={() => adminView()}/>
+                                width={6} onClick={() => adminView()} style={{color: 'lightgray'}}/>
                     }
                     {currentPath !== LOGIN && userRole === "manager" &&
                         <Button label={managerViewButtonText} type={"primary"} height={2}
-                                width={6} style={{marginRight: 12}} onClick={() => toggleManagerView()}/>
+                                width={6} style={{marginRight: 12, color: 'lightgray'}} onClick={() => toggleManagerView()}/>
                     }
                 </div>
 
@@ -75,12 +75,12 @@ export default function Header({name}: HeaderProps) {
                         alt="person_icon"
                         width={32}
                         height={32}
-                        style={{filter: 'invert()', opacity: 1}}
+                        style={{transform: 'invert()', opacity: 1}}
                         priority
                     />
 
                     <Button label={"Logout"} type={"primary"} height={2} width={6}
-                            onClick={() => logout()}/>
+                            onClick={() => logout()} style={{color: 'lightgray'}}/>
                 </div>
             </div>
             <hr className={styles["hr-color"]}></hr>
