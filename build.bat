@@ -4,7 +4,7 @@ REM build.bat - baut Backend (TypeScript) und Frontend nacheinander.
 REM Bricht ab, sobald ein Schritt fehlschlaegt.
 
 REM In das Verzeichnis wechseln, in dem diese Datei liegt (= Projekt-Root).
-REM AI GERNERATED hab keine Ahnung von BAT scripten
+REM AI GERNERATED
 cd /d "%~dp0"
 
 echo ==^> Backend: TypeScript kompilieren

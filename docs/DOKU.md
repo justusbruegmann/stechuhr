@@ -83,8 +83,6 @@ Mögliche werte:
 Cross-Plattform pwsh:  
 ``./build.ps1``
 
-
-
 Windows:  
 ``.\build.bat``
 

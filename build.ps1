@@ -1,5 +1,5 @@
 $ErrorActionPreference = "Stop"
-
+# AI GEN
   Set-Location -Path $PSScriptRoot
 
   Write-Host "Backend build"
