@@ -4,7 +4,7 @@ import { authMiddleware } from "../middleware/auth";
 
 const router = Router();
 
-//create timeentry
+//create timeentry 
 router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
     try{
         const reqBody: any = req.body;
