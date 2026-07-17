@@ -1,7 +1,9 @@
 .title {
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 2rem;
     margin-bottom: 1rem;
 }
+
 .separator {
     margin-bottom: 1rem;
 }
@@ -18,6 +20,13 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
+.notifications_header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .notifications_title {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 3vh;
@@ -26,4 +35,50 @@
 
 .notifications_text {
     font-family: Arial, Helvetica, sans-serif;
+}
+
+.notifications_time {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.8rem;
+    color: gray;
+}
+
+.notifications_status {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.status_read {
+    color: green;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.status_unread {
+    color: #c0392b;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.status_dropdown_wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.status_arrow {
+    font-size: 0.9rem;
+    color: #555;
+    pointer-events: none;
+}
+
+.status_select {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    border: none;
+    cursor: pointer;
+    appearance: none;
 }
