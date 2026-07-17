@@ -87,7 +87,7 @@ export default function Dashboard() {
     }
 
     useEffect(() => {
-        authCheck().then(async (r) => {
+        authCheck().then(async () => {
             const token = localStorage.getItem("token")
             const userid = localStorage.getItem("userid")
 
@@ -133,10 +133,10 @@ export default function Dashboard() {
     }
 
 
-    const deleteEntry = async (id: string) => {
+    const deleteEntry = async (id: number) => {
         console.log("Delete " + id);
 
-        await deleteTimeEntry(Number(id)).then(
+        await deleteTimeEntry(id).then(
             () => {
                 setDailyEntries((prev) =>
                     Object.fromEntries(

@@ -13,7 +13,7 @@ import User from "@/types/User";
 
 interface Props {
     entries: Record<DateString, TimeEntry[]>;
-    deleteEntry: (id: string) => void;
+    deleteEntry: (id: number) => void;
     user: User;
 }
 

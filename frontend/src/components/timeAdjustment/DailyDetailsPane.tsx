@@ -9,7 +9,7 @@ import {DateString} from "@/types/misc";
 import {formatDate} from "@/utils/TimeUtils";
 
 export default function DailyDetailsPane({date, entries, onAddEntry, deleteEntry}: {
-    date: DateString; entries: TimeEntry[]; onAddEntry: (entry: TimeEntry) => void; deleteEntry: (id: string) => void;
+    date: DateString; entries: TimeEntry[]; onAddEntry: (entry: TimeEntry) => void; deleteEntry: (id: number) => void;
 }) {
     const {showModal, hideModal} = useModal();
 
