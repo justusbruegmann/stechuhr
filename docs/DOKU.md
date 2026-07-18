@@ -1,15 +1,55 @@
 # How2CenterADiv Stechuhr
 ## Matrikelnummern:
-    - justusbruegmann: 4865545
-    - SebastianAnhalt: 7020807
-    - mika630: 1586623
-    - FHG : nummer Einfügen Bitte beachten Github Email und git Email unterschiedlich da Firmen Laptop
-    - brdly06: Nummer einfügen
-AI als Formulierungshilfe verwendet
+    justusbruegmann: 4865545
+    SebastianAnhalt: 7020807
+    mika630: 1586623
+    FHG : nummer Einfügen Bitte beachten Github Email und git Email unterschiedlich da Firmen Laptop
+    brdly06: Nummer einfügen
+
+
 # Was macht die Anwendung? (Mika)
 # Struktur des Repo (Sebastian)
-# Setup der Dev Umgebung (Justus)
 
+
+# Aufgabenverteilung
+
+Der überwältigende Teil der DevOps wurde von `justusbruegmann` erledigt. Das umfasst die Erstellung und Pflege des Git-Repositories (inkl. der Code-Reviews zu PRs), die Einrichtung der PostgreSQL-Datenbank auf Supabase, sowie die Deployment-Prozesse auf zuerst Vercel und später Railway.
+
+Die Datenbank-Schemata wurden von `justusbruegmann` und `Sebastian Anhalt` erstellt und gepflegt.
+
+Die Zusammenführung und Integration der Frontend-Komponenten auf der /dashboard Seite sowie die Pflege der Kompatibilität zwischen den einzelnen Komponenten wurde maßgeblich von `Sebastian Anhalt` erledigt.
+
+Zur Schaffung einer grundlegend einheitlichen Ästhetik der Anwendungen wurden von `Sebastian Anhalt` und `justusbruegmann` zu Beginn der Entwicklung Layout-Komponenten erstellt, 
+die im [Layout-Ordner](#srccomponents) zu finden sind und in vielen der Komponenten verwendet werden.
+
+Die Aufteilung der Domain-Logik und der Funktionen der Anwendung können im Detail den Kapiteln [Was macht die Anwendung?](#was-macht-die-anwendung-mika) und [Eigenleistung](#eigenleistung) entnommen werden. Hier nur eine grobe Darstellung:
+
+**justusbruegmann**
+- Authentication & Authorization
+- Login
+- Benutzerverwaltung
+
+**Sebastian Anhalt**
+- Übersicht Tag/Woche/Monat der geleisteten Arbeitszeiten
+- Manager-Ansicht zur Bearbeitung von Arbeitszeiten, Urlaubszeiten und Krankheitstagen der untergebenen Mitarbeiter (inkl. einiger weniger Benutzerverwaltung-Endpunkten im Backend)
+
+**mika630**
+- Ein-/Ausstempelfunktion auf dem Dashboard
+- Darstellung der aktuellen Arbeitszeit und des aktuellen Status (gestempelt / nicht gestempelt)
+- Bereitstellung der */timeEntry/* Endpunkte im Backend, also der zentralen Ressource für die Zeiterfassung
+
+**FHG**
+- Übersicht über alle Arbeitszeiten eines Tages
+- Manuelles Nachtragen von Arbeitszeiten
+- Funktion zum Stellen von Anträgen wegen Urlaubs oder Krankheit
+
+**brdly06**
+- Kalender auf dem Dashboard mit visueller Aufbereitung von Arbeitszeiten, Wochenenden, Feiertagen und Urlaubszeiten
+- Benachrichtigungen 
+
+
+
+# Setup der Dev Umgebung (Justus)
 > Wichtig:  
 > node und npm sind vorrausgesetzt sowie ein postgresSQL DBconnectionlink  
 > Es gibt das Ganze SQL DB Script als sql Datei im docs Verzeichnis
