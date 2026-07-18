@@ -5,11 +5,13 @@ import styles from "./Calendar.module.css"
 import { useState } from "react";
 import Holidays from 'date-holidays';
 import TimeEntry from "@/types/TimeEntry";
+import { DateString } from "@/types/misc";
+import { generateDateString } from "@/utils/TimeUtils";
 
 
 type Props = {
-    showDailyDetails: (date: Date) => void;
-    timeEntries: Record<string, TimeEntry[]>
+    showDailyDetails: (date: DateString) => void;
+    timeEntries: Record<DateString, TimeEntry[]>
 }
 
 
@@ -51,15 +53,15 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
     const holidays = new Holidays('DE', 'BW');
 
     // --- Legende ---
-const symbols = [
-    ["Krank", "rgb(0, 0, 0)", "rgba(255, 200, 0, 0.12)", "rgb(255, 180, 0)"],
-    ["Urlaub", "rgb(0, 0, 0)", "rgba(180, 50, 240, 0.12)", "rgb(180, 20, 240)"],
-    ["WE", "rgb(0, 0, 0)", "rgba(50, 110, 255, 0.12)", "rgb(20, 90, 255)"],
-    ["FT", "rgb(0, 0, 0)", "rgba(230, 50, 230, 0.12)", "rgb(230, 10, 230)"],
-    [">8h", "rgb(0, 0, 0)", "rgba(0, 255, 0, 0.5)", "rgb(0, 150, 0)"],
-    ["6-8h", "rgb(0, 0, 0)", "rgba(255, 140, 0, 0.5)", "rgb(200, 120, 0)"],
-    ["<6h", "rgb(0, 0, 0)", "rgba(255, 0, 0, 0.5)", "rgb(200, 0, 0)"]
-].map(([text, color, backgroundColor, borderColor]) => ({ text, color, backgroundColor, borderColor }));
+    const symbols = [
+        ["Krank", "rgb(0, 0, 0)", "rgba(255, 200, 0, 0.12)", "rgb(255, 180, 0)"],
+        ["Urlaub", "rgb(0, 0, 0)", "rgba(180, 50, 240, 0.12)", "rgb(180, 20, 240)"],
+        ["WE", "rgb(0, 0, 0)", "rgba(50, 110, 255, 0.12)", "rgb(20, 90, 255)"],
+        ["FT", "rgb(0, 0, 0)", "rgba(230, 50, 230, 0.12)", "rgb(230, 10, 230)"],
+        [">8h", "rgb(0, 0, 0)", "rgba(0, 255, 0, 0.5)", "rgb(0, 150, 0)"],
+        ["6-8h", "rgb(0, 0, 0)", "rgba(255, 140, 0, 0.5)", "rgb(200, 120, 0)"],
+        ["<6h", "rgb(0, 0, 0)", "rgba(255, 0, 0, 0.5)", "rgb(200, 0, 0)"]
+    ].map(([text, color, backgroundColor, borderColor]) => ({ text, color, backgroundColor, borderColor }));
     const legend1Symbols = symbols.slice(0, 4);
     const legend2Symbols = symbols.slice(4);
 
@@ -208,8 +210,7 @@ const symbols = [
                         if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
                             return (
                                 <div key={index} className={styles.calendar_today} style={dayStyle}
-                                    onClick={() => showDailyDetails(new Date(currentYear, currentMonth, day))}>
-                                    {day && <div className={styles.calendar_day_text}>{day}</div>}
+                                    onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day)))}>                                    {day && <div className={styles.calendar_day_text}>{day}</div>}
                                     <div className={styles.calendar_day_symbols_container}>
                                         {handleEntries(index, day)}
                                     </div>
@@ -218,8 +219,7 @@ const symbols = [
                         }
                         return (
                             <div key={index} className={styles.calendar_day} style={dayStyle}
-                                onClick={() => showDailyDetails(new Date(currentYear, currentMonth, day))}>
-                                {day && <div className={styles.calendar_day_text}>{day}</div>}
+                                onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day)))}>                                {day && <div className={styles.calendar_day_text}>{day}</div>}
                                 <div className={styles.calendar_day_symbols_container}>
                                     {handleEntries(index, day)}
                                 </div>

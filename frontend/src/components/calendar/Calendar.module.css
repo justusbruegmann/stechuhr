@@ -197,7 +197,7 @@
 .calendar_symbols {
     display: flex;
 
-    width: 4vw;
+    width: 100%;
     height: 2.25vh;
     justify-content: center;
     align-items: center;
