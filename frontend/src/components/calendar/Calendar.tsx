@@ -7,16 +7,18 @@ import Holidays from 'date-holidays';
 import TimeEntry from "@/types/TimeEntry";
 import { DateString } from "@/types/misc";
 import { generateDateString } from "@/utils/TimeUtils";
+import User from "@/types/User";
 
 
 type Props = {
+    user?: User;
     showDailyDetails: (date: DateString) => void;
     timeEntries: Record<DateString, TimeEntry[]>
     onMonthChange: (year: number, month: number) => void;
 }
 
 
-export default function Kalender({ showDailyDetails, timeEntries, onMonthChange }: Props) {
+export default function Kalender({ user, showDailyDetails, timeEntries, onMonthChange }: Props) {
 
     // --- Kalender ---
     const timeEntryList = Object.values(timeEntries).flat();
@@ -46,6 +48,9 @@ export default function Kalender({ showDailyDetails, timeEntries, onMonthChange 
         }
     }
 
+    // --- Mindestwochenarbeitszeit ---
+    const targetHours = user ? user.workload / 5 : 8;
+    const lowerThreshold = targetHours * 0.75;
 
     // --- Wochentage ---
     const weekdays = ["Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa.", "So."];
@@ -59,9 +64,9 @@ export default function Kalender({ showDailyDetails, timeEntries, onMonthChange 
         ["Urlaub", "rgb(0, 0, 0)", "rgba(180, 50, 240, 0.12)", "rgb(180, 20, 240)"],
         ["WE", "rgb(0, 0, 0)", "rgba(50, 110, 255, 0.12)", "rgb(20, 90, 255)"],
         ["FT", "rgb(0, 0, 0)", "rgba(230, 50, 230, 0.12)", "rgb(230, 10, 230)"],
-        [">8h", "rgb(0, 0, 0)", "rgba(0, 255, 0, 0.5)", "rgb(0, 150, 0)"],
-        ["6-8h", "rgb(0, 0, 0)", "rgba(255, 140, 0, 0.5)", "rgb(200, 120, 0)"],
-        ["<6h", "rgb(0, 0, 0)", "rgba(255, 0, 0, 0.5)", "rgb(200, 0, 0)"]
+        [`>${targetHours.toFixed(1)}h`, "rgb(0, 0, 0)", "rgba(0, 255, 0, 0.5)", "rgb(0, 150, 0)"],
+        [`${lowerThreshold.toFixed(1)} - ${targetHours.toFixed(1)}h`, "rgb(0, 0, 0)", "rgba(255, 140, 0, 0.5)", "rgb(200, 120, 0)"],
+        [`<${lowerThreshold.toFixed(1)}h`, "rgb(0, 0, 0)", "rgba(255, 0, 0, 0.5)", "rgb(200, 0, 0)"]
     ].map(([text, color, backgroundColor, borderColor]) => ({ text, color, backgroundColor, borderColor }));
     const legend1Symbols = symbols.slice(0, 4);
     const legend2Symbols = symbols.slice(4);
@@ -148,13 +153,13 @@ export default function Kalender({ showDailyDetails, timeEntries, onMonthChange 
         let symbolIndex: number = -1;
 
         switch (true) {
-            case workHours >= 8:
+            case workHours >= targetHours:
                 symbolIndex = 4;
                 break;
-            case workHours >= 6:
+            case workHours >= targetHours * 0.75:
                 symbolIndex = 5;
                 break;
-            case workHours < 6:
+            case workHours < targetHours * 0.75:
                 symbolIndex = 6;
                 break;
         }

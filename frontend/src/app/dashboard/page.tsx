@@ -227,7 +227,7 @@ export default function Dashboard() {
                     addEntry={addEntryForDate} updateEntry={updateEntryEndTime} />
 
                 <div className={styles.calendarWrapper}>
-                    <Calendar showDailyDetails={showDailyDetails} timeEntries={dailyEntries} onMonthChange={handleCalendarMonthChange} />
+                    <Calendar user={currentUser} showDailyDetails={showDailyDetails} timeEntries={dailyEntries} onMonthChange={handleCalendarMonthChange} />
                 </div>
             </div>
         </div>
