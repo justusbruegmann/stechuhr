@@ -136,7 +136,7 @@ Im Allgemeinen hat jede Route zwingend eine page.tsx-Datei, deren Inhalt unter d
 Außerdem können hier weitere Dateien wie z.B. CSS-Stylesheets (seitenname.module.css) oder lokal verwendete Components abgelegt sein.
 
 #### Routen
-**/**
+**/** \
 Enthält eine page.tsx, die nur eine Umleitung auf **/dashboard** auslöst.
 Zusätzlich dazu liegen hier auch allgemeine Konfigurationen der Webseite:
 - Das Favicon
@@ -144,27 +144,68 @@ Zusätzlich dazu liegen hier auch allgemeine Konfigurationen der Webseite:
 - layout.tsx, welches den äußeren HTML-Rahmen der Seite definiert und benötigte Kontexte (hier nur ModalProvider) einbindet
 - Eine not-found Seite, die als catch-all auf alle nicht definierten Routen reagiert
 
-**/dashboard**
+**/dashboard** `(hauptsächlich) Sebastian Anhalt` \
 Das Dashboard ist die Hauptseite der Anwendung.
 Sie enthält die Einstempelfunktion und einen Kalender.
 
-**/login**
+**/login** `justusbruegmann` \
 Die Login-Seite.
 
-**/admin_view**
+**/admin_view** `justusbruegmann` \
 Eine Seite zur Benutzerverwaltung, auf die nur Admin-Accounts Zugriff haben.
 Hier können neue Benutzer angelegt, bestehende Benutzer gelöscht, und ihre Rollen und die Zuordnung zu Vorgesetzten (Managern) verändert werden.
 
-**/manager_view**
+**/manager_view** `Sebastian Anhalt` \
 Diese Seite wird nur für Manager-Accounts mit Inhalt befüllt, alle anderen sehen eine Fehlermeldung.
 Hierauf können Manager die Arbeitszeiten, Urlaubstage ihrer Mitarbeiter einsehen und bearbeiten, sowie eine Zusammenfassung der geleisteten Wochenarbeitszeit, genehmigter Urlaubstage und eingetragener Krankheitstage sehen.
 Außerdem können offene Anträge hier anzeigen lassen und akzeptieren / ablehnen.
 
 
 ### /src/components
-Hier befinden sich alle React-Components.
-// ToDo
+Hier befinden sich die React-Components, die von den page.tsx in /src/app eingebunden werden, geordnet nach Anwendungsgebiet.
 
+**Layout** \
+Diese Komponenten sind als Erstes und in absichtlicher Allgemeinheit entstanden und mussten sich im Lauf der Entwicklung der Restlichen Anwendung verschiedenen Anforderungen anpassen. 
+Sie sind unser Ersatz für ein UI-Framework, da wir keines verwenden durften, und erinnern daher durchaus bekannten Strukturen (z.B. Card).
+Popup, Loader und Sidepane sind die drei Ausprägungen von Modals, die wir in der Anwendung verwenden. Sie basieren auf dem ModalContext (src/context/ModalContext). \
+*Button + Header:* `justusbruegmann` \
+*Card, Loader, Popup, Sidepane, SpinningLoader, Tabs:* `Sebastian Anhalt`
+
+**Calendar** `brdly06` \
+Diese Component erstellt den Kalender auf der /dashboard Seite. 
+
+**Login** `justusbruegmann` \
+Enthält nur eine Komponente: Ein Popup zum Ändern des One-Time-Passwords, das der Admin bei der Erstellung eines neuen Accounts vergibt.
+
+**ManagerView** `Sebastian Anhalt` \
+Enthält die Komponenten, die auf der /manager_view Seite verwendet werden: ein Popup zum Bearbeiten der vertraglichen Arbeitszeiten sowie Urlaubszeiten eines Benutzers, und die Tabellen zur Darstellung der Arbeitszeiten, Urlaubszeiten und Krankheitstage mehrerer User-Accounts.
+
+**Overview** `Sebastian Anhalt` \
+Enthält die Komponenten, die auf dem Dashboard eine Zusammenfassung der geleisteten Arbeitszeit und des Tages-, Wochen- und Monatsfortschritts darstellen.
+
+**TimeAdjustment** `FHG` \
+Die DailyDetailsPane zeigt alle eingetragenen Arbeitszeiten eines Tages an und ist öffenbar, indem man auf einen Tag im Kalender klickt.
+Über den 'Manuell-Nachtragen'-Button öffnet sich ein Popup, in welchem die beiden anderen Komponenten dieses Ordners Verwendung finden.
+
+**Timecard** `mika630` \
+Die Timecard-Komponente ist die Einstempelfunktion auf dem Dashboard. Sie zeigt u.a. die aktuelle Uhrzeit, die aktuelle Arbeitszeit und den aktuellen Status (gestempelt / nicht gestempelt) an.
+
+**Usermanagement** `justusbruegmann` \
+Enthält die Komponenten, die auf der /admin_view Seite zur Darstellung und Verwaltung aller User Accounts verwendet werden.
+
+
+### /src/context
+Die Anwendung verwendet nur einen einzelnen Provider, den ModalContext, zur Bereitstellung der Funktion, von jeder Komponente aus ein möglicherweise geschachteltes Modal öffnen zu können.
+Seit der Erweiterung, mehrere Modals gleichzeitig öffnen zu können und den Inhalt bereits geöffneter Modals neu zu rendern ist dieser Context unter starker Zuhilfenahme von KI entstanden.
+
+### /src/scripts
+Die Scripts in diesem Ordner umfassen die fetch-Funktionen, die von den React-Components aufgerufen werden, um mit dem Backend zu kommunizieren; gruppiert nach dem Endpunkt, den sie aufrufen.
+
+### /src/types
+Typ-Definitionen, die im Frontend zur starken Typisierung des Codes verwendet werden.
+
+### /src/utils
+Hilfsfunktionen, die an mehreren Stellen im Frontend verwendet werden, oder die zu umfangreich für die einzelnen page.tsx sind und daher ausgelagert wurden.
 
 
 ## Backend
