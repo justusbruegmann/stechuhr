@@ -508,9 +508,56 @@ und zum Akzeptieren/Ablehnen von Anträgen.
 
 Schließlich werden die Daten als fertige React.ReactNode-Elemente an die UserTable-Komponente übergeben, die sie in einer Tabelle darstellt.
 
-
 ### Backend
-// ToDo
+Gemäß dem generellen Aufbau des Backends besteht jeder Endpunkt aus drei Schichten: 
+- **/route**: Hier wird die Route definiert, Middleware eingebunden und Authorization und Input-Validierung durchgeführt.
+- **/service**: Hier wird die eigentliche Domainlogik implementiert.
+- **/repository**: Hier werden die SQL-Abfragen an die Datenbank definiert.
+
+
+Die Manager-Ansicht benötigt drei Endpunkte im Backend, um die benötigten Daten zu laden und zu bearbeiten:
+
+#### GET /users/manager/users
+[Link zum Code](/backend/route/userManagement.ts#L137) \
+Hier werden alle Benutzer zurückgeliefert, deren Manager der angemeldete Benutzer ist.\
+Es ist quasi keine Authorization zu erledigen, da bei dieser Anfrage keine parameter außer der bereits verifizierten Identität des Antragstellers verwendet werden. \
+Daher werden Anfrage und Antwort mit minimalem Aufwand durchgereicht: \
+route → service → repository → service → route. 
+
+#### PATCH /users/:id/employment
+[Link zum Code](/backend/route/userManagement.ts#L167) \
+Hierüber kann der Manager die Wochenarbeitszeit und die Urlaubstage eines untergebenen Mitarbeiters bearbeiten. \
+Dieser Endpunkt hat eine etwas komplexere Authorization. Zuerst wird der mitgelieferte Payload mittels eines Zod-Schemas validiert.
+Dann folgt die Überprüfung, ob der angemeldete Benutzer der Manager des zu bearbeitenden Mitarbeiters ist.
+Sofern eine gültige Anfrage vorliegt, wird sie an den Service weitergeleitet, der die Datenbank aktualisiert.
+
+#### GET /summary?userId=:id&startDate=:startDate&endDate=:endDate
+[Link zum Code](/backend/route/summary.ts) \
+Der Summary-Endpunkt stellt eine nicht-persistente Ressource zur Verfügung, die eine Zusammenfassung der Arbeitszeiten, Urlaubstage und Krankheitstage eines Benutzers für einen bestimmten Zeitraum liefert.
+Er hat dementsprechend keine Funktion in **/repository** und wird ausschließlich durch den Aufruf anderer **/service**-Funktionen mit Leben gefüllt.
+
+In **/route** werden die Parameter mithilfe eines Zod-Schemas und weiterer Funktionen validiert. Danach wird noch mehr Authorization durchgeführt,
+indem überprüft wird, ob der angemeldete Benutzer entweder der Benutzer selbst oder dessen Manager ist.
+
+In **/service** werden drei Anfragen an den TimeEntriesService von *mika630* durchgeführt, um Listen zu eingetragenen 
+Arbeitszeiten, Urlaubstagen und Krankheitstagen des Benutzers im gegebenen Zeitraum zu laden. Aus diesen Daten wird dann die Zusammenfassung erstellt in Form des folgenden DTOs zurückgegeben:
+
+```typescript
+/**
+ * Strings to represent a date in the format YYYY-MM-DD
+ */
+export type DateString = string;
+
+export default interface Summary {
+    userId: number;
+    startDate: DateString;
+    endDate: DateString;
+
+    vacationDaysTaken: number;
+    sickDaysTaken: number;
+    timeWorkedInMinutes: number;
+}
+```
 
 ### Honorable Mention: Overview auf Dashboard
 Die Übersicht auf dem Dashboard war anfangs als meine zu bewertende Eigenleistung geplant. 
@@ -518,3 +565,10 @@ Da sie allerdings komplett ohne zusätzliches Backend auskommt und ihren Zustand
 Liste aller Zeiteinträge des aktuellen Monats generiert werden kann, erfüllt sie den Anspruch als End-to-End-Feature nicht.
 
 Trotzdem bin ich stolz auf das Endprodukt, in dem jedes einzelne Element von mir stammt (inkl. Sidepane mit Animation, Tabs-Feature, DetailEntry mit Animation, und die mühselige Zeitberechnung in timeUtils.ts).
+
+
+## mika630: Timecard
+
+## brdly06: Notifications
+
+## FHG: Requests

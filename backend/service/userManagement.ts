@@ -8,7 +8,6 @@ import {
     getManagers,
     getUserFromUserName,
     getUsers,
-    getUsersForManager,
     updateManager,
     updateRole
 } from "../repository/userManagement";
@@ -106,11 +105,6 @@ export async function managerGet() {
     return result;
 }
 
-export async function managerGetOwnUsers(managerId: number) {
-    const result = await getUsersForManager(managerId);
-    return result;
-}
-
 export async function roleUpdate(userId: number, newRole: string) {
     if (newRole === "manager" || newRole === "admin" || newRole === "user") {
         const result = await updateRole(userId, newRole);
@@ -133,4 +127,8 @@ export async function managerUpdate(userId: number, managerId: number) {
 
 export async function updateEmploymentDetails(userId: number, updateFields: {workload?: number, holidays?: number}) {
     return await repo.updateEmploymentDetails(userId, updateFields);
+}
+
+export async function getUsersForManager(managerId: number) {
+    return await repo.getUsersForManager(managerId);
 }
