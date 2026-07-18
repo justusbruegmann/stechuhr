@@ -179,7 +179,7 @@
 .calendar_legend1 {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.6rem;
+    gap: 1rem;
 
     justify-content: center;
     margin-top: 0.5rem;
@@ -188,7 +188,7 @@
 .calendar_legend2 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.6rem;
+    gap: 1rem;
 
     justify-content: center;
     margin-top: 0.5rem;
@@ -197,7 +197,7 @@
 .calendar_symbols {
     display: flex;
 
-    width: 100%;
+    width: 120%;
     height: 2.25vh;
     justify-content: center;
     align-items: center;

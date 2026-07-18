@@ -12,10 +12,11 @@ import { generateDateString } from "@/utils/TimeUtils";
 type Props = {
     showDailyDetails: (date: DateString) => void;
     timeEntries: Record<DateString, TimeEntry[]>
+    onMonthChange: (year: number, month: number) => void;
 }
 
 
-export default function Kalender({ showDailyDetails, timeEntries }: Props) {
+export default function Kalender({ showDailyDetails, timeEntries, onMonthChange }: Props) {
 
     // --- Kalender ---
     const timeEntryList = Object.values(timeEntries).flat();
@@ -77,10 +78,13 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
         }
 
         setCurrentDay(newDate);
+        onMonthChange(newDate.getFullYear(), newDate.getMonth());
     }
 
     function handleToday() {
-        setCurrentDay(new Date(today.getFullYear(), today.getMonth(), 1));
+        const newDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        setCurrentDay(newDate);
+        onMonthChange(newDate.getFullYear(), newDate.getMonth());
     }
 
     // Wochenende
@@ -94,11 +98,26 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
         return holiday && holiday.some(h => h.type === "public");
     }
 
+    // Krankheit / Urlaub
+    function isType(day: number): "sick" | "holiday" | null {
+        const dayEntries = timeEntryList.filter((entry: TimeEntry) => {
+            const entryDate = new Date(entry.startTime);
+            return entryDate.getFullYear() === currentYear &&
+                entryDate.getMonth() === currentMonth &&
+                entryDate.getDate() === day;
+        });
+
+        if (dayEntries.some(e => e.type === "sick")) return "sick";
+        if (dayEntries.some(e => e.type === "holiday")) return "holiday";
+        return null;
+    }
+
     function handleWorkingHours(day: number) {
         const dayEntries = timeEntryList.filter((entry: any) => {
             const entryDate = new Date(entry.startTime);
 
-            return entryDate.getFullYear() === currentYear &&
+            return entry.type === "work" &&
+                entryDate.getFullYear() === currentYear &&
                 entryDate.getMonth() === currentMonth &&
                 entryDate.getDate() === day;
         });
@@ -205,7 +224,17 @@ export default function Kalender({ showDailyDetails, timeEntries }: Props) {
                             borderColor: symbols[3].borderColor
                         } : undefined;
 
-                        const dayStyle = holidayStyle ?? weekendStyle;
+                        const entryType = isType(day);
+                        const sickStyle = entryType === "sick" ? {
+                            backgroundColor: symbols[0].backgroundColor,
+                            borderColor: symbols[0].borderColor
+                        } : undefined;
+                        const vacationStyle = entryType === "holiday" ? {
+                            backgroundColor: symbols[1].backgroundColor,
+                            borderColor: symbols[1].borderColor
+                        } : undefined;
+
+                        const dayStyle = holidayStyle ?? weekendStyle ?? sickStyle ?? vacationStyle;
 
                         if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
                             return (

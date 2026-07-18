@@ -4,24 +4,24 @@ import styles from "./Dashboard.module.css"
 import Header from "@/components/layout/Header";
 import Timecard from "@/components/timecard/Timecard";
 import Calendar from "@/components/calendar/Calendar";
-import {useModal} from "@/contexts/ModalContext";
+import { useModal } from "@/contexts/ModalContext";
 import Overview from "@/components/overview/Overview";
-import {useCallback, useEffect, useRef, useState} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import TimeEntry from "@/types/TimeEntry";
 import DailyDetailsPane from "@/components/timeAdjustment/DailyDetailsPane";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 
-import {loginToken} from "@/scripts/auth";
-import {deleteTimeEntry, getTimeEntries} from "@/scripts/timeEntriesScript";
-import {DateString} from "@/types/misc";
-import {generateDateString, startOfTheMonthDateString, todayDateString} from "@/utils/TimeUtils";
+import { loginToken } from "@/scripts/auth";
+import { deleteTimeEntry, getTimeEntries } from "@/scripts/timeEntriesScript";
+import { DateString } from "@/types/misc";
+import { generateDateString, startOfTheMonthDateString, todayDateString } from "@/utils/TimeUtils";
 import User from "@/types/User";
-import {getUserById} from "@/scripts/userManagement";
+import { getUserById } from "@/scripts/userManagement";
 
 
 export default function Dashboard() {
 
-    const {showModal, updateModalContent} = useModal();
+    const { showModal, updateModalContent } = useModal();
     const router = useRouter();
 
     /**
@@ -61,9 +61,9 @@ export default function Dashboard() {
             if (index === -1) return prev;
 
             const updated = [...entries];
-            updated[index] = {...updated[index], endTime: endTime.toISOString()};
+            updated[index] = { ...updated[index], endTime: endTime.toISOString() };
 
-            return {...prev, [dateString]: updated};
+            return { ...prev, [dateString]: updated };
         });
     };
 
@@ -86,6 +86,38 @@ export default function Dashboard() {
         localStorage.setItem("role", login.role);
     }
 
+    async function loadTimeEntries(year: number, month: number) {
+        const token = localStorage.getItem("token");
+        const userid = localStorage.getItem("userid");
+        if (!token || !userid) { router.push("/login"); return; }
+
+        const startDate = generateDateString(new Date(year, month, 1));
+        const endDate = generateDateString(new Date(year, month + 1, 0));
+
+        const [work, holiday, sick] = await Promise.all([
+            getTimeEntries(token, Number(userid), "work", startDate, endDate),
+            getTimeEntries(token, Number(userid), "holiday", startDate, endDate),
+            getTimeEntries(token, Number(userid), "sick", startDate, endDate),
+        ]);
+
+        const allEntries: TimeEntry[] = [...work, ...holiday, ...sick];
+
+        const grouped = allEntries.reduce<Record<DateString, TimeEntry[]>>(
+            (collection, timeEntry) => {
+                const key = generateDateString(new Date(timeEntry.startTime));
+                if (!collection[key]) collection[key] = [];
+                collection[key].push(timeEntry);
+                return collection;
+            },
+            {},
+        );
+
+        setDailyEntries((prev) => ({ ...prev, ...grouped }));
+    }
+    const handleCalendarMonthChange = useCallback((year: number, month: number) => {
+        loadTimeEntries(year, month);
+    }, []);
+
     useEffect(() => {
         authCheck().then(async () => {
             const token = localStorage.getItem("token")
@@ -96,32 +128,15 @@ export default function Dashboard() {
                 return
             }
 
-            const timeEntries: TimeEntry[] = await getTimeEntries(
-                token,
-                Number(userid),
-                "work",
-                startOfTheMonthDateString(),
-                todayDateString()
-            );
-
-            const grouped = timeEntries.reduce<Record<DateString, TimeEntry[]>>(
-                (collection, timeEntry) => {
-                    const key = generateDateString(new Date(timeEntry.startTime));
-                    if (!collection[key]) collection[key] = [];
-                    collection[key].push(timeEntry);
-                    return collection;
-                },
-                {},
-            );
-            setDailyEntries(grouped);
-
             // Load user
             // Since this is currently only needed for the <Overview>, we preload it but need not await for the site to
             // be usable 
             loadCurrentUser();
         });
-    }, [router])
 
+        const today = new Date();
+        loadTimeEntries(today.getFullYear(), today.getMonth());
+    }, [router])
 
     async function loadCurrentUser() {
         try {
@@ -158,7 +173,7 @@ export default function Dashboard() {
             return;
         }
 
-        return <Overview entries={dailyEntries} deleteEntry={deleteEntry} user={currentUser}/>
+        return <Overview entries={dailyEntries} deleteEntry={deleteEntry} user={currentUser} />
     }
 
     const createDailyDetailsContent = (date: DateString) => (
@@ -191,28 +206,28 @@ export default function Dashboard() {
     }, [dailyEntries, updateModalContent]);
 
     const openOverviewModal = useCallback(() => {
-        const {id} = showModal("sidepane", createOverviewContent())
-        currentlyOpenModal.current = {id, type: "OverviewModal"};
+        const { id } = showModal("sidepane", createOverviewContent())
+        currentlyOpenModal.current = { id, type: "OverviewModal" };
     }, [dailyEntries, showModal, addEntryForDate]);
 
     const showDailyDetails = useCallback((datum: DateString) => {
         console.log("show daily details for " + datum);
-        const {id} = showModal("sidepane", createDailyDetailsContent(datum));
-        currentlyOpenModal.current = {id, type: "DailyDetails", date: datum};
+        const { id } = showModal("sidepane", createDailyDetailsContent(datum));
+        currentlyOpenModal.current = { id, type: "DailyDetails", date: datum };
     }, [dailyEntries, showModal, addEntryForDate]);
 
 
     return (
         <div className={styles.wrapper}>
             <div className={styles.headerBar}>
-                <Header name={"dashboard"}/>
+                <Header name={"dashboard"} />
             </div>
             <div className={styles.viewArea}>
                 <Timecard openOverview={openOverviewModal} isOverviewOpenable={!currentUser}
-                          addEntry={addEntryForDate} updateEntry={updateEntryEndTime}/>
+                    addEntry={addEntryForDate} updateEntry={updateEntryEndTime} />
 
                 <div className={styles.calendarWrapper}>
-                    <Calendar showDailyDetails={showDailyDetails} timeEntries={dailyEntries}/>
+                    <Calendar showDailyDetails={showDailyDetails} timeEntries={dailyEntries} onMonthChange={handleCalendarMonthChange} />
                 </div>
             </div>
         </div>
