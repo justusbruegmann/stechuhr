@@ -19,7 +19,7 @@ Die Datenbank-Schemata wurden von `justusbruegmann` und `Sebastian Anhalt` erste
 
 Die Zusammenführung und Integration der Frontend-Komponenten auf der /dashboard Seite sowie die Pflege der Kompatibilität zwischen den einzelnen Komponenten wurde maßgeblich von `Sebastian Anhalt` erledigt.
 
-Zur Schaffung einer grundlegend einheitlichen Ästhetik der Anwendungen wurden von `Sebastian Anhalt` und `justusbruegmann` zu Beginn der Entwicklung Layout-Komponenten erstellt, 
+Zur Schaffung einer grundlegend einheitlichen Ästhetik in der Anwendunge wurden von `Sebastian Anhalt` und `justusbruegmann` zu Beginn der Entwicklung Layout-Komponenten erstellt, 
 die im [Layout-Ordner](#srccomponents) zu finden sind und in vielen der Komponenten verwendet werden.
 
 Die Aufteilung der Domain-Logik und der Funktionen der Anwendung können im Detail den Kapiteln [Was macht die Anwendung?](#was-macht-die-anwendung-mika) und [Eigenleistung](#eigenleistung) entnommen werden. Hier nur eine grobe Darstellung:
@@ -166,7 +166,12 @@ Frontend und Backend sind eigenständige und voneinander losgelöste npm package
 ## Frontend
 Das Frontend ist ein Next.js-Projekt, das auf der Vorlesungsvorlage mit React und TypeScript basiert.
 
-Dementsprechend beinhaltet der Root Ordner Konfigurationsdateien wie *.env*, *.gitignore*, *package.json*, etc., sowie die Assets in **/public** und den Quellcode-Ordner **/src**.
+Dementsprechend beinhaltet der Root Ordner 
+- Konfigurationsdateien wie *.env*, *.gitignore*, *package.json*, etc.
+- Build-Skripte für die Erstellung der Produktionsversion der Anwendung: *build.bat*, *build.ps1*, *build.sh*
+- Assets in **/public** 
+- den Quellcode-Ordner **/src**
+
 Der Quellcode der Anwendung ist in folgenden Ordnern strukturiert:
 
 ### /src/app
@@ -272,29 +277,32 @@ Sie kennen keine Logik oder Validierung und sind ausschließlich für die strukt
 
 ### Sonstiges
 
-**/**
+**/** \
 Die Project Root beinhaltet die üblichen Konfigurationsdateien wie *.env*, *.gitignore*, *Dockerfile*, *package.json*, etc., sowie den Einstiegspunkt *app.ts* der Anwendung.
 
-**/drizzle**
+**/drizzle** \
 Der Drizzle-Ordner beinhaltet nur das ORM-Schema, auf dem die Datenbankverbindung der repository-Funktionen basiert.
 
-**/middleware**
+**/middleware** \
 In diesem Ordner sind die Middleware-Funktionen abgelegt, die von mehreren Routen verwendet werden.
 
-**/schemas**
+**/schemas** \
 Hier sind Zod-Schemas zur Input-Validierung definiert.
 
-**/types**
+**/types** \
 Geteilte TypeScript types und interfaces sind hier abgelegt.
 
-**/utils**
+**/utils** \
 Hier befinden sich geteilte Hilfsfunktionen, die an verschiedenen Stellen in der Anwendung Verwendung finden.
 Sie sind grob nach Anwendungsgebiet gruppiert.
 
 
 
 # Eigenleistung
-## Auth 4865545
+
+In diesem Kapitel werden diejenigen Ende-zu-Ende-Features der Anwendung beschrieben, die für das jeweilige Gruppenmitglied bewertet werden sollen.
+
+## justusbruegmann: Auth
 ### Ideen
 Aufgrund von Kommunikation aus dem ersten Semester, dass nur das absolute Minimum an Fremdpakete verwendet werden soll, wurde angenommen das auch Login usw selbst gebaut werden müssen.
 Deshalb wurde bereits vor der Kommunikation, dass solche Pakete erlaubt sind, das Feature schon fertiggestellt.
@@ -434,3 +442,79 @@ dabei muss der Nutzer sich ein neues Password vergeben welches nur er kennt.
 Wenn das Passwort verändert wurde kann der Nutzer sich normal anmelden.  
 ![otpForm](images/login/otpForm.png)
 
+
+
+## Sebastian Anhalt: Manager-Ansicht
+
+### Kontext
+Es gibt drei Arten von Rollen in der Anwendung: User, Manager und Admin.
+- User: Ein ganz normaler Mitarbeiter, einem Manager untergeordnet
+- Manager: Ein Vorgesetzter, der die Arbeitszeiten, Urlaubszeiten und Krankheitstage seiner untergebenen Mitarbeiter einsehen und bearbeiten kann. Hat potenziell auch einen übergeordneten Manager.
+- Admin: Ein reiner Verwaltungsaccount, der keine Arbeitszeiten eintragen kann, aber Benutzerkonten erstellen und löschen kann.
+
+Die Manager-Ansicht ist daher der Teil der Anwendung, der für Manager-Accounts sichtbar ist und ihnen die Verwaltung ihrer untergebenen Mitarbeiter ermöglicht.
+
+### Frontend
+
+#### Funktion
+
+Die Manager-Ansicht ist in der Anwendung unter der Route /manager_view erreichbar.
+Sie besteht aus einer einzigen großen Tabelle, die für jeden dem angemeldeten Manager untergebenen Mitarbeiter seine vertraglich vereinbarten und bereits genommenen Urlaubstage, seine festgeschriebenen Krankheitstage und eine Zusammenfassung über die geschuldete und bereits geleistete Wochenarbeitszeit anzeigt.
+Außerdem können über den Button "Bearbeiten" in einem Popup die Wochenarbeitszeit und die Urlaubstage angepasst werden.
+
+//ToDo
+Zuletzt kann der Manager hier über den Button "Anträge" in einem Popup offene Anträge seiner untergebenen Mitarbeiter einsehen und akzeptieren oder ablehnen.
++ Bild davon
+
+![Manager-Ansicht](images/managerView/managerView.png)
+
+![Bearbeiten-Popup](images/managerView/popupEdit.png)
+
+Zum Styling des Frontends ([Manager View](/frontend/src/app/manager_view/manager_view.module.css), [User Table](/frontend/src/components/managerView/userTable.module.css), [EditUserModal](/frontend/src/components/managerView/editUserModal.module.css)) wurde in Teilen KI verwendet.
+Eine genaue Kennzeichnung ist hier schier unmöglich, da die KI einen bestehenden Grundstock an CSS erweitert hat, der dann manuell noch an vielen Stellen nachgebessert wurde.
+
+
+#### Sicherheit
+Die Webseite nutzt kein SSR. Deshalb ist es kaum möglich, die Route /manager_view Nicht-Manager-Accounts unzugänglich zu machen.
+Der Zugriff darauf ist ausschließlich dadurch etwas erschwert, dass nur Manager den Button im Header angezeigt bekommen, der auf diese Seite führt.
+
+Die eigenltiche Sicherheit wird durch das Backend gewährleistet. Bei der Anfrage nach Benutzern, deren Manager der angemeldete Benutzer ist, wird dementsprechend unberechtigten Accounts eine leere Liste zurückgeliefert.
+Sie sehen dann grafisch dieselbe Fehlermeldung wie Manager-Accounts, die keine untergebenen Mitarbeiter haben:
+
+
+![Fehlermeldung](images/managerView/noSubordinates.png)
+
+
+#### Implementierung
+Beim Laden der Seite ruft das Frontend die Liste der untergebenen Mitarbeiter des angemeldeten Managers ab.
+Außerdem lädt es für jeden dieser Mitarbeiter je zwei Zusammenfassungen: eine über die aktuelle Woche und eine über den aktuellen Monat.
+// ToDo: Zusätzlich wird zu jedem Mitarbeiter die Liste der offenen Anträge geladen.
+
+Solange auf die Antworten des Backends gewartet wird, zeigt das Frontend einen Ladebildschirm an.
+
+Aus den Antworten wird ein erweitertes User-Objekt zusammengesetzt, in dem die relevanten Daten für jeden Mitarbeiter zusammengefasst sind:
+```typescript
+type UserWithSummaryEntries = User & {
+    summaryEntries: {
+        vacationDaysThisYear: number | null;
+        sickDaysThisYear: number | null;
+        hoursWorkedThisWeek: number | null;
+    };
+};
+```
+Es folgen Definitionen für die handler-Funktionen zum Bearbeiten von Mitarbeiterdaten
+// ToDo
+und zum Akzeptieren/Ablehnen von Anträgen.
+
+Schließlich werden die Daten als fertige React.ReactNode-Elemente an die UserTable-Komponente übergeben, die sie in einer Tabelle darstellt.
+
+
+### Backend
+// ToDo
+
+### Honorable Mention: Overview auf Dashboard
+Die Übersicht auf dem Dashboard war anfangs als meine zu bewertende Eigenleistung geplant. 
+Da sie allerdings komplett ohne zusätzliches Backend auskommt und ihren Zustand nur aus der ohnehin im Frontend vorhandenen 
+Liste aller Zeiteinträge des aktuellen Monats generiert werden kann, erfüllt sie den Anspruch als End-to-End-Feature nicht.
+
+Trotzdem bin ich stolz auf das Endprodukt, in dem jedes einzelne Element von mir stammt (inkl. Sidepane mit Animation, Tabs-Feature, DetailEntry mit Animation, und die mühselige Zeitberechnung in timeUtils.ts).
