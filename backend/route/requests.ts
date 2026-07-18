@@ -51,6 +51,24 @@ router.get(
         }
     });
 
+router.get(
+    '/requests/:id',
+    authMiddleware("user", true),
+    async (req, res) => {
+        const requesterId = res.locals.user.id;
+        try {
+            const requestId = Number(req.params.id);
+            const request = await requestsService.getSingleRequestById(requestId);
+            if (request && (request.userId == requesterId || request.managerId == requesterId)) {
+                return res.status(200).json(request);
+            } else {
+                return res.status(401).send("Unauthorized");
+            }
+        } catch {
+            return res.status(400).send("Bad Request");
+        }
+    });
+
 router.post(
     '/requests',
     authMiddleware("user", true),

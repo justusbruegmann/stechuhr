@@ -3,7 +3,7 @@
 import Button from "@/components/layout/Button";
 import { useModal } from "@/contexts/ModalContext";
 import TestComponent from "@/app/ctest/TestComponent";
-import { createRequest } from "@/scripts/requests";
+import { getSingleRequestById } from "@/scripts/requests";
 
 //asd
 export default function Ctest() {
@@ -11,8 +11,8 @@ export default function Ctest() {
     const { showModal } = useModal();
 
     async function a() {
-        const createdRequest = await createRequest("holiday", "2026-07-16", "2026-07-17");
-
+        const request = await getSingleRequestById(5);
+        console.log(request);
     }
 
     return (
@@ -48,8 +48,7 @@ export default function Ctest() {
                 } />
             <br />
 
-            <Button label={"Get requests a manager is responsible for"} type="primary" height={3} width={15} onClick={() => a()} />
+            <Button label={"Get a single request by Id"} type="primary" height={3} width={15} onClick={() => a()} />
         </>
-    )
-        ;
+    );
 }

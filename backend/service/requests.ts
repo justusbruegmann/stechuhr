@@ -6,7 +6,16 @@ export async function getAllRequestsForUser(userId: number) {
 }
 
 export async function getAllRequestsAManagerIsResponsibleFor(managerId: number) {
-    return await repository.getAllRequestsForUser(managerId);
+    return await repository.getAllRequestsAManagerIsResponsibleFor(managerId);
+}
+
+export async function getSingleRequestById(id: number) {
+    const requestList = await repository.getSingleRequestById(id);
+    if(requestList.length == 1) {
+        return requestList[0];
+    } else {
+        return null;
+    }
 }
 
 export async function createRequest(userId: number, type: "holiday" | "sick", startDate: string, endDate: string, remark?: string) {

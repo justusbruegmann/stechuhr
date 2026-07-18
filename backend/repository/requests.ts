@@ -11,6 +11,10 @@ export async function getAllRequestsAManagerIsResponsibleFor(managerId: number) 
     return await db.select().from(requests).where(eq(requests.managerId, managerId))
 }
 
+export async function getSingleRequestById(id: number) {
+    return await db.select().from(requests).where(eq(requests.id, id));
+}
+
 export async function createRequest(userId: number, managerId: number, type: "holiday" | "sick", startDate: string, endDate: string, remark?: string, isApproved?: boolean) {
     return await db.insert(requests).values({
         "userId": userId,
