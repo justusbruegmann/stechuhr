@@ -63,6 +63,7 @@ export default function RequestPopup({ date }: RequestPopupProps) {
 
   async function createRequest(){
     const createdRequest = await script.createRequest(type, startDate, endDate, remark);
+    return createdRequest;
   }
 
   return (
@@ -90,10 +91,6 @@ export default function RequestPopup({ date }: RequestPopupProps) {
           onClick={() => {
             if (checkDateFormat(startDate) && checkDateFormat(endDate)) {
               if (startDate <= endDate) {
-                console.log(`Type: ${type}`)
-                console.log(`From: ${startDate}`)
-                console.log(`To: ${endDate}`)
-                console.log(`Remark: ${remark}`)
                 createRequest();
                 // toDo: add close() when successful and Error text when not
               } else {

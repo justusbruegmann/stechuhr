@@ -24,8 +24,12 @@ export async function createRequest(userId: number, type: "holiday" | "sick", st
 
     //toDo: add Validation 
 
-    if (user?.managerid != null && user?.managerid != undefined && (startDate <= endDate)) {
-        return await repository.createRequest(userId, user?.managerid, type, startDate, endDate, remark ?? undefined);
+    if (user?.managerid != null && user?.managerid != undefined) {
+        if (startDate <= endDate) {
+            return await repository.createRequest(userId, user?.managerid, type, startDate, endDate, remark ?? undefined);
+        } else {
+            throw new Error("The start needs to be before the end of the absence")
+        }
     } else {
         throw new Error("Server Error");
     }

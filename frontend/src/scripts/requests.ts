@@ -12,6 +12,7 @@ export async function getAllRequestsForUser(userId: number) {
         return await sendRequest("GET", url);
     } catch (error) {
         console.log(error);
+        throw error;
     }
 }
 
@@ -21,6 +22,7 @@ export async function getAllRequestsAManagerIsResponsibleFor(managerId: number) 
         return await sendRequest("GET", url);
     } catch (error) {
         console.log(error);
+        throw error;
     }
 }
 
@@ -30,11 +32,12 @@ export async function getSingleRequestById(requestId: number) {
         return await sendRequest("GET", url);
     } catch (error) {
         console.log(error);
+        throw error;
     }
 }
 
 export async function createRequest(type: "holiday" | "sick", startDate: string, endDate: string, remark?: string) {
-    const url = `${BASE_URL}/requests?type=${type}&startDate=${startDate}&endDate=${endDate}&remark=${remark}`;
+    const url = `${BASE_URL}/requests`;
     try {
         return await sendRequest("POST", url, {
             type: type,
@@ -44,6 +47,7 @@ export async function createRequest(type: "holiday" | "sick", startDate: string,
         });
     } catch (error) {
         console.log(error);
+        throw error;
     }
 }
 
@@ -55,6 +59,7 @@ export async function updateRequest(requestId: number, approved?: boolean | null
         });
     } catch (error) {
         console.log(error);
+        throw error;
     }
 }
 
@@ -64,5 +69,6 @@ export async function deleteRequest(requestId: number) {
         return await sendRequest("DELETE", url);
     } catch (error) {
         console.log(error);
+        throw error;
     }
 }
