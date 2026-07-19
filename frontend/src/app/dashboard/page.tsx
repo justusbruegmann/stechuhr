@@ -88,6 +88,11 @@ export default function Dashboard() {
             prev.map((n) => n.id === id ? { ...n, isRead } : n)
         );
     }
+    const killNotification = (id: number) => {
+        setNotifications((prev) =>
+            prev.filter((n) => n.id !== id)
+        );
+    }
 
 
 
@@ -137,6 +142,7 @@ export default function Dashboard() {
                     <Notifications
                         notifications={notifications}
                         updateNotification={updateNotification}
+                        killNotification={killNotification}
                     />
                 );
             }
@@ -158,9 +164,11 @@ export default function Dashboard() {
             <Notifications
                 notifications={notifications}
                 updateNotification={updateNotification}
+                killNotification={killNotification}
             />)
         currentlyOpenModal.current = { id, type: "NotificationsModal" };
-    }, [notifications, showModal]);
+        loadNotifications();
+    }, [notifications, loadNotifications, showModal]);
 
 
 

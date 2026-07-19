@@ -4,16 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import Card from "@/components/layout/Card";
 import styles from "./Notifications.module.css"
 import Notification from "@/types/Notification";
-import { patchNotification } from "@/scripts/notifications";
+import { deleteNotification, patchNotification } from "@/scripts/notifications";
 
 
 type Props = {
     notifications: Notification[]
-    updateNotification: (id:number, isRead: boolean) => void
+    updateNotification: (id: number, isRead: boolean) => void
+    killNotification: (id: number) => void
 }
 
 
-export default function Notifications({ notifications, updateNotification  }: Props) {
+export default function Notifications({ notifications, updateNotification, killNotification }: Props) {
     const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -44,6 +45,22 @@ export default function Notifications({ notifications, updateNotification  }: Pr
 
         updateNotification(id, isRead);
     };
+    const handleDelete = async (id: number) => {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("userid");
+        if (!token || !userId) {
+            return;
+        }
+
+
+        const result = await deleteNotification(token, Number(userId), id);
+        if (!result || result == 400 || result == 401) {
+            console.error("Notification delete fehlgeschlagen", result);
+            return;
+        }
+
+        killNotification(id);
+    }
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleString("de-DE", {
@@ -65,19 +82,19 @@ export default function Notifications({ notifications, updateNotification  }: Pr
                         <div className={styles.notifications_container}>
                             <div className={styles.notifications_header}>
                                 {notification.type === "worktime_exceeded" ? (
-                                    <p className={styles.notifications_title}>Reguläre Arbeitszeit überschritten</p>
+                                    <p className={styles.title}>Reguläre Arbeitszeit überschritten</p>
                                 ) : (
-                                    <p className={styles.notifications_title}>Anfrage</p>
+                                    <p className={styles.title}>Anfrage</p>
                                 )}
 
-                                <div className={styles.notifications_status}>
-                                    <span className={notification.isRead ? styles.status_read : styles.status_unread}>
+                                <div className={styles.status}>
+                                    <span className={notification.isRead ? styles.read : styles.unread}>
                                         {notification.isRead ? "Gelesen" : "Ungelesen"}
                                     </span>
 
-                                    <div className={styles.status_dropdown_wrapper}>
+                                    <div className={styles.dropdown_wrapper}>
                                         <span
-                                            className={styles.status_arrow}
+                                            className={styles.arrow}
                                             onClick={() =>
                                                 setOpenDropdownId(openDropdownId === notification.id ? null : notification.id)
                                             }
@@ -86,15 +103,15 @@ export default function Notifications({ notifications, updateNotification  }: Pr
                                         </span>
 
                                         {openDropdownId === notification.id && (
-                                            <div className={styles.status_menu}>
+                                            <div className={styles.menu}>
                                                 <div
-                                                    className={styles.status_menu_item}
+                                                    className={styles.menu_item}
                                                     onClick={() => handleReadStatusChange(notification.id, false)}
                                                 >
                                                     Ungelesen
                                                 </div>
                                                 <div
-                                                    className={styles.status_menu_item}
+                                                    className={styles.menu_item}
                                                     onClick={() => handleReadStatusChange(notification.id, true)}
                                                 >
                                                     Gelesen
@@ -106,7 +123,13 @@ export default function Notifications({ notifications, updateNotification  }: Pr
                             </div>
 
                             <p className={styles.notifications_text}>{notification.description}</p>
-                            <p className={styles.notifications_time}>{formatDate(notification.createdAt)}</p>
+
+                            <div className={styles.notifications_footer}>
+                                <p className={styles.time}>{formatDate(notification.createdAt)}</p>
+                                <button className={styles.delete_button} onClick={() => handleDelete(notification.id)}>
+                                    Löschen
+                                </button>
+                            </div>
                         </div>
                     </Card>
                 ))
