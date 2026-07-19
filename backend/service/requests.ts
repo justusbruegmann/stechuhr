@@ -1,3 +1,4 @@
+import { request } from "node:http";
 import * as repository from "../repository/requests";
 import * as userManagementService from "../service/userManagement";
 
@@ -30,7 +31,17 @@ export async function createRequest(userId: number, type: "holiday" | "sick", st
     }
 }
 
-export async function updateRequest(requestId: number, approved?: boolean) {
-    //toDo: Validation
-    return await repository.updateRequest(requestId, approved);
+export async function updateRequest(requestId: number, requesterId: number, approved?: boolean | null) {
+    const request = await getSingleRequestById(requestId);
+
+    if(request && request.managerId === requesterId ){
+        const requestList = await repository.updateRequest(requestId, approved ?? null);
+        if(requestList.length == 1) {
+            return requestList[0];
+        } else {
+            return null;
+        }
+    } else {
+        return null;
+    }
 }

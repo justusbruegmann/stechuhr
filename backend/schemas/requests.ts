@@ -29,11 +29,8 @@ export const requestsRequestParameterSchema = z.object(
 
 export type requestsRequestParameter = z.infer<typeof requestsRequestParameterSchema>;
 
-export const updateRequestsRequestParameterSchema = z.object(
-    {
-        approved: z.boolean()
-            .optional()
-    }
-)
+export const updateRequestsRequestBodySchema = z.object({
+    approved: z.boolean().nullable().optional()
+});
 
-export type updateRequestsRequetParameter = z.infer<typeof updateRequestsRequestParameterSchema>;
+export type UpdateRequestBody = z.infer<typeof updateRequestsRequestBodySchema>;

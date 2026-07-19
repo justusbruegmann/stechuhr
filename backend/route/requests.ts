@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/auth";
 import { validateQueryParameters } from "../middleware/validateQueryParameters";
-import { getRequestsRequestParameterSchema, getRequestsRequestParameter, requestsRequestParameterSchema, requestsRequestParameter, updateRequestsRequestParameterSchema, updateRequestsRequetParameter } from "../schemas/requests";
+import { getRequestsRequestParameterSchema, getRequestsRequestParameter, requestsRequestParameterSchema, requestsRequestParameter, updateRequestsRequestBodySchema, UpdateRequestBody } from "../schemas/requests";
 import * as requestsService from "../service/requests";
 import * as userManagementService from "../service/userManagement";
 import User from "../types/users";
@@ -90,24 +90,25 @@ router.post(
 
 router.patch(
     '/requests/:id',
-    authMiddleware("manager", true),
-    validateQueryParameters(updateRequestsRequestParameterSchema),
+    authMiddleware("manager"),
+    validateQueryParameters(updateRequestsRequestBodySchema),
     async (req, res) => {
-
-        const queryParams = res.locals.queryParams as updateRequestsRequetParameter;
-
         try {
             const id = Number(req.params.id);
+            const requesterId = res.locals.user.id;
+            const { approved } = req.body;
 
-            const approved = queryParams.approved;
+            const updatedRequest = await requestsService.updateRequest(id, requesterId, approved);
 
-            const updatedRequest = await requestsService.updateRequest(id, approved);
 
-            return res.status(200).json(updatedRequest);
+            if (updatedRequest) {
+                return res.status(200).json(updatedRequest);
+            } else {
+                return res.status(401).send("Unauthorized");
+            }
         } catch {
             return res.status(400).send("Bad request");
         }
-    }
-)
+    });
 
 export default router;

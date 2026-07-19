@@ -27,7 +27,7 @@ export async function createRequest(userId: number, managerId: number, type: "ho
     } as Request);
 }
 
-export async function updateRequest(requestId: number, approved?: boolean) {
+export async function updateRequest(requestId: number, approved: boolean | null) {
     return await db
         .update(requests)
         .set({ isApproved: approved })

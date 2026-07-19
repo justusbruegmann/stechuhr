@@ -41,3 +41,14 @@ export async function createRequest(type: "holiday" | "sick", startDate: string,
         console.log(error);
     }
 }
+
+export async function updateRequest(requestId: number, approved?: boolean | null) {
+    const url = `${BASE_URL}/requests/${requestId}`;
+        try {
+        return await sendRequest("PATCH", url, { 
+            approved: approved ?? null
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}

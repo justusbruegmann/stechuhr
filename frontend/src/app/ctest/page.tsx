@@ -3,7 +3,7 @@
 import Button from "@/components/layout/Button";
 import { useModal } from "@/contexts/ModalContext";
 import TestComponent from "@/app/ctest/TestComponent";
-import { getSingleRequestById } from "@/scripts/requests";
+import { updateRequest } from "@/scripts/requests";
 
 //asd
 export default function Ctest() {
@@ -11,8 +11,8 @@ export default function Ctest() {
     const { showModal } = useModal();
 
     async function a() {
-        const request = await getSingleRequestById(5);
-        console.log(request);
+        const updatedRequest = await updateRequest(1);
+        console.log(updatedRequest);
     }
 
     return (
@@ -48,7 +48,7 @@ export default function Ctest() {
                 } />
             <br />
 
-            <Button label={"Get a single request by Id"} type="primary" height={3} width={15} onClick={() => a()} />
+            <Button label={"Update a request"} type="primary" height={3} width={15} onClick={() => a()} />
         </>
     );
 }
