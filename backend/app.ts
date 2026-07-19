@@ -9,15 +9,32 @@ import {drizzle} from 'drizzle-orm/postgres-js'
 // @ts-ignore
 import postgres from "postgres"
 import {users} from "./drizzle/schema"
-import cors from "cors";
 
-app.use(
-    cors({
-        origin: ["http://localhost:3000", "https://how2centeradiv.dev", "https://staging.how2centeradiv.dev"],
-        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization", "userid"],
-    })
-);
+const allowedOrigins = new Set([
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://how2centeradiv.dev",
+    "https://staging.how2centeradiv.dev",
+]);
+
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+
+    if (origin && allowedOrigins.has(origin)) {
+        res.header("Access-Control-Allow-Origin", origin);
+        res.header("Vary", "Origin");
+    }
+
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, userid");
+
+    if (req.method === "OPTIONS") {
+        return res.sendStatus(204);
+    }
+
+    next();
+});
+
 const connectionString = process.env.DATABASE_URL
 if (!connectionString) {
     throw new Error("Missing connection string");
@@ -47,10 +64,12 @@ import auth from "./route/auth"
 import summary from "./route/summary";
 import requests from "./route/requests";
 import {authMiddleware} from "./middleware/auth";
+import timeEntriesRoute from "./route/timeEntriesRoute";
 
 app.use(userMangement);
 app.use(auth);
 app.use(summary);
+app.use(timeEntriesRoute);
 app.use(requests);
 
 app.get("/", (req, res) => {

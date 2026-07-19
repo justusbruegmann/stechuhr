@@ -6,14 +6,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "app": "npx tsc && node dist/app.js",
-    "start": "npx tsc && node dist/app.js",
+    "start": "node dist/app.js",
     "dev": "npx tsc && node dist/app.js"
   },
   "author": "Justus Bruegmann & Sebastian Anhalt & Felix Hagino & Mika Siegrist & Aaron Bradley",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
+    "date-holidays": "^3.32.0",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",

@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import {useState} from "react";
 import TimeInput from "@/components/timeAdjustment/TimeInput";
 import Button from "@/components/layout/Button";
-import { useCurrentModal, useModal } from "@/contexts/ModalContext";
+import {useCurrentModal, useModal} from "@/contexts/ModalContext";
 import TimeEntry from "@/types/TimeEntry";
 import styles from "./ManualEntryPopup.module.css";
 
@@ -12,22 +12,22 @@ type Props = {
   onCreate: (entry: TimeEntry) => void;
 };
 
-export default function ManualEntryPopup({ date, onCreate }: Props) {
-  const { hideModal } = useModal();
+export default function ManualEntryPopup({date, onCreate}: Props) {
+    const {hideModal} = useModal();
 
   const { close } = useCurrentModal();
 
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
-  const [isChecked, setIsChecked] = useState(true);
+    const [isChecked, setIsChecked] = useState(true);
 
-  function checkTimeFormat(time: string) {
-    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-    return timeRegex.test(time);
-  }
+    function checkTimeFormat(time: string) {
+        const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+        return timeRegex.test(time);
+    }
 
-  function saveButton(isToTimeRequired: boolean = true) {
+    function saveButton(isToTimeRequired: boolean = true) {
 
     const [startHours, startMinutes] = startTime.split(":").map(Number);
 
@@ -51,9 +51,9 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
     }
   }
 
-  return (
-    <div className={styles["container"]}>
-      <h2>Manueller Zeiteintrag</h2>
+    return (
+        <div className={styles["container"]}>
+            <h2>Manueller Zeiteintrag</h2>
 
       <br />
       <div className={styles["container-einstempelzeit"]}>
@@ -67,18 +67,18 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
         visible={true}
       />
 
-      <br />
+            <br/>
 
-      <input
-        type="checkbox"
-        id="addEndTime"
-        className={styles["checkbox"]}
-        checked={isChecked}
-        onChange={() => isChecked ? setIsChecked(false) : setIsChecked(true)
-        }
-      />
+            <input
+                type="checkbox"
+                id="addEndTime"
+                className={styles["checkbox"]}
+                checked={isChecked}
+                onChange={() => isChecked ? setIsChecked(false) : setIsChecked(true)
+                }
+            />
 
-      <label htmlFor="addEndTime" className={styles["labels"]}>Austempelzeit hinzufügen</label>
+            <label htmlFor="addEndTime" className={styles["labels"]}>Austempelzeit hinzufügen</label>
 
       <TimeInput
         onChange={(e) => setEndTime(e.target.value)}
@@ -86,16 +86,18 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
         visible={isChecked}
       />
 
-      <br />
+            <br/>
 
-      <div className={styles["container-popup-buttons"]}>
-        <Button
-          label="Abbrechen"
-          type="primary"
-          height={2.5}
-          width={6}
-          onClick={() => { close() }}
-        />
+            <div className={styles["container-popup-buttons"]}>
+                <Button
+                    label="Abbrechen"
+                    type="primary"
+                    height={2.5}
+                    width={6}
+                    onClick={() => {
+                        close()
+                    }}
+                />
 
         <Button
           label="Eintrag hinzufügen"

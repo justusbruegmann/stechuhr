@@ -1,3 +1,8 @@
+/**
+ * This Provider is in large parts created with the use of GitHub Copilot.
+ * It is not a piece of code mentioned under /docs/DOKU.md#Eigenleistung, and is therefore not to influence any team member's personal evaluation.
+ */
+
 'use client';
 
 import {createContext, ReactNode, useCallback, useContext, useState} from "react";

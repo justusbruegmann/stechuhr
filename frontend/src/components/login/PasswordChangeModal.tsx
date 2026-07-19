@@ -3,7 +3,6 @@ import {useState} from 'react';
 import styles from "@/app/login/Login.module.css"
 import {otpChange} from "@/scripts/auth";
 
-//UI import
 import Button from "@/components/layout/Button";
 
 
@@ -33,7 +32,7 @@ export function PasswordChangeModal({ password, userId, onSuccess }: any) {
                     onChange={(e) => setRepeatPassword(e.target.value)}
                 />
                 {validNewPassword &&
-                    <p>Passwort Feld ist leer oder es hat keine 8 Zeichen mit Groß/kleinbuchstaben Zahlen oder Sonderzeichen</p>}
+                    <p>Passwort Feld ist leer oder es hat keine 8 Zeichen mit Groß/kleinbuchstaben, Zahlen oder Sonderzeichen oder länger als 48</p>}
                 <Button type={"accent"} label={"Fertig"} width={"calc(100% - 1rem)"} height={2}
                         onClick={async () => {
                             if(!(newPassword === repeatPassword)) {
@@ -42,6 +41,7 @@ export function PasswordChangeModal({ password, userId, onSuccess }: any) {
                             let otpResult: any;
                             try {
                                 otpResult = await otpChange(Number(userId), password.trim(), newPassword.trim());
+                                otpResult = JSON.stringify(otpResult);
                             } catch (e) {
                                 console.log(e);
                             }

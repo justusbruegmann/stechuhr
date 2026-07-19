@@ -1,5 +1,3 @@
-import {SummaryRequestParameter} from "../schemas/summary";
-
 export type AuthUser = {
     id: number;
     role: string;

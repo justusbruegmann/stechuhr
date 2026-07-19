@@ -87,17 +87,6 @@ export async function getManagers() {
     return result;
 }
 
-export async function getUsersForManager(managerId: number) {
-    const result = await db.select({
-        username: users.username,
-        role: users.role,
-        id: users.id,
-        workload: users.workload,
-        holidays: users.holidays
-    }).from(users).where(eq(users.managerid, managerId));
-    return result;
-}
-
 export async function getManagerById(managerId: number) {
     const result = await db.select({id: users.id, role: users.role}).from(users).where(eq(users.id, managerId))
     return result[0];
@@ -115,4 +104,14 @@ export async function updateRole(userId: number, role:string) {
 
 export async function updateEmploymentDetails(userId: number, updateFields: {workload?: number, holidays?: number}) {
     return db.update(users).set(updateFields).where(eq(users.id, userId));
+}
+
+export async function getUsersForManager(managerId: number) {
+    return await db.select({
+        username: users.username,
+        role: users.role,
+        id: users.id,
+        workload: users.workload,
+        holidays: users.holidays
+    }).from(users).where(eq(users.managerid, managerId)) as User[];
 }

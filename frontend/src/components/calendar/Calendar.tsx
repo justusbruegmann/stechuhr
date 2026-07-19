@@ -5,10 +5,12 @@ import styles from "./Calendar.module.css"
 import {useState} from "react";
 import Holidays from 'date-holidays';
 import TimeEntry from "@/types/TimeEntry";
+import {DateString} from "@/types/misc";
+import {generateDateString} from "@/utils/TimeUtils";
 
 
 type Props = {
-    showDailyDetails: (date: Date) => void;
+    showDailyDetails: (date: DateString) => void;
     timeEntries: Record<string, TimeEntry[]>
 }
 
@@ -219,7 +221,7 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
                         if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
                             return (
                                 <div key={index} className={styles.calendar_today}
-                                     onClick={() => showDailyDetails(new Date(currentYear, currentMonth, day))}>
+                                     onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day+1)))}>
                                     {day && <div className={styles.calendar_day_text}>{day}</div>}
                                     <div className={styles.calendar_day_symbols_container}>
                                         {handleEntries(index, day)}
@@ -229,7 +231,7 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
                         }
                         return (
                             <div key={index} className={styles.calendar_day}
-                                 onClick={() => showDailyDetails(new Date(currentYear, currentMonth, day))}>
+                                 onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day+1)))}>
                                 {day && <div className={styles.calendar_day_text}>{day}</div>}
                                 <div className={styles.calendar_day_symbols_container}>
                                     {handleEntries(index, day)}

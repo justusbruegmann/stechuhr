@@ -6,6 +6,8 @@ import TimeEntry from "@/types/TimeEntry";
 
 import styles from "./DailyDetailsPane.module.css";
 import RequestPopup from "./RequestPopup";
+import {DateString} from "@/types/misc";
+import {formatDate} from "@/utils/TimeUtils";
 
 export default function DailyDetailsPane({ date, entries, onAddEntry, deleteEntry }: {
     date: Date; entries: TimeEntry[]; onAddEntry: (entry: TimeEntry) => void; deleteEntry: (id: string) => void;
