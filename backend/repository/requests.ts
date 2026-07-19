@@ -34,3 +34,10 @@ export async function updateRequest(requestId: number, approved: boolean | null)
         .where(eq(requests.id, requestId))
         .returning()
 }
+
+export async function deleteRequest(requestId: number) {
+    return await db
+        .delete(requests)
+        .where(eq(requests.id, requestId))
+        .returning()
+}

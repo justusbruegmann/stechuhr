@@ -3,17 +3,11 @@
 import Button from "@/components/layout/Button";
 import { useModal } from "@/contexts/ModalContext";
 import TestComponent from "@/app/ctest/TestComponent";
-import { updateRequest } from "@/scripts/requests";
 
 //asd
 export default function Ctest() {
 
     const { showModal } = useModal();
-
-    async function a() {
-        const updatedRequest = await updateRequest(1);
-        console.log(updatedRequest);
-    }
 
     return (
         <>
@@ -47,8 +41,6 @@ export default function Ctest() {
                     showModal("spinningLoader", <p>Logging in</p>)
                 } />
             <br />
-
-            <Button label={"Update a request"} type="primary" height={3} width={15} onClick={() => a()} />
         </>
     );
 }

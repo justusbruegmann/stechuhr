@@ -36,7 +36,12 @@ export async function getSingleRequestById(requestId: number) {
 export async function createRequest(type: "holiday" | "sick", startDate: string, endDate: string, remark?: string) {
     const url = `${BASE_URL}/requests?type=${type}&startDate=${startDate}&endDate=${endDate}&remark=${remark}`;
     try {
-        return await sendRequest("POST", url);
+        return await sendRequest("POST", url, {
+            type: type,
+            startDate: startDate,
+            endDate: endDate,
+            remark: remark ?? null
+        });
     } catch (error) {
         console.log(error);
     }
@@ -44,10 +49,19 @@ export async function createRequest(type: "holiday" | "sick", startDate: string,
 
 export async function updateRequest(requestId: number, approved?: boolean | null) {
     const url = `${BASE_URL}/requests/${requestId}`;
-        try {
-        return await sendRequest("PATCH", url, { 
+    try {
+        return await sendRequest("PATCH", url, {
             approved: approved ?? null
         });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function deleteRequest(requestId: number) {
+    const url = `${BASE_URL}/requests/${requestId}`;
+    try {
+        return await sendRequest("DELETE", url);
     } catch (error) {
         console.log(error);
     }

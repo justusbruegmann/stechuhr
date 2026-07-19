@@ -12,20 +12,20 @@ export async function getAllRequestsAManagerIsResponsibleFor(managerId: number) 
 
 export async function getSingleRequestById(id: number) {
     const requestList = await repository.getSingleRequestById(id);
-    if(requestList.length == 1) {
+    if (requestList.length == 1) {
         return requestList[0];
     } else {
         return null;
     }
 }
 
-export async function createRequest(userId: number, type: "holiday" | "sick", startDate: string, endDate: string, remark?: string) {
+export async function createRequest(userId: number, type: "holiday" | "sick", startDate: string, endDate: string, remark?: string | null) {
     const user = await userManagementService.getUserById(userId);
 
     //toDo: add Validation 
-    
+
     if (user?.managerid != null && user?.managerid != undefined && (startDate <= endDate)) {
-        return await repository.createRequest(userId, user?.managerid, type, startDate, endDate, remark);
+        return await repository.createRequest(userId, user?.managerid, type, startDate, endDate, remark ?? undefined);
     } else {
         throw new Error("Server Error");
     }
@@ -34,9 +34,24 @@ export async function createRequest(userId: number, type: "holiday" | "sick", st
 export async function updateRequest(requestId: number, requesterId: number, approved?: boolean | null) {
     const request = await getSingleRequestById(requestId);
 
-    if(request && request.managerId === requesterId ){
+    if (request && request.managerId === requesterId) {
         const requestList = await repository.updateRequest(requestId, approved ?? null);
-        if(requestList.length == 1) {
+        if (requestList.length == 1) {
+            return requestList[0];
+        } else {
+            return null;
+        }
+    } else {
+        return null;
+    }
+}
+
+export async function deleteRequest(requestId: number, requesterId: number) {
+    const request = await getSingleRequestById(requestId);
+
+    if (request && (request.userId === requesterId || request.managerId === requesterId)) {
+        const requestList = await repository.deleteRequest(requestId);
+        if (requestList.length == 1) {
             return requestList[0];
         } else {
             return null;

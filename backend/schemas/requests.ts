@@ -16,18 +16,19 @@ export const getRequestsRequestParameterSchema = z.object(
 
 export type getRequestsRequestParameter = z.infer<typeof getRequestsRequestParameterSchema>;
 
-export const requestsRequestParameterSchema = z.object(
+export const requestsRequestBodySchema = z.object(
     {
         type: requestType,
         startDate: dateStringSchema,
         endDate: dateStringSchema,
         remark: z.string()
             .max(512)
+            .nullable()
             .optional()
     }
 )
 
-export type requestsRequestParameter = z.infer<typeof requestsRequestParameterSchema>;
+export type requestsRequestBody = z.infer<typeof requestsRequestBodySchema>;
 
 export const updateRequestsRequestBodySchema = z.object({
     approved: z.boolean().nullable().optional()
