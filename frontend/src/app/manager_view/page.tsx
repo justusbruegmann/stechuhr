@@ -167,9 +167,51 @@ export default function ManagerView() {
         );
     }
 
+
+    function updateRequests(userId: number, remainingRequests: Request[]) {
+        setUsers(prevUsers => {
+            const user = prevUsers[userId];
+            if (!user) return prevUsers;
+
+            return {
+                ...prevUsers,
+                [userId]: {
+                    ...user,
+                    openRequests: remainingRequests,
+                },
+            };
+        });
+
+        //ToDo: update modal content
+
+
+        //
+        // useEffect(() => {
+        //     if (currentlyOpenModal.current) {
+        //         if (currentlyOpenModal.current.type === "DailyDetails") {
+        //             console.log("Trying to update daily details")
+        //             updateModalContent(
+        //                 currentlyOpenModal.current.id,
+        //                 createDailyDetailsContent(currentlyOpenModal.current.date)
+        //             );
+        //         } else if (currentlyOpenModal.current.type === "OverviewModal") {
+        //             if (currentUser) {
+        //                 updateModalContent(
+        //                     currentlyOpenModal.current.id,
+        //                     createOverviewContent()
+        //                 );
+        //             }
+        //         }
+        //     }
+        // }, [dailyEntries, updateModalContent]);
+
+
+    }
+
+
     function answerRequests(userId: number) {
         showModal("popup",
-            <AnswerRequestModal user={users[userId]} updateLocalState={generateUserUpdateFunction(userId)} /> //ToDo: updateLocalState functionality
+            <AnswerRequestModal user={users[userId]} updateLocalState={updateRequests}/> //ToDo: updateLocalState functionality
         );
     }
 

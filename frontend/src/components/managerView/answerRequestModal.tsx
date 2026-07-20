@@ -1,34 +1,33 @@
 'use client';
 import * as React from 'react';
-import User from "@/types/User";
 import {capitalize} from "@/utils/StringUtils";
 import styles from './answerRequestModal.module.css';
-import {useCurrentModal} from "@/contexts/ModalContext";
 import {UserWithExtraFields} from "@/app/manager_view/page";
 import RequestEntry from "@/components/managerView/requestEntry";
 import Request from "@/types/Request";
+import {updateRequest} from "@/scripts/requests";
 
 export type AnswerRequestModalProps = {
     user: UserWithExtraFields;
-    updateLocalState?: (newEntries: Partial<Record<keyof User, any>>) => void; // ToDo: Change this
+    updateLocalState: (userId: number, remainingRequests: Request[]) => void;
 };
 
 export default function AnswerRequestModal({user, updateLocalState}: AnswerRequestModalProps) {
-    const {close} = useCurrentModal();
-    const [requests, setRequests] = React.useState<Request[]>(user.openRequests);
-    const [busy, setBusy] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
 
-    async function answerRequest(request: Request, approved: boolean) {
-        if (busy) return;
-        setBusy(true);
+
+    async function answerRequest(requestId: number, isApproved: boolean) {
+        if (loading) return;
+        setLoading(true);
+
         try {
-            // ToDo: persistence
+            await updateRequest(requestId, isApproved);
 
-            const remaining = requests.filter(r => r.id !== request.id);
-            setRequests(remaining);
-            if (remaining.length === 0) close();
+            // Update local state
+            const remaining = user.openRequests.filter(req => req.id !== requestId);
+            updateLocalState(user.id, remaining)
         } finally {
-            setBusy(false);
+            setLoading(false);
         }
     }
 
@@ -37,25 +36,30 @@ export default function AnswerRequestModal({user, updateLocalState}: AnswerReque
             <h2 className={styles.header}>{capitalize(user.username)}</h2>
             <hr className={styles.separator}/>
 
-            <div className={styles.requestEntriesContainer}>
-                {requests.length === 0 ? (
-                    <p className={styles.empty}>Keine offenen Anträge</p>
-                ) : (
-                    requests.map((request, index) => (
-                        <>
-                            <RequestEntry
-                                request={request}
-                                answerRequest={answerRequest}
-                            />
+            {!loading &&
+                <div className={styles.requestEntriesContainer}>
+                    {user.openRequests.length === 0 ? (
+                        <p className={styles.empty}>Keine offenen Anträge</p>
+                    ) : (
+                        user.openRequests.map((request, index) => (
+                            <>
+                                <RequestEntry
+                                    request={request}
+                                    answerRequest={answerRequest}
+                                />
 
-                            {index < requests.length - 1 &&
-                                <hr className={styles.separator}/>
-                            }
+                                {index < user.openRequests.length - 1 &&
+                                    <hr className={styles.separator}/>
+                                }
+                            </>
+                        ))
+                    )}
+                </div>
+            }
 
-                        </>
-                    ))
-                )}
-            </div>
+            {loading && (
+                <p className={styles.empty}>Loading ...</p>
+            )}
         </div>
     );
 }

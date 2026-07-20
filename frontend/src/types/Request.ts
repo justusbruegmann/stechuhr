@@ -1,7 +1,7 @@
 import {DateString} from "@/types/misc";
 
 export default interface Request{
-    id: string;
+    id: number;
     userId: number,
     managerId: number,
     type: "holiday" | "sick",

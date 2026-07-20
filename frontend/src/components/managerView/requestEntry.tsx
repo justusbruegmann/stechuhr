@@ -1,22 +1,12 @@
 import Button from "@/components/layout/Button";
 import { formatDate } from "@/utils/TimeUtils";
 import styles from "./requestEntry.module.css";
-import {DateString} from "@/types/misc";
+import Request from "@/types/Request";
 
-export interface Request {
-    id: string;
-    userId: number;
-    managerId: number;
-    type: "holiday" | "sick";
-    startDate: DateString;
-    endDate: DateString;
-    remark?: string;
-    isApproved?: boolean;
-}
 
 type RequestEntryParams = {
     request: Request;
-    answerRequest?: (request: Request, approved: boolean) => void;
+    answerRequest?: (requestId: number, approved: boolean) => Promise<void>;
 };
 
 export default function RequestEntry({ request, answerRequest }: RequestEntryParams) {
@@ -34,8 +24,8 @@ export default function RequestEntry({ request, answerRequest }: RequestEntryPar
             <p className={styles.remark}>{request.remark ?? ""}</p>
 
             <div className={styles.actions}>
-                <Button label="Genehmigen" type="success" onClick={() => answerRequest?.(request, true)} />
-                <Button label="Ablehnen" type="error" onClick={() => answerRequest?.(request, false)} />
+                <Button label="Genehmigen" type="success" onClick={() => answerRequest?.(request.id, true)} />
+                <Button label="Ablehnen" type="error" onClick={() => answerRequest?.(request.id, false)} />
             </div>
         </div>
     );
