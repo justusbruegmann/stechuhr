@@ -97,23 +97,41 @@ export async function notificationPost(userId: number, date: string) {
             (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
         );
 
-        let totalMinutesWorked = 0;
+        const merged: { start: Date; end: Date }[] = [];
+
         for (const entry of sortedEntries) {
             if (!entry.endTime) continue;
-            const diffMs = new Date(entry.endTime).getTime() - new Date(entry.startTime).getTime();
-            totalMinutesWorked += diffMs / (1000 * 60);
+
+            const start = new Date(entry.startTime);
+            const end = new Date(entry.endTime);
+
+            if (merged.length === 0) {
+                merged.push({ start, end });
+                continue;
+            }
+
+            const last = merged[merged.length - 1];
+
+            if (start <= last.end) {
+                if (end > last.end) {
+                    last.end = end;
+                }
+            } else {
+                merged.push({ start, end });
+            }
+        }
+
+        let totalMinutesWorked = 0;
+        for (const interval of merged) {
+            totalMinutesWorked +=
+                (interval.end.getTime() - interval.start.getTime()) / (1000 * 60);
         }
         const totalHoursWorked = totalMinutesWorked / 60;
 
         let totalBreakMinutes = 0;
-        for (let i = 0; i < sortedEntries.length - 1; i++) {
-            const currentEnd = sortedEntries[i].endTime;
-            const nextStart = sortedEntries[i + 1].startTime;
-            if (!currentEnd) continue;
-            const gapMs = new Date(nextStart).getTime() - new Date(currentEnd).getTime();
-            if (gapMs > 0) {
-                totalBreakMinutes += gapMs / (1000 * 60);
-            }
+        for (let i = 0; i < merged.length - 1; i++) {
+            totalBreakMinutes +=
+                (merged[i + 1].start.getTime() - merged[i].end.getTime()) / (1000 * 60);
         }
 
         const targetHours = user.workload / 5;
@@ -121,17 +139,20 @@ export async function notificationPost(userId: number, date: string) {
 
         const notificationsToCreate: { type: "worktime_exceeded"; description: string }[] = [];
 
+        const hours = Math.floor(totalMinutesWorked / 60);
+        const minutes = Math.round(totalMinutesWorked % 60);
+
         if (totalHoursWorked < lowerThreshold) {
             notificationsToCreate.push({
                 type: "worktime_exceeded",
-                description: `Am ${dayLabel} wurden nur ${totalHoursWorked.toFixed(1)}h gearbeitet (Soll: mind. ${targetHours.toFixed(1)}h).`
+                description: `Am ${dayLabel} wurden nur ${hours}h ${minutes}min gearbeitet (Soll: mind. ${hours}h ${minutes}min).`
             });
         }
 
         if (totalHoursWorked > 10) {
             notificationsToCreate.push({
                 type: "worktime_exceeded",
-                description: `Am ${dayLabel} wurden ${totalHoursWorked.toFixed(1)}h gearbeitet (gesetzliches Maximum: 10h).`
+                description: `Am ${dayLabel} wurden ${hours}h ${minutes}min gearbeitet (gesetzliches Maximum: 10h).`
             });
         }
 
@@ -145,7 +166,7 @@ export async function notificationPost(userId: number, date: string) {
         if (requiredBreakMinutes > 0 && totalBreakMinutes < requiredBreakMinutes) {
             notificationsToCreate.push({
                 type: "worktime_exceeded",
-                description: `Am ${dayLabel} wurde bei ${totalHoursWorked.toFixed(1)}h Arbeitszeit nur ${Math.round(totalBreakMinutes)} Min. Pause gemacht (erforderlich: ${requiredBreakMinutes} Min.).`
+                description: `Am ${dayLabel} wurde bei ${hours}h ${minutes}min Arbeitszeit nur ${Math.round(totalBreakMinutes)} Min. Pause gemacht (erforderlich: ${requiredBreakMinutes} Min.).`
             });
         }
 
