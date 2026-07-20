@@ -1,13 +1,24 @@
 import sendRequest from "@/utils/requestWrapper";
 import Request from "../types/Request";
+import { DateString } from "@/types/misc";
 
 const BASE_URL: string | undefined = process.env.NEXT_PUBLIC_BACKEND_URL;
 if (!BASE_URL) {
     throw new Error("no BASE_URL provided");
 }
 
-export async function getAllRequestsForUser(userId: number) {
-    const url = `${BASE_URL}/requests?userId=${userId}`;
+export async function getRequestsForUser(userId: number, startDate?: DateString, endDate?: DateString) {
+    const params = new URLSearchParams({
+        userId: userId.toString(),
+    });
+    if (startDate) {
+        params.append("startDate", startDate);
+    }
+    if (endDate) {
+        params.append("endDate", endDate);
+    }
+    const url = `${BASE_URL}/requests?${params.toString()}`;
+
     try {
         return await sendRequest("GET", url);
     } catch (error) {
@@ -16,8 +27,8 @@ export async function getAllRequestsForUser(userId: number) {
     }
 }
 
-export async function getAllRequestsAManagerIsResponsibleFor(managerId: number) {
-    const url = `${BASE_URL}/requests/manager/${managerId}`;
+export async function getAllRequestsAManagerIsResponsibleFor() {
+    const url = `${BASE_URL}/requests/manager`;
     try {
         return await sendRequest("GET", url);
     } catch (error) {
