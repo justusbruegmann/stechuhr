@@ -5,11 +5,20 @@ import {useModal} from "@/contexts/ModalContext";
 import TimeEntry from "@/types/TimeEntry";
 
 import styles from "./DailyDetailsPane.module.css";
+import RequestPopup from "./RequestPopup";
 import {DateString} from "@/types/misc";
-import {formatDate} from "@/utils/TimeUtils";
+import {formatDate, generateDateString} from "@/utils/TimeUtils";
 
-export default function DailyDetailsPane({date, entries, onAddEntry, deleteEntry}: {
-    date: DateString; entries: TimeEntry[]; onAddEntry: (entry: TimeEntry) => void; deleteEntry: (id: number) => void;
+export default function DailyDetailsPane({
+                                             date,
+                                             entries,
+                                             onAddEntry,
+                                             deleteEntry
+}: {
+    date: DateString;
+    entries: TimeEntry[];
+    onAddEntry: (entry: TimeEntry) => void;
+    deleteEntry: (id: number) => void;
 }) {
     const {showModal, hideModal} = useModal();
 
@@ -26,8 +35,8 @@ export default function DailyDetailsPane({date, entries, onAddEntry, deleteEntry
                         <DetailEntry key={element.id}
                                      timeEntry={element}
                                      deleteFunc={() => {
-                            deleteEntry(element.id)
-                        }}/>
+                                         deleteEntry(element.id)
+                                     }}/>
                     ))}
                 </div>
 
@@ -36,14 +45,24 @@ export default function DailyDetailsPane({date, entries, onAddEntry, deleteEntry
                         label="Manuell nachtragen"
                         type="accent"
                         height={3}
-                        width={15}
+                        width={10}
                         onClick={() =>
                             showModal("popup",
                                 <ManualEntryPopup
                                     date={new Date(date)}
-                                    onClose={() => hideModal()}
                                     onCreate={onAddEntry}
                                 />
+                            )
+                        }
+                    />
+                    <Button
+                        label="Antrag erstellen"
+                        type="primary"
+                        height={3}
+                        width={10}
+                        onClick={() =>
+                            showModal("popup",
+                                <RequestPopup date={new Date(date)}/>
                             )
                         }
                     />

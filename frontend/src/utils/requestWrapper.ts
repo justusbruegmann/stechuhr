@@ -33,6 +33,7 @@ export default async function sendRequest(
     if (!response.ok) {
         throw new Error(response.statusText);
     }
+
     const text = await response.text();
     return text ? JSON.parse(text) : null;
 }

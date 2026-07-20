@@ -19,7 +19,12 @@ export const sessions = pgTable("sessions", {
     expiresat: timestamp("expiresat"),
 });
 
-export const requestTypeEnum = pgEnum("request_type", ["holiday", "sick"]);
+
+export const requestTypeEnum = pgEnum("request_type", [
+    "holiday",
+    "sick",
+    // ... your actual values
+]);
 
 export const notificationTypeEnum = pgEnum("notification_type", ["info", "warning"]);
 
@@ -36,13 +41,15 @@ export const timeEntries = pgTable("timeEntries", {
 
 export const requests = pgTable("requests", {
     id: serial("id").primaryKey(),
-    userId: integer("userId").references(() => users.id, {onDelete: "cascade"}),
-    managerId: integer("managerId").references(() => users.id, {
-        onDelete: "set null",
-    }),
+    userId: integer("userId")
+        .notNull()
+        .references(() => users.id, { onDelete: "cascade" }),
+    managerId: integer("managerId")
+        .references(() => users.id, { onDelete: "set null" }),
     type: requestTypeEnum("type").notNull(),
-    startTime: timestamp("startTime", {withTimezone: true}).notNull(),
-    endTime: timestamp("endTime", {withTimezone: true}).notNull(),
+    startDate: varchar("startDate").notNull(),
+    endDate: varchar("endDate").notNull(),
+    remark: text("remark"),
     isApproved: boolean("isApproved"),
 });
 
