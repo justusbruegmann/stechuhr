@@ -13,6 +13,32 @@
 
 
 
+# Was macht die Anwendung
+Die Anwendung dient zur Erfassung von Arbeitszeiten von Nutzern. Zudem erhält man einen Überblick über seine Zeiteinträge und kann diese jederzeit einsehen. Es gibt drei verschiedene Rollen von Anwendern:
+
+## Rollen
+### User
+Als User ist es möglich sich über die Timecard ein- und auszustechen. Man erhält eine Überischt über die heute gearbeiteten Stunden, und über sein Saldo für den Tag, Woche und Monat. Im Kalender kann man außerdem auf einen Blick seine Zeitereignisse sehen. 
+Zudem ist es möglich Abwesenheitsanträge in Form von Urlaub oder Krankheit zu erstellen. Auch vergessene Ein- und Ausstechzeiten kann man nachtragen.
+
+### Manager
+Als Manager hat man die selben Funktionen wie ein normaler User. Jedoch verfügt der Manager noch über die Manager-Ansicht über die er einen Überblick über seine zuständigen Mitarbeiter bekommt. Hier kann er deren Anträge genehmigen und wenn nötig auch Urlaubstage, Krankheitstage und Zeitereignisse anpassen.
+
+### Admin
+Als Admin ist es nicht möglich sich einzustechen, bzw. Zeiteinträge, Abwesenheitsanträge etc. zu erstellen. Die Admin Rolle dient nur zur Verwaltung der Benutzer der Anwendung. Es ist möglich neue Nutzer anzulegen, zu löschen und auch vorgeschriebene Arbeitszeiten und Urlaubstage anzupassen.
+
+## Login
+| Bild | Beschreibung |
+|------|--------------|
+| <img src="images/login/LoginPage.png" width="1500"> | Die Login-Seite dient zur Anmeldung des Benutzers. Es gibt zwei Textfelder. In das obere Feld wird der Benutzername eingegeben, in das untere das Passwort. Nach erfolgreicher Eingabe gelangt der Benutzer über den Button "Login“ auf sein Dashboard. |
+
+## Timecard
+| Bild | Beschreibung |
+|------|--------------|
+| <img src="images/login/LoginPage.png" width="1500"> | Über die Timecard ist es möglich sich ein- und auszustechen. Dies erfolgt über den grünen/roten Button. Nachdem man auf einstempeln bzw. auf ausstempeln geklickt hat wird der Button für einen Moment deaktiviert und zeigt einen spinner an. Dies liegt daran das der Button seinen Zustand erst ändert, wenn die Änderungen bereits erfolgreich in die Datenbank übernommen wurden. Die Timecard zeigt zudem auch die aktuelle Uhrzeit, ob man bereits ein- oder ausgestemeplt ist und wie lange man an dem aktuellen Tag schon gearbeitet hat. Ganz unten gibt es einen Button "xy" welcher auf das xy verweißt. |
+
+## xy
+
 # Struktur des Repositories
 Das Repository ist als Monorepo in zwei Hauptteilen aufgebaut: Backend und Frontend. Zusätzlich liegt die Dokumentation des gesamten Monorepos im Ordner /docs.
 
