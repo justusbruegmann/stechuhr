@@ -221,7 +221,7 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
                         if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
                             return (
                                 <div key={index} className={styles.calendar_today}
-                                     onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day+1)))}>
+                                     onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day)))}>
                                     {day && <div className={styles.calendar_day_text}>{day}</div>}
                                     <div className={styles.calendar_day_symbols_container}>
                                         {handleEntries(index, day)}
@@ -231,7 +231,7 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
                         }
                         return (
                             <div key={index} className={styles.calendar_day}
-                                 onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day+1)))}>
+                                 onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day)))}>
                                 {day && <div className={styles.calendar_day_text}>{day}</div>}
                                 <div className={styles.calendar_day_symbols_container}>
                                     {handleEntries(index, day)}

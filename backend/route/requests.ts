@@ -72,9 +72,10 @@ router.get(
 router.post(
     '/requests',
     authMiddleware("user", true),
-    validateQueryParameters(requestsRequestBodySchema),
     async (req, res) => {
         const body = req.body as requestsRequestBody;
+
+        // ToDo: validate body (Removed erroneously used middleware validateQueryParameters with body zod-schema)
 
         const { type, startDate, endDate, remark } = body;
 
@@ -83,7 +84,8 @@ router.post(
             const createdRequest = await requestsService.createRequest(userId, type, startDate, endDate, remark);
 
             return res.status(201).send();
-        } catch {
+        } catch (e) {
+            console.error(e);
             return res.status(400).send("Bad Request");
         }
     });

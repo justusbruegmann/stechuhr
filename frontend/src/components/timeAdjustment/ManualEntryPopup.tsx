@@ -35,16 +35,16 @@ export default function ManualEntryPopup({date, onCreate}: Props) {
       const [endHours, endMinutes] = endTime.split(":").map(Number);
 
       const entry: TimeEntry = {
-        id: crypto.randomUUID(),
-        userId: "456",
+        id: -1,
+        userId: -1,
         startTime: new Date(date.setHours(startHours, startMinutes)).toISOString(),
         endTime: new Date(date.setHours(endHours, endMinutes)).toISOString()
       };
       onCreate(entry);
     } else {
       const entry: TimeEntry = {
-        id: crypto.randomUUID(),
-        userId: "456",
+        id: -1,
+        userId: -1,
         startTime: new Date(date.setHours(startHours, startMinutes)).toISOString()
       };
       onCreate(entry);

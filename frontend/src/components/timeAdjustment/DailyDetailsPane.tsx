@@ -1,41 +1,42 @@
 import Button from "@/components/layout/Button";
 import DetailEntry from "@/components/overview/DetailEntry";
 import ManualEntryPopup from "@/components/timeAdjustment/ManualEntryPopup";
-import { useModal } from "@/contexts/ModalContext";
+import {useModal} from "@/contexts/ModalContext";
 import TimeEntry from "@/types/TimeEntry";
 
 import styles from "./DailyDetailsPane.module.css";
 import RequestPopup from "./RequestPopup";
 import {DateString} from "@/types/misc";
-import {formatDate} from "@/utils/TimeUtils";
+import {formatDate, generateDateString} from "@/utils/TimeUtils";
 
-export default function DailyDetailsPane({ date, entries, onAddEntry, deleteEntry }: {
-    date: Date; entries: TimeEntry[]; onAddEntry: (entry: TimeEntry) => void; deleteEntry: (id: string) => void;
+export default function DailyDetailsPane({
+                                             date,
+                                             entries,
+                                             onAddEntry,
+                                             deleteEntry
+}: {
+    date: DateString;
+    entries: TimeEntry[];
+    onAddEntry: (entry: TimeEntry) => void;
+    deleteEntry: (id: number) => void;
 }) {
-    const { showModal, hideModal } = useModal();
-
-    function dateToString(date: Date) {
-        const day = String(date.getDate()).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const year = date.getFullYear();
-        return `${day}.${month}.${year}`;
-    }
+    const {showModal, hideModal} = useModal();
 
     return (
         <div className={styles["container"]}>
-            <h2>Zeiteinträge für {dateToString(date)}</h2>
-            <br />
-            <hr />
-            <br />
+            <h2>Zeiteinträge für {formatDate(new Date(date))}</h2>
+            <br/>
+            <hr/>
+            <br/>
 
             <div className={styles["container-entries-button"]}>
                 <div>
                     {entries.map((element) => (
                         <DetailEntry key={element.id}
-                            timeEntry={element}
-                            deleteFunc={() => {
-                                deleteEntry(element.id)
-                            }} />
+                                     timeEntry={element}
+                                     deleteFunc={() => {
+                                         deleteEntry(element.id)
+                                     }}/>
                     ))}
                 </div>
 
@@ -48,7 +49,7 @@ export default function DailyDetailsPane({ date, entries, onAddEntry, deleteEntr
                         onClick={() =>
                             showModal("popup",
                                 <ManualEntryPopup
-                                    date={date}
+                                    date={new Date(date)}
                                     onCreate={onAddEntry}
                                 />
                             )
@@ -61,7 +62,7 @@ export default function DailyDetailsPane({ date, entries, onAddEntry, deleteEntr
                         width={10}
                         onClick={() =>
                             showModal("popup",
-                                <RequestPopup date={date} />
+                                <RequestPopup date={new Date(date)}/>
                             )
                         }
                     />
