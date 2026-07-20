@@ -42,8 +42,8 @@ export default function Button({
     // @ts-ignore
     return (
         <div className={styles.wrapper} style={mergedStyle}>
-            <button className={mergedClassName} style={{height: '100%', width: '100%'}} onClick={onClick} disabled={disabled || loading}>
-                {loading ? <span className={styles.spinner} /> : label}
+            <button className={mergedClassName} style={{height: '100%', width: '100%'}} onClick={onClick} disabled={disabled || loading} suppressHydrationWarning>
+                {loading ? <span className={`${styles.spinner} ${type === 'primary' ? styles.darkSpinner : ''}`} /> : label}
             </button>
         </div>
     );
