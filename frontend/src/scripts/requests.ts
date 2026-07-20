@@ -16,8 +16,14 @@ export async function getAllRequestsForUser(userId: number) {
     }
 }
 
-export async function getAllRequestsAManagerIsResponsibleFor(managerId: number) {
-    const url = `${BASE_URL}/requests/manager/${managerId}`;
+export async function getAllRequestsAManagerIsResponsibleFor() {
+
+    const currentlyLoggedInUserId = localStorage.getItem("userid");
+    if (!currentlyLoggedInUserId) {
+        throw new Error("no userId in local storage");
+    }
+
+    const url = `${BASE_URL}/requests/manager/${currentlyLoggedInUserId}`;
     try {
         return await sendRequest("GET", url);
     } catch (error) {

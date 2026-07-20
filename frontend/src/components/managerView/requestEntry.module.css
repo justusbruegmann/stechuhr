@@ -1,0 +1,32 @@
+.row {
+    display: grid;
+    grid-template-columns: 100px 180px 1fr auto;
+    align-items: start;
+    gap: 1rem;
+    padding: 0.5rem 0;
+}
+
+.type {
+    font-weight: bold;
+}
+
+.dates {
+    white-space: nowrap;
+}
+
+.remark {
+    display: flex;
+    margin: 0;
+    color: gray;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    justify-content: end;
+}
+
+.actions button {
+    padding: 0.5rem;
+}

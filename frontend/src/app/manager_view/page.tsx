@@ -102,18 +102,9 @@ export default function ManagerView() {
     }
 
     async function loadRequests() {
-        let currentlyLoggedInUserId;
-        try {
-            currentlyLoggedInUserId = Number(localStorage.getItem("userid"));
-            // ToDo: Fix localStorage type of userid to number
-        } catch (error) {
-            console.error(error);
-            return;
-        }
-
         let requests: Request[] = [];
         try {
-            const response: Request[] = await getAllRequestsAManagerIsResponsibleFor(currentlyLoggedInUserId);
+            const response: Request[] = await getAllRequestsAManagerIsResponsibleFor();
             if (Array.isArray(response)) {
                 requests = response;
             }
