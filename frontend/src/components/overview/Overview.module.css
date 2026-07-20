@@ -12,31 +12,8 @@
     margin-bottom: 1rem;
 }
 
-.overviewContainer {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
-}
-
-.tabContentArea {
+.tab-content-area {
     display: flex;
     flex-direction: column;
     gap: 0;
-    flex: 1;
-    min-height: 0;
-}
-
-.detailEntryContainer {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-}
-
-.noEntriesMessage {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    padding-top: 6rem;
-    color: darkgray;
 }

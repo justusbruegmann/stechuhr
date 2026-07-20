@@ -19,9 +19,9 @@ export function authMiddleware(requiredRole: UserRole, rolesAboveAllowed: boolea
             if (rolesAboveAllowed) {
                 const authUserLevel = ROLESPERMS[authUser.data.role as UserRole];
                 const requiredLevel = ROLESPERMS[requiredRole];
-                if (authUserLevel < requiredLevel) return res.status(403).json({error: "unauthorized"});
+                if (authUserLevel < requiredLevel) return res.status(401).json({error: "unauthorized"});
             } else {
-                if (authUser.data.role !== requiredRole) return res.status(403).json({error: "unauthorized"});
+                if (authUser.data.role !== requiredRole) return res.status(401).json({error: "unauthorized"});
             }
             res.locals.user = {id: authUser.data.id, role: authUser.data.role};
             next();

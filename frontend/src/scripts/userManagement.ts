@@ -88,11 +88,6 @@ export async function getManagers(token: string, userId: number) {
 
 export async function updateRole(userId: number, role: string, tokenOfAdmin: string, useridOfAdmin: number) {
     const url = `${BASE_URL}/users/${userId}/role`;
-    const body = {
-        "role": role.toLowerCase(),
-    }
-    return await sendRequest("PATCH", url, body)
-    /*
     const headers = {
         "content-type": "application/json",
         "Authorization": tokenOfAdmin,
@@ -101,7 +96,7 @@ export async function updateRole(userId: number, role: string, tokenOfAdmin: str
     const body = {
         "role": role.toLowerCase(),
     }
-    const result: Response = await fetch(url, {method: "patch", body: JSON.stringify(body), headers: headers});
+    const result: Response = await fetch(url, {method: "put", body: JSON.stringify(body), headers: headers});
     if (result.status === 204) {
         return 204;
     } else if (result.status === 401) {
@@ -109,16 +104,12 @@ export async function updateRole(userId: number, role: string, tokenOfAdmin: str
     } else {
 
         return 400
-    }*/
+    }
 }
 
 export async function updateManager(userId: number, managerId: number, tokenOfAdmin: string, useridOfAdmin: number) {
     const url = `${BASE_URL}/users/${userId}/manager`;
-    const body = {
-        "managerid": managerId,
-    }
-    return await sendRequest("PATCH",url,body)
-    /*const headers = {
+    const headers = {
         "content-type": "application/json",
         "Authorization": tokenOfAdmin,
         "userid": `${useridOfAdmin}`
@@ -126,14 +117,14 @@ export async function updateManager(userId: number, managerId: number, tokenOfAd
     const body = {
         "managerid": managerId,
     }
-    const result = await fetch(url, {method: "patch", body: JSON.stringify(body), headers: headers});
+    const result = await fetch(url, {method: "put", body: JSON.stringify(body), headers: headers});
     if (result.status === 204) {
         return 204;
     } else if (result.status === 401) {
         return 401
     } else {
         return 400
-    }*/
+    }
 }
 
 
@@ -149,5 +140,5 @@ export async function getUsersForManager(): Promise<User[]> {
 
 export async function updateUser(userId: number, changes: Record<string, any>): Promise<User> {
     const url = `${BASE_URL}/users/${userId}/employment`;
-    return await sendRequest("PATCH", url, changes);
+    return await sendRequest("PUT", url, changes);
 }

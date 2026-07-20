@@ -1,26 +1,23 @@
 'use client';
 
 import * as React from 'react';
-import styles from "./Overview.module.css";
+import Styles from "./Overview.module.css";
 import Tabs from "@/components/layout/Tabs";
 import SaldoView from "@/components/overview/SaldoView";
 import DetailEntry from "@/components/overview/DetailEntry";
 import TimeEntry from "@/types/TimeEntry";
 import {getTimeEntriesByTimespan} from "@/utils/TimeUtils";
-import {DateString} from "@/types/misc";
-import User from "@/types/User";
 
 
 interface Props {
-    entries: Record<DateString, TimeEntry[]>;
-    deleteEntry: (id: number) => void;
-    user: User;
+    entries: Record<string, TimeEntry[]>;
+    deleteEntry: (id: string) => void;
 }
 
 
-export default function Overview({entries, deleteEntry, user}: Props) {
+export default function Overview({entries, deleteEntry}: Props) {
 
-    const timeEntries: Record<DateString, TimeEntry[]> = {
+    const timeEntries: Record<string, TimeEntry[]> = {
         "day": getTimeEntriesByTimespan(entries, "day"),
         "week": getTimeEntriesByTimespan(entries, "week"),
         "month": getTimeEntriesByTimespan(entries, "month")
@@ -35,29 +32,20 @@ export default function Overview({entries, deleteEntry, user}: Props) {
         }
 
         return (
-            <div className={styles.tabContentArea}>
+            <div className={Styles["tab-content-area"]}>
                 <h1>{titles[timespan] || "Unbekannt"}</h1>
-                <SaldoView timespan={timespan} timeEntries={timeEntries[timespan]} user={user}/>
+                <SaldoView timespan={timespan} timeEntries={timeEntries[timespan]}/>
                 <br/>
 
-                <div className={styles.detailEntryContainer}>
-                    {timeEntries[timespan].length > 0 && timeEntries[timespan]
-                        .sort((a, b) => a.startTime.localeCompare(b.startTime)) // Sort in ascending order (oldest first)
-                        .map((entry) => (
-                            <DetailEntry
-                                key={entry.id}
-                                timeEntry={entry}
-                                deleteFunc={() => {
-                                    deleteEntry(entry.id)
-                                }}
-                            />
-                        ))}
-                    {timeEntries[timespan].length == 0 &&
-                        <div className={styles.noEntriesMessage}>
-                            <p>Keine Buchungen für diesen Zeitraum vorhanden.</p>
-                        </div>
-                    }
-                </div>
+                {timeEntries[timespan].map((entry) => (
+                    <DetailEntry
+                        key={entry.id}
+                        timeEntry={entry}
+                        deleteFunc={() => {
+                            deleteEntry(entry.id)
+                        }}
+                    />
+                ))}
             </div>
         );
     }
@@ -69,12 +57,12 @@ export default function Overview({entries, deleteEntry, user}: Props) {
     }
 
     return (
-        <div className={styles.overviewContainer}>
-            <h3 className={styles.title}>Übersicht</h3>
-            <hr className={styles.separator}/>
-            <p className={styles.subtitle}>Saldo und Buchungen für Tag / Woche / Monat</p>
+        <>
+            <h3 className={`${Styles["title"]}`}>Übersicht</h3>
+            <hr className={`${Styles["separator"]}`}/>
+            <p className={`${Styles["subtitle"]}`}>Saldo und Buchungen für Tag / Woche / Monat</p>
 
             <Tabs tabs={tabs}/>
-        </div>
+        </>
     );
 }

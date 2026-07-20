@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import {useModal} from "@/contexts/ModalContext";
 import styles from './manager_view.module.css';
 
+
 import {getUsersForManager} from "@/scripts/userManagement";
 import UserTable from "@/components/managerView/userTable";
 import Button from "@/components/layout/Button";
@@ -14,8 +15,6 @@ import {capitalize} from "@/utils/StringUtils";
 import EditUserModal from "@/components/managerView/editUserModal";
 import Summary from "@/types/summary";
 import {getSummaryForUser} from "@/scripts/summary";
-import {startOfTheMonthDateString, startOfTheWeekDateString, todayDateString} from "@/utils/TimeUtils";
-import {DateString} from "@/types/misc";
 
 
 type UserWithSummaryEntries = User & {
@@ -30,6 +29,7 @@ type UserWithSummaryEntries = User & {
 export default function ManagerView() {
     const router = useRouter();
 
+
     /**
      * Loading and storing users
      */
@@ -43,6 +43,7 @@ export default function ManagerView() {
 
         loadUsers()
             .then(_ => {
+                console.log(users);
                 close();
                 setLoading(false);
             })
@@ -58,37 +59,26 @@ export default function ManagerView() {
 
         if (!Array.isArray(response)) return;
 
-        const summariesMonth = await Promise.all(
-            response.map((user: User) => loadSummary(user.id, startOfTheMonthDateString(), todayDateString())
-                .catch((e) => {
-                        console.error(e);
-                        return undefined;
-                    }
-                ))
-        );
-
-        const summariesWeek = await Promise.all(
-            response.map((user: User) => loadSummary(user.id, startOfTheWeekDateString(), todayDateString())
-                .catch((e) => {
-                        console.error(e);
-                        return undefined;
-                    }
-                ))
+        const summaries = await Promise.all(
+            response.map((user: User) => loadSummary(user.id))
         );
 
         const extendedUser: UserWithSummaryEntries[] = response.map((user: User, index: number) => {
-            const summaryMonth = summariesMonth[index];
-            const summaryWeek = summariesWeek[index];
+            const summary = summaries[index];
+
+            console.log(`Loaded summary for user ${user.id}: ${JSON.stringify(summary)}`);
 
             return {
                 ...user,
                 summaryEntries: {
-                    vacationDaysThisYear: summaryMonth?.vacationDaysTaken ?? null,
-                    sickDaysThisYear: summaryMonth?.sickDaysTaken ?? null,
-                    hoursWorkedThisWeek: summaryWeek ? Math.floor(summaryWeek.timeWorkedInMinutes / 60) : null
+                    vacationDaysThisYear: summary?.vacationDaysTaken ?? null,
+                    sickDaysThisYear: summary?.sickDaysTaken ?? null,
+                    hoursWorkedThisWeek: summary ? Math.floor(summary.timeWorkedInMinutes / 60) : null
                 }
             };
         });
+
+        console.log(`Extended users object: ${JSON.stringify(extendedUser)}`);
 
         const extendedUsers = Object.fromEntries(extendedUser.map(user => [user.id, user]));
         setUsers(extendedUsers);
@@ -100,8 +90,8 @@ export default function ManagerView() {
      */
     const currentYear = new Date().getFullYear();
 
-    async function loadSummary(userId: number, startDate: DateString, endDate: DateString): Promise<Summary | undefined> {
-        return await getSummaryForUser(userId, startDate, endDate)
+    async function loadSummary(userId: number): Promise<Summary | undefined> {
+        return await getSummaryForUser(userId, "2026-01-01", "2026-07-01")
             .catch((e) => {
                 console.error(e);
                 return undefined;
@@ -113,12 +103,9 @@ export default function ManagerView() {
      * Editing users
      */
     function generateUserUpdateFunction(userId: number) {
-        // This function returns another function with the userId hardcoded into it, which can then be passed into the
-        // EditUserModal component to update the local state of the user with the given userId.
-
-        // Yes, I did write this myself. No, I am not sure whether this is the most elegant way. But it works.
-
         return (updates: Partial<Record<keyof User, any>>): void => {
+
+            console.log(`Saving changes ${updates} to user ${userId}`);
 
             setUsers(prevUsers => {
                 const updatedUser = {
@@ -165,12 +152,13 @@ export default function ManagerView() {
                             <Button label={"Bearbeiten"} type={"primary"}
                                     onClick={() => editUser(user.id)}/>
                             <Button label={"Anträge"} type={"accent"}
-                                    onClick={() => alert("Felix, ich warte immer noch auf einen Endpunkt, um Anträge abrufen zu können...")}/>
+                                    onClick={() => console.log("Darf ich bitte bitte früher gehen?")}/>
                         </div>
                     </td>
                 </tr>);
         }
     );
+
 
     return (
         <>
