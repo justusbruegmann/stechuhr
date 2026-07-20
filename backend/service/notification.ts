@@ -64,10 +64,14 @@ export async function notificationPost(userId: number, date: string) {
             const dayEnd = new Date(checkDay);
             dayEnd.setHours(23, 59, 59, 999);
 
+
+            const dayStartStr = dayStart.toISOString();
+            const dayEndStr = dayEnd.toISOString();
+
             const [work, vacation, sick] = await Promise.all([
-                getTimeEntries(userId, "work", dayStart, dayEnd),
-                getTimeEntries(userId, "holiday", dayStart, dayEnd),
-                getTimeEntries(userId, "sick", dayStart, dayEnd),
+                getTimeEntries(userId, "work", dayStartStr, dayEndStr),
+                getTimeEntries(userId, "holiday", dayStartStr, dayEndStr),
+                getTimeEntries(userId, "sick", dayStartStr, dayEndStr),
             ]);
 
             if (work.length > 0) {

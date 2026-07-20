@@ -4,10 +4,12 @@ import styles from "./Dashboard.module.css"
 import Header from "@/components/layout/Header";
 import Timecard from "@/components/timecard/Timecard";
 import Calendar from "@/components/calendar/Calendar";
+import Notifications from "@/components/notifications/Notifications";
 import { useModal } from "@/contexts/ModalContext";
 import Overview from "@/components/overview/Overview";
 import { useCallback, useEffect, useRef, useState } from "react";
 import TimeEntry from "@/types/TimeEntry";
+import Notification from "@/types/Notification";
 import DailyDetailsPane from "@/components/timeAdjustment/DailyDetailsPane";
 import { useRouter } from "next/navigation";
 
@@ -17,6 +19,7 @@ import { DateString } from "@/types/misc";
 import { generateDateString, startOfTheMonthDateString, todayDateString } from "@/utils/TimeUtils";
 import User from "@/types/User";
 import { getUserById } from "@/scripts/userManagement";
+import { getNotificationList, postNotification } from "@/scripts/notifications";
 
 
 export default function Dashboard() {
@@ -31,10 +34,12 @@ export default function Dashboard() {
      */
     const [dailyEntries, setDailyEntries] = useState<Record<DateString, TimeEntry[]>>({});
     const [currentUser, setCurrentUser] = useState<User>();
+    const [notifications, setNotifications] = useState<Notification[]>([]);
 
     const currentlyOpenModal = useRef<
         { id: string; type: "OverviewModal" } |
         { id: string; type: "DailyDetails"; date: DateString } |
+        { id: string; type: "NotificationsModal" } |
         null
     >(null);
 
@@ -134,6 +139,8 @@ export default function Dashboard() {
             loadCurrentUser();
         });
 
+        loadNotifications();
+
         const today = new Date();
         loadTimeEntries(today.getFullYear(), today.getMonth());
     }, [router])
@@ -185,6 +192,33 @@ export default function Dashboard() {
         />
     );
 
+    async function loadNotifications() {
+        const token = localStorage.getItem("token")
+        const userid = localStorage.getItem("userid")
+
+        if (!token || !userid) {
+            return
+        }
+        // ! NOCH NICHT FERTIG & NOCH NICHT GETESTET
+        //await postNotification(token, Number(userid), new Date().toISOString());
+        // ! NOCH NICHT FERTIG & NOCH NICHT GETESTET
+        const notificationList = await getNotificationList(token, Number(userid));
+        console.log(notificationList);
+        if (notificationList && notificationList != 400 && notificationList != 401 && notificationList != 500) {
+            setNotifications(notificationList);
+        }
+    }
+    const updateNotification = (id: number, isRead: boolean) => {
+        setNotifications((prev) =>
+            prev.map((n) => n.id === id ? { ...n, isRead } : n)
+        );
+    }
+    const killNotification = (id: number) => {
+        setNotifications((prev) =>
+            prev.filter((n) => n.id !== id)
+        );
+    }
+
     // Update modal content when dailyEntries change
     useEffect(() => {
         if (currentlyOpenModal.current) {
@@ -201,9 +235,18 @@ export default function Dashboard() {
                         createOverviewContent()
                     );
                 }
+            } else if (currentlyOpenModal.current.type === "NotificationsModal") {
+                updateModalContent(
+                    currentlyOpenModal.current.id,
+                    <Notifications
+                        notifications={notifications}
+                        updateNotification={updateNotification}
+                        killNotification={killNotification}
+                    />
+                );
             }
         }
-    }, [dailyEntries, updateModalContent]);
+    }, [dailyEntries, notifications, updateModalContent]);
 
     const openOverviewModal = useCallback(() => {
         const { id } = showModal("sidepane", createOverviewContent())
@@ -216,11 +259,22 @@ export default function Dashboard() {
         currentlyOpenModal.current = { id, type: "DailyDetails", date: datum };
     }, [dailyEntries, showModal, addEntryForDate]);
 
+    const openNotificationModal = useCallback(() => {
+        const { id } = showModal("sidepane",
+            <Notifications
+                notifications={notifications}
+                updateNotification={updateNotification}
+                killNotification={killNotification}
+            />)
+        currentlyOpenModal.current = { id, type: "NotificationsModal" };
+        loadNotifications();
+    }, [notifications, showModal]);
+
 
     return (
         <div className={styles.wrapper}>
             <div className={styles.headerBar}>
-                <Header name={"dashboard"} />
+                <Header name={"dashboard"} onNotificationsClick={openNotificationModal} />
             </div>
             <div className={styles.viewArea}>
                 <Timecard openOverview={openOverviewModal} isOverviewOpenable={!currentUser}
