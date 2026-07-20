@@ -4,16 +4,13 @@ import { authMiddleware } from "../middleware/auth";
 
 const router = Router();
 
-//create timeentry 
+//create time entry
 router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
     try{
         const reqBody: any = req.body;
         const validTypes = ["work", "holiday", "sick"];
         if(!reqBody?.type || !validTypes.includes(reqBody.type)){
             return res.status(400).send("type is required and has to be work, holiday or sick");
-        }
-        if (res.locals.user.role === "admin") {
-            return res.status(400).json({error: "Admins are not allowed to clock in."});
         }
         if(!reqBody.starttime){
             return res.status(400).send("starttime is needed");
@@ -31,9 +28,9 @@ router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
         if(
             createdTimeEntry == "not able to work on weekends"|| 
             createdTimeEntry == "out of working time" || 
-            createdTimeEntry == "last time entry has no endtime" ||
+            createdTimeEntry == "last time entry has no end time" ||
             createdTimeEntry == "not able to work on holidays" ||
-            createdTimeEntry == "endtime is before starttime"
+            createdTimeEntry == "end time is before startime"
         ){
             return res.status(400).json({"error": createdTimeEntry});
         }
@@ -88,15 +85,12 @@ router.get('/users/:userId/timeentries', authMiddleware("user", true), async (re
             return res.status(403).send("not allowed");
         }
         const {type, startDate, endDate} = req.query;
-        if (type && !["work", "holiday", "sick"].includes(type as string)) {
-            return res.status(400).send("type must be: work, holiday, sick");
+        if (!type || !["work", "holiday", "sick"].includes(type as string)) {
+            return res.status(400).send("type is required and must: work, holiday, sick");
         }
-        const start = startDate ? startDate as string : undefined;
-        const end = endDate ? endDate+"T23:59:59" : undefined;
+        const start = startDate ? new Date(startDate as string) : undefined;
+        const end = endDate ? new Date(endDate as string) : undefined;
         const timeEntries = await getTimeEntriesService(userid, type as "work"|"holiday"|"sick", start, end);
-        if(timeEntries == "end date is before start date"){
-            return res.status(400).json(timeEntries);
-        }
         return res.status(200).json(timeEntries);
     }
     catch(error){

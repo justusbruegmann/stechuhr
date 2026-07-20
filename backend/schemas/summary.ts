@@ -1,5 +1,4 @@
 import * as z from 'zod';
-import {generateTodayDateString} from "../utils/timeUtils";
 
 const dateStringSchema = z
     .string()
@@ -13,7 +12,7 @@ export const summaryRequestParameterSchema = z.object(
         startDate: dateStringSchema,
         endDate: dateStringSchema
             .optional()
-            .default(() => generateTodayDateString()),
+            .default(() => new Date().toISOString().slice(0, 10)),
     }
 )
 

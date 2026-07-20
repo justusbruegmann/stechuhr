@@ -4,33 +4,21 @@ import * as React from 'react';
 import Styles from "./SaldoView.module.css";
 import Card from "@/components/layout/Card";
 import TimeEntry from "@/types/TimeEntry";
-import {formatMsTime, getWorkdaysInCurrentMonth, getWorkdaysInCurrentWeek, isTodayWorkday} from "@/utils/TimeUtils";
-import User from "@/types/User";
+import {formatMsTime} from "@/utils/TimeUtils";
 
-type SaldoViewProps = {
+type Props = {
     timespan: "day" | "week" | "month";
     timeEntries: TimeEntry[];
-    user: User;
 }
 
 
 export default function SaldoView({
                                       timespan,
-                                      timeEntries,
-                                      user,
-                                  }: SaldoViewProps) {
+                                      timeEntries
+                                  }: Props) {
 
     const hour = 60 * 60 * 1000;
-    const workloadPerDay = user.workload * hour / 5
-    let requiredWorkTime: number;
-    if (timespan == "day") {
-        requiredWorkTime = isTodayWorkday() ? workloadPerDay : 0;
-    } else if (timespan == "week") {
-        requiredWorkTime = workloadPerDay * getWorkdaysInCurrentWeek();
-    } else {
-        requiredWorkTime = workloadPerDay * getWorkdaysInCurrentMonth();
-    }
-    // ToDo: Integrate with accepted vacation days + sick days once Requests Feature is available. Felix, liefere!
+    const requiredWorkTime = timespan == "day" ? 8 * hour : timespan == "week" ? 40 * hour : 160 * hour;
 
     const totalWorkedTime: number = timeEntries.reduce((total, entry) => {
         const startTime = new Date(entry.startTime);

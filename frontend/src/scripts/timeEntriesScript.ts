@@ -1,6 +1,3 @@
-import { error } from "node:console";
-import sendRequest from "@/utils/requestWrapper";
-
 const BASE_URL: string | undefined = process.env.NEXT_PUBLIC_BACKEND_URL;
 if (!BASE_URL) {
     throw new Error("no BASE_URL provided");
@@ -19,10 +16,6 @@ export async function createTimeEntry(token: string,userid: number, startTime: D
         "type": type
     };
     const response = await fetch(url, {method:"POST", body: JSON.stringify(body), headers: headers});
-    const text = await response.json();
-    if(text.error === "Admins are not allowed to clock in."){
-        return {error: text.error};
-    }
     if(response.status == 400){
         return 400;
     }
@@ -30,7 +23,7 @@ export async function createTimeEntry(token: string,userid: number, startTime: D
         return 401;
     }
     if(response.status == 201){
-        return text;
+        return await response.json();
     }
 }
 
@@ -56,11 +49,9 @@ export async function setEndTime(token: string, userid: number, timeEntryId: num
     }
 }
 
-export async function getTimeEntries(token: string, userid: number, type?: "work"|"holiday"|"sick", startDate?: string, endDate?: string){
+export async function getTimeEntries(token: string, userid: number, type: "work"|"holiday"|"sick", startDate?: string, endDate?: string){
     const params = new URLSearchParams();
-    if(type){
-        params.append("type", type);
-    }
+    params.append("type", type);
     if (startDate){
         params.append("startDate", startDate);
     } 
@@ -126,7 +117,21 @@ export async function getLastTimeEntry(token: string, userid: number){
     }
 }
 
-export async function deleteTimeEntry(timeEntryId: number){
+export async function deleteTimeEntry(token: string, userid: number, timeEntryId: number){
     const url = `${BASE_URL}/timeentries/${timeEntryId}`;
-    return await sendRequest("DELETE", url);
+    const headers = {
+        "content-type": "application/json",
+        "Authorization": token,
+        "userid": `${userid}`
+    };
+    const response = await fetch(url, {method:"DELETE", headers: headers});
+    if(response.status == 400){
+        return 400;
+    }
+    if(response.status == 401){
+        return 401;
+    }
+    if(response.status == 200){
+       return 200;
+    }
 }

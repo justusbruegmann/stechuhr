@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 
 const saltRounds = 10;
 const password = 'mySecurePassword';

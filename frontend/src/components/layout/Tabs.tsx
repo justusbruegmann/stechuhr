@@ -26,7 +26,7 @@ export default function Tabs({tabs}: TabsProps) {
                     <Card
                         key={name}
                         onClick={() => switchTab(name)}
-                        className={`${styles.tabboxButtons} ${activeTab === name ? styles.selectedTab : ""}`}
+                        className={`${styles["tabbox-buttons"]} ${activeTab === name ? styles["selected-tab"] : ""}`}
                         shadow={false}
                     >
                         {name}

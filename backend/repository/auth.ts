@@ -1,6 +1,7 @@
 import {db} from '../app'
 import {sessions} from '../drizzle/schema';
 import {hashPassword} from "../utils/hashing";
+import {pascal} from "postgres";
 import {eq, and, gt} from "drizzle-orm";
 
 export async function createSession(userId: number, token: string) {
