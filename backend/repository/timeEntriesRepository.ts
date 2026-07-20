@@ -29,35 +29,17 @@ export async function getTimeEntries(userId: number, type?: string, startDate?: 
     if(endDate){
         conditions.push(lte(timeEntries.endTime, new Date(endDate)));
     }
-    const result = await db.select({
-        id: timeEntries.id,
-        userId: timeEntries.userId,
-        startTime: timeEntries.startTime,
-        endTime: timeEntries.endTime,
-        type: timeEntries.type,
-    }).from(timeEntries).where(and(...conditions));
+    const result = await db.select().from(timeEntries).where(and(...conditions));
     return result;
 }
 
 export async function getSingleTimeEntry(timeEntryId: number) {
-    const result = await db.select({
-        id: timeEntries.id,
-        userId: timeEntries.userId,
-        startTime: timeEntries.startTime,
-        endTime: timeEntries.endTime,
-        type: timeEntries.type,
-    }).from(timeEntries).where(eq(timeEntries.id, timeEntryId));
+    const result = await db.select().from(timeEntries).where(eq(timeEntries.id, timeEntryId));
     return result;
 }
 
 export async function getLastTimeEntry(userId: number){
-    const result = await db.select({
-        id: timeEntries.id,
-        userId: timeEntries.userId,
-        startTime: timeEntries.startTime,
-        endTime: timeEntries.endTime,
-        type: timeEntries.type,
-    }).from(timeEntries).where(eq(timeEntries.userId, userId)).orderBy(desc(timeEntries.startTime)).limit(1);
+    const result = await db.select().from(timeEntries).where(eq(timeEntries.userId, userId)).orderBy(desc(timeEntries.startTime)).limit(1);
     return result;
 }
 
