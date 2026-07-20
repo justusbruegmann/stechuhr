@@ -19,12 +19,6 @@ export const sessions = pgTable("sessions", {
     expiresat: timestamp("expiresat"),
 });
 
-// Enums — replace values with your actual enum values
-export const timeEntryTypeEnum = pgEnum("time_entry_type", [
-    "work",
-    "break",
-    // ... your actual values
-]);
 
 export const requestTypeEnum = pgEnum("request_type", [
     "holiday",
