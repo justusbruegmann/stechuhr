@@ -214,30 +214,29 @@ Sie sind grob nach Anwendungsgebiet gruppiert.
 
 # Eigenleistung
 ## Auth 4865545
+KI als Formulierungshilfe verwendet
 ### Ideen
 Aufgrund von Kommunikation aus dem ersten Semester, dass nur das absolute Minimum an Fremdpakete verwendet werden soll, wurde angenommen das auch Login usw selbst gebaut werden müssen.
 Deshalb wurde bereits vor der Kommunikation, dass solche Pakete erlaubt sind, das Feature schon fertiggestellt.
 
-
-
-Es wurde sich Aktiv gegen JWTs entschieden da dort der Zugang nicht schnell entfernt werden kann.
+Es wurde sich aktiv gegen JWTs entschieden, da dort der Zugang nicht schnell entfernt werden kann.
 Ebenfalls soll ein Admin als Verwalter Accounts erstellen da kein Mitarbeiter sein Account selbst anlegen soll.
-Im fall einer Kündigung oder ähnliches kann der Admin sehr schnell Zugang zur Zeiterfassung entfernen damit kein Unsinn getrieben wird.
+Im Fall einer Kündigung oder ähnliches kann der Admin sehr schnell Zugang zur Zeiterfassung entfernen, damit kein Unsinn getrieben wird.
 
-Es gibt 3 Rollen in er Anwendung:
+Es gibt 3 Rollen in der Anwendung:
 - User: Ein ganz normaler Mitarbeiter
-- Manager: Ein vorgesetzter von einem Nutzer welcher Urlaubsanträge oder ähnliches bearbeiten kann sowie Arbeitszeiten seiner untergebenen sehen kann. User + zusatz Rechte
-- Admin: Reiner Verwaltungsaccount kann keine timeEntries erstellen.
+- Manager: Ein Vorgesetzter von einem Nutzer welcher Urlaubsanträge oder ähnliches bearbeiten kann sowie Arbeitszeiten seiner Untergebenen sehen kann. User + Zusatzrechte
+- Admin: Reiner Verwaltungsaccount, kann keine timeEntries erstellen.
 
 ### Gesamtprojekt
-Als erstes landet der Nutzer auf der Login page und muss sich dort einloggen.  
-Wenn er ein one time password hat dann muss dieses verändert werden.
-Wenn kein one time password gesetzt ist und die login daten Valide wird dieser zum dashboard weitergeleitet
+Als Erstes landet der Nutzer auf der Login-Page und muss sich dort einloggen.  
+Wenn er ein One-Time-Password hat dann muss dieses geändert werden.
+Wenn kein One-Time-Password gesetzt ist und die Login-Daten valide sind, wird dieser zum Dashboard weitergeleitet
   
-Die Auth läuft im Hintergrund beim öffnen einer page zum check onb der Token noch valid ist oder überhaupt einer existiert.
+Die Auth läuft im Hintergrund beim Öffnen einer Page um zu überprüfen ob der Token noch valide ist oder überhaupt einer existiert.
   
-Ebenfalls wird ein für die anderen Routen eine Middleware gegeben ob die mitgegebenen Authorization und userid einem User gehören.
-Dies ist dabei für fast jede Route relevant da nur Nutzer welche zur Anwendung gehören diese Aktionen ausführen sollen.
+Ebenfalls wird für die anderen Routen eine Middleware bereitgestellt, ob die mitgegebenen Authorization und Userid Header zu einem User gehören.
+Dies ist dabei für fast jede Route relevant, da nur Nutzer welche zur Anwendung gehören diese Aktionen ausführen sollen.
 ```typescript
 const ROLESPERMS: Record<UserRole,number> = {user: 1, manager: 2 , admin:3};
 
@@ -268,7 +267,7 @@ export function authMiddleware(requiredRole: UserRole, rolesAboveAllowed: boolea
     }
 }
 ```
-rolesAboveAllowed sagt aus ob eine Route welche ein user zugreifen darf auch ein Manager oder Admin zugreifen darf
+rolesAboveAllowed sagt aus, ob eine Route, welche ein User zugreifen darf, auch ein Manager oder Admin zugreifen darf.
 
 
 ### Code
