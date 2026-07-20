@@ -5,6 +5,7 @@ import { getRequestsRequestParameterSchema, getRequestsRequestParameter, request
 import * as requestsService from "../service/requests";
 import * as userManagementService from "../service/userManagement";
 import User from "../types/users";
+import { validateRequestBody } from "../middleware/validateRequestBody";
 
 const router = Router();
 
@@ -22,20 +23,21 @@ router.get(
         if (requesterId == userId) {
             const requests = await requestsService.getAllRequestsForUser(userId);
             return res.status(200).json(requests);
-        } else {
-            try {
-                const user = await userManagementService.getUserById(userId);
-                if (user?.managerid == requesterId) {
-                    const requests = await requestsService.getAllRequestsForUser(userId);
-
-                    return res.status(200).json(requests);
-                } else {
-                    return res.status(401).send("Unauthorized")
-                }
-            } catch {
-                return res.status(401).send("Unauthorized");
-            }
         }
+
+        try {
+            const user = await userManagementService.getUserById(userId);
+            if (user?.managerid == requesterId) {
+                const requests = await requestsService.getAllRequestsForUser(userId);
+
+                return res.status(200).json(requests);
+            } else {
+                return res.status(401).send("Unauthorized")
+            }
+        } catch {
+            return res.status(401).send("Unauthorized");
+        }
+
     });
 
 router.get(
@@ -72,10 +74,9 @@ router.get(
 router.post(
     '/requests',
     authMiddleware("user", true),
+    validateRequestBody(requestsRequestBodySchema),
     async (req, res) => {
         const body = req.body as requestsRequestBody;
-
-        // ToDo: validate body (Removed erroneously used middleware validateQueryParameters with body zod-schema)
 
         const { type, startDate, endDate, remark } = body;
 
@@ -93,7 +94,7 @@ router.post(
 router.patch(
     '/requests/:id',
     authMiddleware("manager"),
-    validateQueryParameters(updateRequestsRequestBodySchema),
+    validateRequestBody(updateRequestsRequestBodySchema),
     async (req, res) => {
         try {
             const id = Number(req.params.id);
