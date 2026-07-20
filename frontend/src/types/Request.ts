@@ -1,10 +1,12 @@
-export default interface Request {
+import {DateString} from "@/types/misc";
+
+export default interface Request{
     id: string;
-    userId: string;
-    managerId: string;
-    type: "holiday" | "sick";
-    fromDate: string;
-    toDate: string;
-    remark: string;
-    isApproved: boolean;
+    userId: number,
+    managerId: number,
+    type: "holiday" | "sick",
+    startDate: DateString,
+    endDate: DateString,
+    remark?: string,
+    isApporved?: boolean
 }

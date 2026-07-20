@@ -20,12 +20,13 @@ import {DateString} from "@/types/misc";
 import {getAllRequestsAManagerIsResponsibleFor} from "@/scripts/requests";
 
 
-type UserWithSummaryEntries = User & {
+type UserWithExtraFields = User & {
     summaryEntries: {
         vacationDaysThisYear: number | null;
         sickDaysThisYear: number | null;
         hoursWorkedThisWeek: number | null;
-    };
+    },
+    openRequests: Request[],
 };
 
 
@@ -36,15 +37,14 @@ export default function ManagerView() {
      * Loading and storing users
      */
     const {showModal} = useModal();
-    const [users, setUsers] = React.useState<Record<number, UserWithSummaryEntries>>({});
+    const [users, setUsers] = React.useState<Record<number, UserWithExtraFields>>({});
     const [loading, setLoading] = React.useState(true);
 
     useEffect(() => {
         setLoading(true);
         const {close} = showModal("spinningLoader")
 
-        Promise.all([loadUsers(), loadRequests()])
-        // loadUsers()
+        loadUsers()
             .then(_ => {
                 close();
                 setLoading(false);
@@ -79,7 +79,9 @@ export default function ManagerView() {
                 ))
         );
 
-        const extendedUser: UserWithSummaryEntries[] = response.map((user: User, index: number) => {
+        const openRequests = await loadRequests();
+
+        const extendedUser: UserWithExtraFields[] = response.map((user: User, index: number) => {
             const summaryMonth = summariesMonth[index];
             const summaryWeek = summariesWeek[index];
 
@@ -89,7 +91,8 @@ export default function ManagerView() {
                     vacationDaysThisYear: summaryMonth?.vacationDaysTaken ?? null,
                     sickDaysThisYear: summaryMonth?.sickDaysTaken ?? null,
                     hoursWorkedThisWeek: summaryWeek ? Math.floor(summaryWeek.timeWorkedInMinutes / 60) : null
-                }
+                },
+                openRequests: openRequests ? openRequests.filter(request => request.userId === user.id) : [],
             };
         });
 
@@ -194,7 +197,7 @@ export default function ManagerView() {
                             <Button label={"Bearbeiten"} type={"primary"}
                                     onClick={() => editUser(user.id)}/>
                             <Button label={"Anträge"} type={"accent"}
-                                    onClick={() => alert("Felix, ich warte immer noch auf einen Endpunkt, um Anträge abrufen zu können...")}/>
+                                    onClick={() => alert(`Ich habe ${user.openRequests.length} Anträge dieses Users`)}/>
                         </div>
                     </td>
                 </tr>);
