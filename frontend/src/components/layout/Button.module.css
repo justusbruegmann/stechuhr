@@ -56,6 +56,10 @@
     animation: spin 0.8s linear infinite;
 }
 
+.darkSpinner {
+    border-top-color: var(--sick-blue);
+}
+
 @keyframes spin {
     to {
         transform: rotate(360deg);

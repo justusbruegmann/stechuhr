@@ -15,7 +15,7 @@ export function validateQueryParameters(schema: ZodObject): RequestHandler {
             });
         }
 
-        res.locals["queryParams"] = parsed.data as SummaryRequestParameter;
+        res.locals["queryParams"] = parsed.data;
 
         next();
     };

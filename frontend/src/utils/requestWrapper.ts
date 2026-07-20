@@ -2,13 +2,13 @@ export default async function sendRequest(
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
     url: string,
     body?: any,
-    headersOverrides?: Record<string, string>
+    headersOverrides?: Record<string, string>, ignoreHeader: boolean = false
 ) {
 
     const token = localStorage.getItem("token");
     const loggedInUserId = localStorage.getItem("userid");
-    if (!token || !loggedInUserId) {
-        throw new Error("token or userid not found in local storage");
+    if (!ignoreHeader && (!token || !loggedInUserId)) {
+            throw new Error("token or userid not found in local storage");
     }
 
     const headersPreset = {
@@ -34,5 +34,6 @@ export default async function sendRequest(
         throw new Error(response.statusText);
     }
 
-    return response.status === 204 ? null : await response.json();
+    const text = await response.text();
+    return text ? JSON.parse(text) : null;
 }
