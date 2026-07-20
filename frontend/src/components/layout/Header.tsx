@@ -1,21 +1,20 @@
 'use client';
 // src/components/Button.tsx
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './Header.module.css';
 import Button from "@/components/layout/Button";
-import { usePathname, useRouter } from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import Image from "next/image";
 
 type HeaderProps = {
     name?: string;
-    onNotificationsClick?: () => void;
 }
 
-export default function Header({ name, onNotificationsClick }: HeaderProps) {
+export default function Header({name}: HeaderProps) {
 
     const LOGIN = "/login"
     const DASHBOARD = "/dashboard";
-    const ADMIN_VIEW = "/login/manage";
+    const ADMIN_VIEW = "/admin_view";
     const MANAGER_VIEW = "/manager_view";
 
     const currentPath = usePathname();
@@ -62,23 +61,12 @@ export default function Header({ name, onNotificationsClick }: HeaderProps) {
                 <div className={styles['navigation']}>
                     {currentPath !== LOGIN && userRole === "admin" &&
                         <Button label={name === "admin" ? "Dashboard" : "Admin-Ansicht"} type={"primary"} height={2}
-                            width={6} onClick={() => adminView()} />
+                                width={6} onClick={() => adminView()} style={{color: 'lightgray'}}/>
                     }
                     {currentPath !== LOGIN && userRole === "manager" &&
                         <Button label={managerViewButtonText} type={"primary"} height={2}
-                            width={6} style={{ marginRight: 12 }} onClick={() => toggleManagerView()} />
+                                width={6} style={{marginRight: 12, color: 'lightgray'}} onClick={() => toggleManagerView()}/>
                     }
-                </div>
-
-                <div onClick={onNotificationsClick} style={{ cursor: "pointer" }}>
-                    <Image
-                        src={`/notifications.svg`}
-                        alt="notifications_icon"
-                        width={32}
-                        height={32}
-                        style={{ filter: 'invert()', opacity: 1 }}
-                        priority
-                    />
                 </div>
 
                 <div className={styles['login-indicator']}>
@@ -87,14 +75,14 @@ export default function Header({ name, onNotificationsClick }: HeaderProps) {
                         alt="person_icon"
                         width={32}
                         height={32}
-                        style={{ filter: 'invert()', opacity: 1 }}
+                        style={{transform: 'invert()', opacity: 1}}
                         priority
                     />
 
                     <Button label={"Logout"} type={"primary"} height={2} width={6}
-                        onClick={() => logout()} />
+                            onClick={() => logout()} style={{color: 'lightgray'}}/>
                 </div>
-            </div >
+            </div>
             <hr className={styles["hr-color"]}></hr>
         </>
     );
