@@ -18,9 +18,10 @@ import {getSummaryForUser} from "@/scripts/summary";
 import {startOfTheMonthDateString, startOfTheWeekDateString, todayDateString} from "@/utils/TimeUtils";
 import {DateString} from "@/types/misc";
 import {getAllRequestsAManagerIsResponsibleFor} from "@/scripts/requests";
+import AnswerRequestModal from "@/components/managerView/answerRequestModal";
 
 
-type UserWithExtraFields = User & {
+export type UserWithExtraFields = User & {
     summaryEntries: {
         vacationDaysThisYear: number | null;
         sickDaysThisYear: number | null;
@@ -175,6 +176,12 @@ export default function ManagerView() {
         );
     }
 
+    function answerRequests(userId: number) {
+        showModal("popup",
+            <AnswerRequestModal user={users[userId]} updateLocalState={generateUserUpdateFunction(userId)} /> //ToDo: updateLocalState functionality
+        );
+    }
+
 
     const columns = ["Name", `Urlaub (${currentYear})`, `Krankheitstage (${currentYear})`, "Arbeitszeit diese Woche", ""];
 
@@ -197,7 +204,7 @@ export default function ManagerView() {
                             <Button label={"Bearbeiten"} type={"primary"}
                                     onClick={() => editUser(user.id)}/>
                             <Button label={"Anträge"} type={"accent"}
-                                    onClick={() => alert(`Ich habe ${user.openRequests.length} Anträge dieses Users`)}/>
+                                    onClick={() => answerRequests(user.id)}/>
                         </div>
                     </td>
                 </tr>);
