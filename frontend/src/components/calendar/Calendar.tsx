@@ -2,20 +2,23 @@
 
 import Card from "@/components/layout/Card";
 import styles from "./Calendar.module.css"
-import {useState} from "react";
+import { useState } from "react";
 import Holidays from 'date-holidays';
 import TimeEntry from "@/types/TimeEntry";
-import {DateString} from "@/types/misc";
-import {generateDateString} from "@/utils/TimeUtils";
+import { DateString } from "@/types/misc";
+import { generateDateString } from "@/utils/TimeUtils";
+import User from "@/types/User";
 
 
 type Props = {
+    user?: User;
     showDailyDetails: (date: DateString) => void;
-    timeEntries: Record<string, TimeEntry[]>
+    timeEntries: Record<DateString, TimeEntry[]>
+    onMonthChange: (year: number, month: number) => void;
 }
 
 
-export default function Kalender({showDailyDetails, timeEntries}: Props) {
+export default function Kalender({ user, showDailyDetails, timeEntries, onMonthChange }: Props) {
 
     // --- Kalender ---
     const timeEntryList = Object.values(timeEntries).flat();
@@ -45,6 +48,9 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
         }
     }
 
+    // --- Mindestwochenarbeitszeit ---
+    const targetHours = user ? user.workload / 5 : 8;
+    const lowerThreshold = targetHours * 0.75;
 
     // --- Wochentage ---
     const weekdays = ["Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa.", "So."];
@@ -54,15 +60,14 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
 
     // --- Legende ---
     const symbols = [
-        ["Krank", "rgb(99, 90, 0)", "rgba(255, 234, 0, 0.5)", "rgb(200, 180, 0)"],
-        ["Urlaub", "rgb(82, 0, 120)", "rgba(174, 0, 255, 0.5)", "rgb(120, 0, 200)"],
-        ["WE", "rgb(0, 37, 116)", "rgba(0, 81, 255, 0.5)", "rgb(0, 37, 200)"],
-        ["FT", "rgb(124, 0, 124)", "rgba(255, 0, 255, 0.5)", "rgb(180, 0, 180)"],
-        [">8h", "rgb(30, 114, 30)", "rgba(0, 255, 0, 0.5)", "rgb(0, 150, 0)"],
-        ["6-8h", "rgb(130, 72, 0)", "rgba(255, 140, 0, 0.5)", "rgb(200, 120, 0)"],
-        ["<6h", "rgb(128, 0, 0)", "rgba(255, 0, 0, 0.5)", "rgb(200, 0, 0)"]
-    ].map(([text, color, backgroundColor, borderColor]) => ({text, color, backgroundColor, borderColor}));
-
+        ["Krank", "rgb(0, 0, 0)", "rgba(255, 200, 0, 0.12)", "rgb(255, 180, 0)"],
+        ["Urlaub", "rgb(0, 0, 0)", "rgba(180, 50, 240, 0.12)", "rgb(180, 20, 240)"],
+        ["WE", "rgb(0, 0, 0)", "rgba(50, 110, 255, 0.12)", "rgb(20, 90, 255)"],
+        ["FT", "rgb(0, 0, 0)", "rgba(230, 50, 230, 0.12)", "rgb(230, 10, 230)"],
+        [`>${targetHours.toFixed(1)}h`, "rgb(0, 0, 0)", "rgba(0, 255, 0, 0.5)", "rgb(0, 150, 0)"],
+        [`${lowerThreshold.toFixed(1)} - ${targetHours.toFixed(1)}h`, "rgb(0, 0, 0)", "rgba(255, 140, 0, 0.5)", "rgb(200, 120, 0)"],
+        [`<${lowerThreshold.toFixed(1)}h`, "rgb(0, 0, 0)", "rgba(255, 0, 0, 0.5)", "rgb(200, 0, 0)"]
+    ].map(([text, color, backgroundColor, borderColor]) => ({ text, color, backgroundColor, borderColor }));
     const legend1Symbols = symbols.slice(0, 4);
     const legend2Symbols = symbols.slice(4);
 
@@ -78,17 +83,46 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
         }
 
         setCurrentDay(newDate);
+        onMonthChange(newDate.getFullYear(), newDate.getMonth());
     }
 
     function handleToday() {
-        setCurrentDay(new Date(today.getFullYear(), today.getMonth(), 1));
+        const newDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        setCurrentDay(newDate);
+        onMonthChange(newDate.getFullYear(), newDate.getMonth());
+    }
+
+    // Wochenende
+    function isWeekend(index: number) {
+        return index % 7 === 5 || index % 7 === 6;
+    }
+
+    // Feiertag
+    function isHoliday(day: number) {
+        const holiday = holidays.isHoliday(new Date(currentYear, currentMonth, day));
+        return holiday && holiday.some(h => h.type === "public");
+    }
+
+    // Krankheit / Urlaub
+    function isType(day: number): "sick" | "holiday" | null {
+        const dayEntries = timeEntryList.filter((entry: TimeEntry) => {
+            const entryDate = new Date(entry.startTime);
+            return entryDate.getFullYear() === currentYear &&
+                entryDate.getMonth() === currentMonth &&
+                entryDate.getDate() === day;
+        });
+
+        if (dayEntries.some(e => e.type === "sick")) return "sick";
+        if (dayEntries.some(e => e.type === "holiday")) return "holiday";
+        return null;
     }
 
     function handleWorkingHours(day: number) {
         const dayEntries = timeEntryList.filter((entry: any) => {
             const entryDate = new Date(entry.startTime);
 
-            return entryDate.getFullYear() === currentYear &&
+            return entry.type === "work" &&
+                entryDate.getFullYear() === currentYear &&
                 entryDate.getMonth() === currentMonth &&
                 entryDate.getDate() === day;
         });
@@ -114,52 +148,18 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
     function handleEntries(index: number, day: number) {
         const entries = [];
 
-        // Wochenende
-        if (index % 7 === 5 || index % 7 === 6) {
-            entries.push(
-                <span
-                    className={styles.calendar_symbols}
-                    style={{
-                        color: symbols[2].color,
-                        backgroundColor: symbols[2].backgroundColor,
-                        border: `2px solid ${symbols[2].borderColor}`
-                    }}
-                >
-                    {symbols[2].text}
-                </span>
-            );
-        }
-
-        // Feiertag
-        const holiday = holidays.isHoliday(new Date(currentYear, currentMonth, day));
-
-        if (holiday && holiday.some(f => f.type === "public")) {
-            entries.push(
-                <span
-                    className={styles.calendar_symbols}
-                    style={{
-                        color: symbols[3].color,
-                        backgroundColor: symbols[3].backgroundColor,
-                        border: `2px solid ${symbols[3].borderColor}`
-                    }}
-                >
-                    {symbols[3].text}
-                </span>
-            );
-        }
-
         // Arbeitszeit
         const workHours = handleWorkingHours(day);
         let symbolIndex: number = -1;
 
         switch (true) {
-            case workHours >= 8:
+            case workHours >= targetHours:
                 symbolIndex = 4;
                 break;
-            case workHours >= 6:
+            case workHours >= targetHours * 0.75:
                 symbolIndex = 5;
                 break;
-            case workHours < 6:
+            case workHours < targetHours * 0.75:
                 symbolIndex = 6;
                 break;
         }
@@ -167,6 +167,7 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
         if (workHours !== -1) {
             entries.push(
                 <span
+                    key={index + "Hours"}
                     className={styles.calendar_symbols}
                     style={{
                         color: symbols[symbolIndex].color,
@@ -184,28 +185,28 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
 
     // --- UI ---
     return (
-        <Card>
+        <Card className={styles.container}>
             <div className={styles.calendar_container}>
                 <div className={styles.calendar_header}>
                     <div className={styles.calendar_period}>
                         <div className={styles.calendar_period_text}>{currentYear}</div>
-                        <div
-                            className={styles.calendar_period_text}>{currentDay.toLocaleDateString("de-DE", {month: "long"})}</div>
+                        <div className={styles.calendar_period_text}>{currentDay.toLocaleDateString("de-DE", { month: "long" })}
+                        </div>
                     </div>
                     <div className={styles.calendar_navigation_grid}>
                         <button className={styles.calendar_reset_day} onClick={() => handleToday()}>
                             Heute
                         </button>
                         <button className={styles.calendar_arrow} onClick={() => handleMonthChange("back")}>
-                            <img src="/Arrow_Back.svg" alt=""/>
+                            <img src="/Arrow_Back.svg" alt="" />
                         </button>
                         <button className={styles.calendar_arrow} onClick={() => handleMonthChange("forward")}>
-                            <img src="/Arrow_Forward.svg" alt=""/>
+                            <img src="/Arrow_Forward.svg" alt="" />
                         </button>
                     </div>
                 </div>
-                <hr className={styles.line}/>
-                <br/>
+                <hr className={styles.line} />
+                <br />
 
                 <div className={styles.calendar_weekdays_grid}>
                     {weekdays.map((weekday, index) => (
@@ -218,11 +219,32 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
                         if (day === null) {
                             return <div key={index} className={styles.calendar_empty}>{day}</div>;
                         }
+                        const weekendStyle = isWeekend(index) ? {
+                            backgroundColor: symbols[2].backgroundColor,
+                            borderColor: symbols[2].borderColor
+                        } : undefined;
+
+                        const holidayStyle = isHoliday(day) ? {
+                            backgroundColor: symbols[3].backgroundColor,
+                            borderColor: symbols[3].borderColor
+                        } : undefined;
+
+                        const entryType = isType(day);
+                        const sickStyle = entryType === "sick" ? {
+                            backgroundColor: symbols[0].backgroundColor,
+                            borderColor: symbols[0].borderColor
+                        } : undefined;
+                        const vacationStyle = entryType === "holiday" ? {
+                            backgroundColor: symbols[1].backgroundColor,
+                            borderColor: symbols[1].borderColor
+                        } : undefined;
+
+                        const dayStyle = holidayStyle ?? weekendStyle ?? sickStyle ?? vacationStyle;
+
                         if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
                             return (
-                                <div key={index} className={styles.calendar_today}
-                                     onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day)))}>
-                                    {day && <div className={styles.calendar_day_text}>{day}</div>}
+                                <div key={index} className={styles.calendar_today} style={dayStyle}
+                                    onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day)))}>                                    {day && <div className={styles.calendar_day_text}>{day}</div>}
                                     <div className={styles.calendar_day_symbols_container}>
                                         {handleEntries(index, day)}
                                     </div>
@@ -230,9 +252,8 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
                             );
                         }
                         return (
-                            <div key={index} className={styles.calendar_day}
-                                 onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day)))}>
-                                {day && <div className={styles.calendar_day_text}>{day}</div>}
+                            <div key={index} className={styles.calendar_day} style={dayStyle}
+                                onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day)))}>                                {day && <div className={styles.calendar_day_text}>{day}</div>}
                                 <div className={styles.calendar_day_symbols_container}>
                                     {handleEntries(index, day)}
                                 </div>
@@ -241,8 +262,8 @@ export default function Kalender({showDailyDetails, timeEntries}: Props) {
                     })}
                 </div>
 
-                <br/>
-                <hr className={styles.line}/>
+                <br />
+                <hr className={styles.line} />
 
                 <div className={styles.calendar_legend1}>
                     {legend1Symbols.map((symbol, index) => (

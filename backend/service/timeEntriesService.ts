@@ -1,6 +1,7 @@
 import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLastTimeEntry, deleteTimeEntry } from '../repository/timeEntriesRepository';
 import { time_entry_type } from '../drizzle/schema';
 import Holidays from 'date-holidays';
+import { DateString } from '../types/misc';
 
 export async function createTimeEntryService(userid: number, starttime: Date, endtime: Date | undefined, type: (typeof time_entry_type.enumValues)[number]){
     const holidays = new Holidays('DE', 'BW');
@@ -54,7 +55,7 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date, u
     }
 }
 
-export async function getTimeEntriesService(userid: number, type?: "work" | "holiday" | "sick", startDate?: Date, endDate?: Date){
+export async function getTimeEntriesService(userid: number, type?: "work" | "holiday" | "sick", startDate?: DateString, endDate?: DateString){
     try{
         if(startDate && endDate && startDate > endDate){
             return "end date is before start date";

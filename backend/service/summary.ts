@@ -7,12 +7,9 @@ import {TimeEntry} from "../types/timeEntry";
 
 export async function generateSummary(user: User, startDate: DateString, endDate: DateString): Promise<Summary> {
 
-    const startTime = new Date(startDate+"T00:00:00.000Z");
-    const endTime = new Date(endDate+"T23:59:59.999Z");
-
-    const timeEntriesWork: TimeEntry<"work">[] = await getTimeEntriesService(user.id, "work", startTime, endTime) as TimeEntry<"work">[];
-    const timeEntriesHoliday: TimeEntry<"holiday">[] = await getTimeEntriesService(user.id, "holiday", startTime, endTime) as TimeEntry<"holiday">[];
-    const timeEntriesSick: TimeEntry<"sick">[] = await getTimeEntriesService(user.id, "sick", startTime, endTime) as TimeEntry<"sick">[];
+    const timeEntriesWork: TimeEntry<"work">[] = await getTimeEntriesService(user.id, "work", startDate, endDate) as TimeEntry<"work">[];
+    const timeEntriesHoliday: TimeEntry<"holiday">[] = await getTimeEntriesService(user.id, "holiday", startDate, endDate) as TimeEntry<"holiday">[];
+    const timeEntriesSick: TimeEntry<"sick">[] = await getTimeEntriesService(user.id, "sick", startDate, endDate) as TimeEntry<"sick">[];
 
     const now = new Date();
     const timeWorkedInMinutes: number = timeEntriesWork.reduce((total: number, entry: TimeEntry): number => {

@@ -10,4 +10,5 @@ export default interface TimeEntry {
     userId: number;
     startTime: string;
     endTime?: string;
+    type:string;
 }
