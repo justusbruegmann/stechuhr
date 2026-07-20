@@ -5,22 +5,26 @@ import {useModal} from "@/contexts/ModalContext";
 import TimeEntry from "@/types/TimeEntry";
 
 import styles from "./DailyDetailsPane.module.css";
+import RequestPopup from "./RequestPopup";
+import {DateString} from "@/types/misc";
+import {formatDate, generateDateString} from "@/utils/TimeUtils";
 
-export default function DailyDetailsPane({date, entries, onAddEntry, deleteEntry}: {
-    date: Date; entries: TimeEntry[]; onAddEntry: (entry: TimeEntry) => void; deleteEntry: (id: string) => void;
+export default function DailyDetailsPane({
+                                             date,
+                                             entries,
+                                             onAddEntry,
+                                             deleteEntry
+}: {
+    date: DateString;
+    entries: TimeEntry[];
+    onAddEntry: (entry: TimeEntry) => void;
+    deleteEntry: (id: number) => void;
 }) {
     const {showModal, hideModal} = useModal();
 
-    function dateToString(date: Date) {
-        const day = String(date.getDate()).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const year = date.getFullYear();
-        return `${day}.${month}.${year}`;
-    }
-
     return (
         <div className={styles["container"]}>
-            <h2>Zeiteinträge für {dateToString(date)}</h2>
+            <h2>Zeiteinträge für {formatDate(new Date(date))}</h2>
             <br/>
             <hr/>
             <br/>
@@ -31,8 +35,8 @@ export default function DailyDetailsPane({date, entries, onAddEntry, deleteEntry
                         <DetailEntry key={element.id}
                                      timeEntry={element}
                                      deleteFunc={() => {
-                            deleteEntry(element.id)
-                        }}/>
+                                         deleteEntry(element.id)
+                                     }}/>
                     ))}
                 </div>
 
@@ -41,14 +45,24 @@ export default function DailyDetailsPane({date, entries, onAddEntry, deleteEntry
                         label="Manuell nachtragen"
                         type="accent"
                         height={3}
-                        width={15}
+                        width={10}
                         onClick={() =>
                             showModal("popup",
                                 <ManualEntryPopup
-                                    date={date}
-                                    onClose={() => hideModal()}
+                                    date={new Date(date)}
                                     onCreate={onAddEntry}
                                 />
+                            )
+                        }
+                    />
+                    <Button
+                        label="Antrag erstellen"
+                        type="primary"
+                        height={3}
+                        width={10}
+                        onClick={() =>
+                            showModal("popup",
+                                <RequestPopup date={new Date(date)}/>
                             )
                         }
                     />
