@@ -3,7 +3,6 @@ import * as service from "../service/userManagement";
 import {
     authUser,
     managerGet,
-    managerGetOwnUsers,
     managerUpdate,
     OTPChange,
     roleUpdate,
@@ -94,12 +93,6 @@ router.get('/users/managers', authMiddleware("admin"), async (req, res) => {
     }
 })
 
-router.get('/users/managers/users', authMiddleware("manager"), async (req, res) => {
-    const userId = res.locals.user.id;
-    const result = await managerGetOwnUsers(userId);
-    return res.status(200).send(result);
-})
-
 router.patch('/users/:id/manager', validateUserID, authMiddleware("admin"), async (req, res) => {
     try {
         const userId: number = Number(req.params.id);
@@ -140,14 +133,14 @@ router.patch('/users/:id/role', validateUserID, authMiddleware("admin"), async (
     }
 })
 
-router.get('/users/:id', authMiddleware("user", true), async (req, res) => {
+router.get('/users/managers/users', authMiddleware("manager"), async (req, res) => {
+    const userId = res.locals.user.id;
+    const result: User[] = await service.getUsersForManager(userId);
+    return res.status(200).send(result);
+})
 
-    // Validate inputs
-    if (!isValidUserId(req.params.id)) {
-        return res.status(400).send("invalid user id");
-    }
+router.get('/users/:id', validateUserID, authMiddleware("user", true), async (req, res) => {
     const userId = Number(req.params.id)
-
 
     // Check permissions
     let user: User | null = null;
@@ -170,12 +163,7 @@ router.get('/users/:id', authMiddleware("user", true), async (req, res) => {
 })
 
 
-router.patch('/users/:id/employment', authMiddleware("manager"), async (req, res) => {
-
-    // Validate inputs
-    if (!isValidUserId(req.params.id)) {
-        return res.status(400).send("invalid user id");
-    }
+router.patch('/users/:id/employment', validateUserID, authMiddleware("manager"), async (req, res) => {
     const userId = Number(req.params.id)
 
     const bodyParseResult = employmentRequestSchema.safeParse(req.body);
@@ -183,7 +171,6 @@ router.patch('/users/:id/employment', authMiddleware("manager"), async (req, res
         return res.status(400).send(bodyParseResult.error);
     }
     const updateFields: EmploymentRequest = bodyParseResult.data;
-
 
     // Check permissions
     let user: User | null = null;

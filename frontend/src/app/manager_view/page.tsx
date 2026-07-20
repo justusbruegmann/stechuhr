@@ -113,6 +113,11 @@ export default function ManagerView() {
      * Editing users
      */
     function generateUserUpdateFunction(userId: number) {
+        // This function returns another function with the userId hardcoded into it, which can then be passed into the
+        // EditUserModal component to update the local state of the user with the given userId.
+
+        // Yes, I did write this myself. No, I am not sure whether this is the most elegant way. But it works.
+
         return (updates: Partial<Record<keyof User, any>>): void => {
 
             setUsers(prevUsers => {
@@ -160,7 +165,7 @@ export default function ManagerView() {
                             <Button label={"Bearbeiten"} type={"primary"}
                                     onClick={() => editUser(user.id)}/>
                             <Button label={"Anträge"} type={"accent"}
-                                    onClick={() => alert("Darf ich bitte bitte früher gehen?")}/>
+                                    onClick={() => alert("Felix, ich warte immer noch auf einen Endpunkt, um Anträge abrufen zu können...")}/>
                         </div>
                     </td>
                 </tr>);

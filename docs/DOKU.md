@@ -8,6 +8,46 @@
 AI als Formulierungshilfe verwendet
 # Was macht die Anwendung? (Mika)
 # Struktur des Repo (Sebastian)
+
+
+# Aufgabenverteilung
+
+Der überwältigende Teil der DevOps wurde von `justusbruegmann` erledigt. Das umfasst die Erstellung und Pflege des Git-Repositories (inkl. der Code-Reviews zu PRs), die Einrichtung der PostgreSQL-Datenbank auf Supabase, sowie die Deployment-Prozesse auf zuerst Vercel und später Railway.
+
+Die Datenbank-Schemata wurden von `justusbruegmann` und `Sebastian Anhalt` erstellt und gepflegt.
+
+Die Zusammenführung und Integration der Frontend-Komponenten auf der /dashboard Seite sowie die Pflege der Kompatibilität zwischen den einzelnen Komponenten wurde maßgeblich von `Sebastian Anhalt` erledigt.
+
+Zur Schaffung einer grundlegend einheitlichen Ästhetik in der Anwendunge wurden von `Sebastian Anhalt` und `justusbruegmann` zu Beginn der Entwicklung Layout-Komponenten erstellt, 
+die im [Layout-Ordner](#srccomponents) zu finden sind und in vielen der Komponenten verwendet werden.
+
+Die Aufteilung der Domain-Logik und der Funktionen der Anwendung können im Detail den Kapiteln [Was macht die Anwendung?](#was-macht-die-anwendung-mika) und [Eigenleistung](#eigenleistung) entnommen werden. Hier nur eine grobe Darstellung:
+
+**justusbruegmann**
+- Authentication & Authorization
+- Login
+- Benutzerverwaltung
+
+**Sebastian Anhalt**
+- Übersicht Tag/Woche/Monat der geleisteten Arbeitszeiten
+- Manager-Ansicht zur Bearbeitung von Arbeitszeiten, Urlaubszeiten und Krankheitstagen der untergebenen Mitarbeiter (inkl. einiger weniger Benutzerverwaltung-Endpunkten im Backend)
+
+**mika630**
+- Ein-/Ausstempelfunktion auf dem Dashboard
+- Darstellung der aktuellen Arbeitszeit und des aktuellen Status (gestempelt / nicht gestempelt)
+- Bereitstellung der */timeEntry/* Endpunkte im Backend, also der zentralen Ressource für die Zeiterfassung
+
+**FHG**
+- Übersicht über alle Arbeitszeiten eines Tages
+- Manuelles Nachtragen von Arbeitszeiten
+- Funktion zum Stellen von Anträgen wegen Urlaubs oder Krankheit
+
+**brdly06**
+- Kalender auf dem Dashboard mit visueller Aufbereitung von Arbeitszeiten, Wochenenden, Feiertagen und Urlaubszeiten
+- Benachrichtigungen 
+
+
+
 # Setup der Dev Umgebung (Justus)
 
 > Wichtig:  
@@ -126,7 +166,12 @@ Frontend und Backend sind eigenständige und voneinander losgelöste npm package
 ## Frontend
 Das Frontend ist ein Next.js-Projekt, das auf der Vorlesungsvorlage mit React und TypeScript basiert.
 
-Dementsprechend beinhaltet der Root Ordner Konfigurationsdateien wie *.env*, *.gitignore*, *package.json*, etc., sowie die Assets in **/public** und den Quellcode-Ordner **/src**.
+Dementsprechend beinhaltet der Root Ordner 
+- Konfigurationsdateien wie *.env*, *.gitignore*, *package.json*, etc.
+- Build-Skripte für die Erstellung der Produktionsversion der Anwendung: *build.bat*, *build.ps1*, *build.sh*
+- Assets in **/public** 
+- den Quellcode-Ordner **/src**
+
 Der Quellcode der Anwendung ist in folgenden Ordnern strukturiert:
 
 ### /src/app
@@ -136,7 +181,7 @@ Im Allgemeinen hat jede Route zwingend eine page.tsx-Datei, deren Inhalt unter d
 Außerdem können hier weitere Dateien wie z.B. CSS-Stylesheets (seitenname.module.css) oder lokal verwendete Components abgelegt sein.
 
 #### Routen
-**/**
+**/** \
 Enthält eine page.tsx, die nur eine Umleitung auf **/dashboard** auslöst.
 Zusätzlich dazu liegen hier auch allgemeine Konfigurationen der Webseite:
 - Das Favicon
@@ -144,27 +189,68 @@ Zusätzlich dazu liegen hier auch allgemeine Konfigurationen der Webseite:
 - layout.tsx, welches den äußeren HTML-Rahmen der Seite definiert und benötigte Kontexte (hier nur ModalProvider) einbindet
 - Eine not-found Seite, die als catch-all auf alle nicht definierten Routen reagiert
 
-**/dashboard**
+**/dashboard** `(hauptsächlich) Sebastian Anhalt` \
 Das Dashboard ist die Hauptseite der Anwendung.
 Sie enthält die Einstempelfunktion und einen Kalender.
 
-**/login**
+**/login** `justusbruegmann` \
 Die Login-Seite.
 
-**/admin_view**
+**/admin_view** `justusbruegmann` \
 Eine Seite zur Benutzerverwaltung, auf die nur Admin-Accounts Zugriff haben.
 Hier können neue Benutzer angelegt, bestehende Benutzer gelöscht, und ihre Rollen und die Zuordnung zu Vorgesetzten (Managern) verändert werden.
 
-**/manager_view**
+**/manager_view** `Sebastian Anhalt` \
 Diese Seite wird nur für Manager-Accounts mit Inhalt befüllt, alle anderen sehen eine Fehlermeldung.
 Hierauf können Manager die Arbeitszeiten, Urlaubstage ihrer Mitarbeiter einsehen und bearbeiten, sowie eine Zusammenfassung der geleisteten Wochenarbeitszeit, genehmigter Urlaubstage und eingetragener Krankheitstage sehen.
 Außerdem können offene Anträge hier anzeigen lassen und akzeptieren / ablehnen.
 
 
 ### /src/components
-Hier befinden sich alle React-Components.
-// ToDo
+Hier befinden sich die React-Components, die von den page.tsx in /src/app eingebunden werden, geordnet nach Anwendungsgebiet.
 
+**Layout** \
+Diese Komponenten sind als Erstes und in absichtlicher Allgemeinheit entstanden und mussten sich im Lauf der Entwicklung der Restlichen Anwendung verschiedenen Anforderungen anpassen. 
+Sie sind unser Ersatz für ein UI-Framework, da wir keines verwenden durften, und erinnern daher durchaus bekannten Strukturen (z.B. Card).
+Popup, Loader und Sidepane sind die drei Ausprägungen von Modals, die wir in der Anwendung verwenden. Sie basieren auf dem ModalContext (src/context/ModalContext). \
+*Button + Header:* `justusbruegmann` \
+*Card, Loader, Popup, Sidepane, SpinningLoader, Tabs:* `Sebastian Anhalt`
+
+**Calendar** `brdly06` \
+Diese Component erstellt den Kalender auf der /dashboard Seite. 
+
+**Login** `justusbruegmann` \
+Enthält nur eine Komponente: Ein Popup zum Ändern des One-Time-Passwords, das der Admin bei der Erstellung eines neuen Accounts vergibt.
+
+**ManagerView** `Sebastian Anhalt` \
+Enthält die Komponenten, die auf der /manager_view Seite verwendet werden: ein Popup zum Bearbeiten der vertraglichen Arbeitszeiten sowie Urlaubszeiten eines Benutzers, und die Tabellen zur Darstellung der Arbeitszeiten, Urlaubszeiten und Krankheitstage mehrerer User-Accounts.
+
+**Overview** `Sebastian Anhalt` \
+Enthält die Komponenten, die auf dem Dashboard eine Zusammenfassung der geleisteten Arbeitszeit und des Tages-, Wochen- und Monatsfortschritts darstellen.
+
+**TimeAdjustment** `FHG` \
+Die DailyDetailsPane zeigt alle eingetragenen Arbeitszeiten eines Tages an und ist öffenbar, indem man auf einen Tag im Kalender klickt.
+Über den 'Manuell-Nachtragen'-Button öffnet sich ein Popup, in welchem die beiden anderen Komponenten dieses Ordners Verwendung finden.
+
+**Timecard** `mika630` \
+Die Timecard-Komponente ist die Einstempelfunktion auf dem Dashboard. Sie zeigt u.a. die aktuelle Uhrzeit, die aktuelle Arbeitszeit und den aktuellen Status (gestempelt / nicht gestempelt) an.
+
+**Usermanagement** `justusbruegmann` \
+Enthält die Komponenten, die auf der /admin_view Seite zur Darstellung und Verwaltung aller User Accounts verwendet werden.
+
+
+### /src/context
+Die Anwendung verwendet nur einen einzelnen Provider, den ModalContext, zur Bereitstellung der Funktion, von jeder Komponente aus ein möglicherweise geschachteltes Modal öffnen zu können.
+Seit der Erweiterung, mehrere Modals gleichzeitig öffnen zu können und den Inhalt bereits geöffneter Modals neu zu rendern ist dieser Context unter starker Zuhilfenahme von KI entstanden.
+
+### /src/scripts
+Die Scripts in diesem Ordner umfassen die fetch-Funktionen, die von den React-Components aufgerufen werden, um mit dem Backend zu kommunizieren; gruppiert nach dem Endpunkt, den sie aufrufen.
+
+### /src/types
+Typ-Definitionen, die im Frontend zur starken Typisierung des Codes verwendet werden.
+
+### /src/utils
+Hilfsfunktionen, die an mehreren Stellen im Frontend verwendet werden, oder die zu umfangreich für die einzelnen page.tsx sind und daher ausgelagert wurden.
 
 
 ## Backend
@@ -191,29 +277,32 @@ Sie kennen keine Logik oder Validierung und sind ausschließlich für die strukt
 
 ### Sonstiges
 
-**/**
+**/** \
 Die Project Root beinhaltet die üblichen Konfigurationsdateien wie *.env*, *.gitignore*, *Dockerfile*, *package.json*, etc., sowie den Einstiegspunkt *app.ts* der Anwendung.
 
-**/drizzle**
+**/drizzle** \
 Der Drizzle-Ordner beinhaltet nur das ORM-Schema, auf dem die Datenbankverbindung der repository-Funktionen basiert.
 
-**/middleware**
+**/middleware** \
 In diesem Ordner sind die Middleware-Funktionen abgelegt, die von mehreren Routen verwendet werden.
 
-**/schemas**
+**/schemas** \
 Hier sind Zod-Schemas zur Input-Validierung definiert.
 
-**/types**
+**/types** \
 Geteilte TypeScript types und interfaces sind hier abgelegt.
 
-**/utils**
+**/utils** \
 Hier befinden sich geteilte Hilfsfunktionen, die an verschiedenen Stellen in der Anwendung Verwendung finden.
 Sie sind grob nach Anwendungsgebiet gruppiert.
 
 
 
 # Eigenleistung
-## Auth 4865545
+
+In diesem Kapitel werden diejenigen Ende-zu-Ende-Features der Anwendung beschrieben, die für das jeweilige Gruppenmitglied bewertet werden sollen.
+
+## justusbruegmann: Auth
 KI als Formulierungshilfe verwendet
 ### Ideen
 Aufgrund von Kommunikation aus dem ersten Semester, dass nur das absolute Minimum an Fremdpakete verwendet werden soll, wurde angenommen das auch Login usw selbst gebaut werden müssen.
@@ -352,3 +441,133 @@ dabei muss der Nutzer sich ein neues Password vergeben welches nur er kennt.
 Wenn das Passwort verändert wurde kann der Nutzer sich normal anmelden.  
 ![otpForm](images/login/otpForm.png)
 
+
+
+## Sebastian Anhalt: Manager-Ansicht
+
+### Kontext
+Es gibt drei Arten von Rollen in der Anwendung: User, Manager und Admin.
+- User: Ein ganz normaler Mitarbeiter, einem Manager untergeordnet
+- Manager: Ein Vorgesetzter, der die Arbeitszeiten, Urlaubszeiten und Krankheitstage seiner untergebenen Mitarbeiter einsehen und bearbeiten kann. Hat potenziell auch einen übergeordneten Manager.
+- Admin: Ein reiner Verwaltungsaccount, der keine Arbeitszeiten eintragen kann, aber Benutzerkonten erstellen und löschen kann.
+
+Die Manager-Ansicht ist daher der Teil der Anwendung, der für Manager-Accounts sichtbar ist und ihnen die Verwaltung ihrer untergebenen Mitarbeiter ermöglicht.
+
+### Frontend
+
+#### Funktion
+
+Die Manager-Ansicht ist in der Anwendung unter der Route /manager_view erreichbar.
+Sie besteht aus einer einzigen großen Tabelle, die für jeden dem angemeldeten Manager untergebenen Mitarbeiter seine vertraglich vereinbarten und bereits genommenen Urlaubstage, seine festgeschriebenen Krankheitstage und eine Zusammenfassung über die geschuldete und bereits geleistete Wochenarbeitszeit anzeigt.
+Außerdem können über den Button "Bearbeiten" in einem Popup die Wochenarbeitszeit und die Urlaubstage angepasst werden.
+
+//ToDo
+Zuletzt kann der Manager hier über den Button "Anträge" in einem Popup offene Anträge seiner untergebenen Mitarbeiter einsehen und akzeptieren oder ablehnen.
++ Bild davon
+
+![Manager-Ansicht](images/managerView/managerView.png)
+
+![Bearbeiten-Popup](images/managerView/popupEdit.png)
+
+Zum Styling des Frontends ([Manager View](/frontend/src/app/manager_view/manager_view.module.css), [User Table](/frontend/src/components/managerView/userTable.module.css), [EditUserModal](/frontend/src/components/managerView/editUserModal.module.css)) wurde in Teilen KI verwendet.
+Eine genaue Kennzeichnung ist hier schier unmöglich, da die KI einen bestehenden Grundstock an CSS erweitert hat, der dann manuell noch an vielen Stellen nachgebessert wurde.
+
+
+#### Sicherheit
+Die Webseite nutzt kein SSR. Deshalb ist es kaum möglich, die Route /manager_view Nicht-Manager-Accounts unzugänglich zu machen.
+Der Zugriff darauf ist ausschließlich dadurch etwas erschwert, dass nur Manager den Button im Header angezeigt bekommen, der auf diese Seite führt.
+
+Die eigenltiche Sicherheit wird durch das Backend gewährleistet. Bei der Anfrage nach Benutzern, deren Manager der angemeldete Benutzer ist, wird dementsprechend unberechtigten Accounts eine leere Liste zurückgeliefert.
+Sie sehen dann grafisch dieselbe Fehlermeldung wie Manager-Accounts, die keine untergebenen Mitarbeiter haben:
+
+
+![Fehlermeldung](images/managerView/noSubordinates.png)
+
+
+#### Implementierung
+Beim Laden der Seite ruft das Frontend die Liste der untergebenen Mitarbeiter des angemeldeten Managers ab.
+Außerdem lädt es für jeden dieser Mitarbeiter je zwei Zusammenfassungen: eine über die aktuelle Woche und eine über den aktuellen Monat.
+// ToDo: Zusätzlich wird zu jedem Mitarbeiter die Liste der offenen Anträge geladen.
+
+Solange auf die Antworten des Backends gewartet wird, zeigt das Frontend einen Ladebildschirm an.
+
+Aus den Antworten wird ein erweitertes User-Objekt zusammengesetzt, in dem die relevanten Daten für jeden Mitarbeiter zusammengefasst sind:
+```typescript
+type UserWithSummaryEntries = User & {
+    summaryEntries: {
+        vacationDaysThisYear: number | null;
+        sickDaysThisYear: number | null;
+        hoursWorkedThisWeek: number | null;
+    };
+};
+```
+Es folgen Definitionen für die handler-Funktionen zum Bearbeiten von Mitarbeiterdaten
+// ToDo
+und zum Akzeptieren/Ablehnen von Anträgen.
+
+Schließlich werden die Daten als fertige React.ReactNode-Elemente an die UserTable-Komponente übergeben, die sie in einer Tabelle darstellt.
+
+### Backend
+Gemäß dem generellen Aufbau des Backends besteht jeder Endpunkt aus drei Schichten: 
+- **/route**: Hier wird die Route definiert, Middleware eingebunden und Authorization und Input-Validierung durchgeführt.
+- **/service**: Hier wird die eigentliche Domainlogik implementiert.
+- **/repository**: Hier werden die SQL-Abfragen an die Datenbank definiert.
+
+
+Die Manager-Ansicht benötigt drei Endpunkte im Backend, um die benötigten Daten zu laden und zu bearbeiten:
+
+#### GET /users/manager/users
+[Link zum Code](/backend/route/userManagement.ts#L137) \
+Hier werden alle Benutzer zurückgeliefert, deren Manager der angemeldete Benutzer ist.\
+Es ist quasi keine Authorization zu erledigen, da bei dieser Anfrage keine parameter außer der bereits verifizierten Identität des Antragstellers verwendet werden. \
+Daher werden Anfrage und Antwort mit minimalem Aufwand durchgereicht: \
+route → service → repository → service → route. 
+
+#### PATCH /users/:id/employment
+[Link zum Code](/backend/route/userManagement.ts#L167) \
+Hierüber kann der Manager die Wochenarbeitszeit und die Urlaubstage eines untergebenen Mitarbeiters bearbeiten. \
+Dieser Endpunkt hat eine etwas komplexere Authorization. Zuerst wird der mitgelieferte Payload mittels eines Zod-Schemas validiert.
+Dann folgt die Überprüfung, ob der angemeldete Benutzer der Manager des zu bearbeitenden Mitarbeiters ist.
+Sofern eine gültige Anfrage vorliegt, wird sie an den Service weitergeleitet, der die Datenbank aktualisiert.
+
+#### GET /summary?userId=:id&startDate=:startDate&endDate=:endDate
+[Link zum Code](/backend/route/summary.ts) \
+Der Summary-Endpunkt stellt eine nicht-persistente Ressource zur Verfügung, die eine Zusammenfassung der Arbeitszeiten, Urlaubstage und Krankheitstage eines Benutzers für einen bestimmten Zeitraum liefert.
+Er hat dementsprechend keine Funktion in **/repository** und wird ausschließlich durch den Aufruf anderer **/service**-Funktionen mit Leben gefüllt.
+
+In **/route** werden die Parameter mithilfe eines Zod-Schemas und weiterer Funktionen validiert. Danach wird noch mehr Authorization durchgeführt,
+indem überprüft wird, ob der angemeldete Benutzer entweder der Benutzer selbst oder dessen Manager ist.
+
+In **/service** werden drei Anfragen an den TimeEntriesService von *mika630* durchgeführt, um Listen zu eingetragenen 
+Arbeitszeiten, Urlaubstagen und Krankheitstagen des Benutzers im gegebenen Zeitraum zu laden. Aus diesen Daten wird dann die Zusammenfassung erstellt in Form des folgenden DTOs zurückgegeben:
+
+```typescript
+/**
+ * Strings to represent a date in the format YYYY-MM-DD
+ */
+export type DateString = string;
+
+export default interface Summary {
+    userId: number;
+    startDate: DateString;
+    endDate: DateString;
+
+    vacationDaysTaken: number;
+    sickDaysTaken: number;
+    timeWorkedInMinutes: number;
+}
+```
+
+### Honorable Mention: Overview auf Dashboard
+Die Übersicht auf dem Dashboard war anfangs als meine zu bewertende Eigenleistung geplant. 
+Da sie allerdings komplett ohne zusätzliches Backend auskommt und ihren Zustand nur aus der ohnehin im Frontend vorhandenen 
+Liste aller Zeiteinträge des aktuellen Monats generiert werden kann, erfüllt sie den Anspruch als End-to-End-Feature nicht.
+
+Trotzdem bin ich stolz auf das Endprodukt, in dem jedes einzelne Element von mir stammt (inkl. Sidepane mit Animation, Tabs-Feature, DetailEntry mit Animation, und die mühselige Zeitberechnung in timeUtils.ts).
+
+
+## mika630: Timecard
+
+## brdly06: Notifications
+
+## FHG: Requests

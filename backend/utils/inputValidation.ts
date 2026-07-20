@@ -16,7 +16,7 @@ export function isValidUserId(userId: any) {
 
 
 export function isStartDateEarlierThanEndDate(startDate: DateString, endDate: DateString) {
-    return startDate < endDate;
+    return startDate <= endDate;
 }
 
 
