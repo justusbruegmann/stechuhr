@@ -1,5 +1,9 @@
 import TimeEntry from "@/types/TimeEntry";
+import {DateString} from "@/types/misc";
 
+/**
+ * Returns a string in the format DD.MM.YYYY
+ */
 export function formatDate(date: Date): string {
     return `${String(date.getDate()).padStart(2, '0')}.${
         String(date.getMonth() + 1).padStart(2, '0')}.${
@@ -28,46 +32,26 @@ export function formatDuration(start: Date, end: Date): string {
 
 
 export function getTimeEntriesByTimespan(
-    entries: Record<string, TimeEntry[]>,
+    entries: Record<DateString, TimeEntry[]>,
     timespan: 'day' | 'week' | 'month'
 ): TimeEntry[] {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-    const isInRange = (dateString: string): boolean => {
-        const date = new Date(dateString);
-        const checkDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const isInRange = (checkDateString: string) => {
+        const today = todayDateString();
 
         switch (timespan) {
-            case 'day':
-                return checkDate.getTime() === today.getTime();
-
-            case 'week': {
-                const dayOfWeek = today.getDay();
-                // Convert Sunday (0) to 6, so Monday is the start of the week instead of the predefined sunday = 0
-                const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-                const startOfWeek = new Date(today);
-                startOfWeek.setDate(today.getDate() - daysToMonday);
-
-                const endOfWeek = new Date(startOfWeek);
-                endOfWeek.setDate(startOfWeek.getDate() + 6);
-
-                return checkDate.getTime() >= startOfWeek.getTime() &&
-                    checkDate.getTime() <= endOfWeek.getTime();
-            }
-
-            case 'month':
-                return checkDate.getFullYear() === today.getFullYear() &&
-                    checkDate.getMonth() === today.getMonth();
+            case 'day': return checkDateString === today;
+            case 'week': return startOfTheWeekDateString() <= checkDateString && checkDateString <= today;
+            case 'month': return startOfTheMonthDateString() <= checkDateString && checkDateString <= today;
+            default: return false;
         }
-    };
+    }
 
     return Object.entries(entries)
         .filter(([dateString]) => isInRange(dateString))
         .flatMap(([, timeEntries]) => timeEntries);
 }
 
-function generateDateString(date: Date): string {
+export function generateDateString(date: Date): string {
     return date.toISOString().slice(0, 10);
 }
 
@@ -97,4 +81,18 @@ export function startOfTheMonthDateString() {
     const today = new Date();
     const startOfMonth = dateInUTC(today.getFullYear(), today.getMonth() + 1, 1);
     return generateDateString(startOfMonth);
+}
+
+export function getWorkdaysInCurrentMonth(): number {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate(); // Last day of the previous month
+
+    let count = 0;
+    for (let day = 1; day <= daysInMonth; day++) {
+        const weekday = new Date(year, month, day).getDay();
+        if (weekday !== 0 && weekday !== 6) count++; // 0 is Sunday in Javascript, 6 is saturday
+    }
+    return count;
 }

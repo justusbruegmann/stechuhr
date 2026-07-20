@@ -1,4 +1,5 @@
 import { error } from "node:console";
+import sendRequest from "@/utils/requestWrapper";
 
 const BASE_URL: string | undefined = process.env.NEXT_PUBLIC_BACKEND_URL;
 if (!BASE_URL) {
@@ -125,23 +126,7 @@ export async function getLastTimeEntry(token: string, userid: number){
     }
 }
 
-export async function deleteTimeEntry(token: string, userid: number, timeEntryId: number){
+export async function deleteTimeEntry(timeEntryId: number){
     const url = `${BASE_URL}/timeentries/${timeEntryId}`;
-    const headers = {
-        "content-type": "application/json",
-        "Authorization": token,
-        "userid": `${userid}`
-    };
-    const response = await fetch(url, {method:"DELETE", headers: headers});
-    if(response.status == 400){
-        return 400;
-    }
-    if(response.status == 401){
-        return 401;
-    }
-    if(response.status == 200){
-       return 200;
-    }
+    return await sendRequest("DELETE", url);
 }
-
-//
