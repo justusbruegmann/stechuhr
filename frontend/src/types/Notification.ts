@@ -2,7 +2,7 @@ export default interface Notification {
     id: number;
     userId: number;
     managerId?: number;
-    type: "info" | "warning";
+    type: "request" | "worktime_exceeded";
     description: string;
     isRead: boolean;
     createdAt: string;

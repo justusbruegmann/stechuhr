@@ -82,9 +82,9 @@ export default function Notifications({ notifications, updateNotification, killN
                         <div className={styles.notifications_container}>
                             <div className={styles.notifications_header}>
                                 {notification.type === "worktime_exceeded" ? (
-                                    <p className={styles.title}>Reguläre Arbeitszeit überschritten</p>
+                                    <p className={styles.title}>Zeitregelung missachtet</p>
                                 ) : (
-                                    <p className={styles.title}>Anfrage</p>
+                                    <p className={styles.title}>Anfrage bearbeitet</p>
                                 )}
 
                                 <div className={styles.status}>

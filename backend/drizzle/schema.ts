@@ -30,9 +30,8 @@ export const requestTypeEnum = pgEnum("request_type", [
 ]);
 
 export const notificationTypeEnum = pgEnum("notification_type", [
-    "info",
-    "warning",
-    // ... your actual values
+    "request",
+    "worktime_exceeded",
 ]);
 
 // Tables
