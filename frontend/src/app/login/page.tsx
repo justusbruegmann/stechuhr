@@ -59,6 +59,7 @@ export default function Page(){
             let result: any;
             try {
                 result = await loginUsername(username.trim(), password.trim());
+                console.log(result);
             } catch (e) {
                 console.error(e);
             }
