@@ -1,9 +1,6 @@
 import {
     getNotificationList, postNotification, getNotification, patchNotification, deleteNotification
 } from "../repository/notification";
-import { getUserById } from "../repository/userManagement";
-import { getTimeEntries } from "../repository/timeEntriesRepository";
-import Holidays from "date-holidays";
 
 
 export async function notificationListGet(userId: number) {
@@ -16,146 +13,17 @@ export async function notificationListGet(userId: number) {
     }
 }
 
-// ! NOCH NICHT FERTIG, REQUESTS FEHLEN NOCH
 export async function notificationPost(userId: number, date: string) {
+    // ! NICHT FERTIG. 
     try {
-        // ! NOCH NICHT FERTIG, REQUESTS FEHLEN NOCH
-        const user = await getUserById(userId);
-        if (!user) {
-            throw new Error("User not found");
-        }
-
-        const existingNotifications = await getNotificationList(userId);
-        const referenceDate = new Date(date);
-        const checkDay = new Date(referenceDate);
-        checkDay.setDate(checkDay.getDate() - 1);
-
-        const alreadyCheckedToday = existingNotifications.some(
-            (n: any) => new Date(n.createdAt).toDateString() === referenceDate.toDateString()
-        );
-
-        if (alreadyCheckedToday)
-            return { message: `notifications for ${referenceDate.toDateString()} already exist` };
-
-        const holidays = new Holidays("DE", "BW");
-
-        let workEntries: Awaited<ReturnType<typeof getTimeEntries>> = [];
-        let foundWorkDay = false;
-
-        const maxLookback = 90;
-        let iterations = 0;
-
-        while (iterations < maxLookback) {
-            iterations++;
-
-            const dayOfWeek = checkDay.getDay();
-            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-
-            const holidayResult = holidays.isHoliday(checkDay);
-            const isPublicHoliday = holidayResult && holidayResult.some(h => h.type === "public");
-
-            if (isWeekend || isPublicHoliday) {
-                checkDay.setDate(checkDay.getDate() - 1);
-                continue;
-            }
-
-            const dayStart = new Date(checkDay);
-            dayStart.setHours(0, 0, 0, 0);
-            const dayEnd = new Date(checkDay);
-            dayEnd.setHours(23, 59, 59, 999);
-
-            const [work, vacation, sick] = await Promise.all([
-                getTimeEntries(userId, "work", dayStart, dayEnd),
-                getTimeEntries(userId, "holiday", dayStart, dayEnd),
-                getTimeEntries(userId, "sick", dayStart, dayEnd),
-            ]);
-
-            if (work.length > 0) {
-                workEntries = work;
-                foundWorkDay = true;
-                break;
-            }
-
-            if (vacation.length > 0 || sick.length > 0) {
-                checkDay.setDate(checkDay.getDate() - 1);
-                continue;
-            }
-
-            break;
-        }
-
-        if (!foundWorkDay)
-            return { message: "no workday found in the last 90 days" };
-
-        const dayLabel = checkDay.toLocaleDateString("de-DE");
-
-        const sortedEntries = [...workEntries].sort(
-            (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-        );
-
-        let totalMinutesWorked = 0;
-        for (const entry of sortedEntries) {
-            if (!entry.endTime) continue;
-            const diffMs = new Date(entry.endTime).getTime() - new Date(entry.startTime).getTime();
-            totalMinutesWorked += diffMs / (1000 * 60);
-        }
-        const totalHoursWorked = totalMinutesWorked / 60;
-
-        let totalBreakMinutes = 0;
-        for (let i = 0; i < sortedEntries.length - 1; i++) {
-            const currentEnd = sortedEntries[i].endTime;
-            const nextStart = sortedEntries[i + 1].startTime;
-            if (!currentEnd) continue;
-            const gapMs = new Date(nextStart).getTime() - new Date(currentEnd).getTime();
-            if (gapMs > 0) {
-                totalBreakMinutes += gapMs / (1000 * 60);
-            }
-        }
-
-        const targetHours = user.workload / 5;
-        const lowerThreshold = targetHours * 0.75;
-
-        const notificationsToCreate: { type: "worktime_exceeded"; description: string }[] = [];
-
-        if (totalHoursWorked < lowerThreshold) {
-            notificationsToCreate.push({
-                type: "worktime_exceeded",
-                description: `Am ${dayLabel} wurden nur ${totalHoursWorked.toFixed(1)}h gearbeitet (Soll: mind. ${targetHours.toFixed(1)}h).`
-            });
-        }
-
-        if (totalHoursWorked > 10) {
-            notificationsToCreate.push({
-                type: "worktime_exceeded",
-                description: `Am ${dayLabel} wurden ${totalHoursWorked.toFixed(1)}h gearbeitet (gesetzliches Maximum: 10h).`
-            });
-        }
-
-        let requiredBreakMinutes = 0;
-        if (totalHoursWorked > 9) {
-            requiredBreakMinutes = 45;
-        } else if (totalHoursWorked > 6) {
-            requiredBreakMinutes = 30;
-        }
-
-        if (requiredBreakMinutes > 0 && totalBreakMinutes < requiredBreakMinutes) {
-            notificationsToCreate.push({
-                type: "worktime_exceeded",
-                description: `Am ${dayLabel} wurde bei ${totalHoursWorked.toFixed(1)}h Arbeitszeit nur ${Math.round(totalBreakMinutes)} Min. Pause gemacht (erforderlich: ${requiredBreakMinutes} Min.).`
-            });
-        }
-
-        for (const n of notificationsToCreate) {
-            await postNotification(userId, user.managerid, n.type, n.description);
-        }
-
-        return { message: "created successfully" };
+        // ! const notification = await postNotification(userId, date);
+        return {"message": "noch nicht fertig"};
     } catch (e) {
         console.error(e);
         throw e;
     }
+    // ! NICHT FERTIG. 
 }
-// ! NOCH NICHT FERTIG, REQUESTS FEHLEN NOCH
 
 export async function notificationGet(userId: number, id: number) {
     try {

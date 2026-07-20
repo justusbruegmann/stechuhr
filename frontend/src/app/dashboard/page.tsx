@@ -14,7 +14,7 @@ import DailyDetailsPane from "@/components/timeAdjustment/DailyDetailsPane";
 import { useRouter } from "next/navigation";
 
 import { loginToken } from "@/scripts/auth";
-import { getNotificationList, postNotification } from "@/scripts/notifications";
+import { getNotificationList } from "@/scripts/notifications";
 
 
 export default function Dashboard() {
@@ -75,9 +75,7 @@ export default function Dashboard() {
         if (!token || !userid) {
             return
         }
-        // ! NOCH NICHT FERTIG & NOCH NICHT GETESTET
-        //await postNotification(token, Number(userid), new Date().toISOString());
-        // ! NOCH NICHT FERTIG & NOCH NICHT GETESTET
+
         const notificationList = await getNotificationList(token, Number(userid));
         if (notificationList && notificationList != 400 && notificationList != 401 && notificationList != 500) {
             setNotifications(notificationList);
