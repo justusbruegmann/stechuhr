@@ -16,7 +16,7 @@ export async function getNotificationList(userId: number) {
     return result;
 }
 
-export async function postNotification(userId: number, managerId: number, type: "info" | "warning", description: string) {
+export async function postNotification(userId: number, managerId: number | null, type: "request" | "worktime_exceeded", description: string) {
     const result = await db.insert(notifications).values({
         "userId": userId,
         "managerId": managerId,
