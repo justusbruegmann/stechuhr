@@ -2,8 +2,40 @@
     font-size: 2rem;
     margin-bottom: 1rem;
 }
+
 .separator {
     margin-bottom: 1rem;
+}
+
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.spinnerIsRead {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(0, 157, 60, 0.2);
+    border-top: 2px solid #009d3c;
+    border-radius: 50%;
+    display: inline-block;
+    animation: spin 0.7s linear infinite;
+}
+
+.spinnerDelete {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(222, 0, 0, 0.2);
+    border-top: 2px solid #de0000;
+    border-radius: 50%;
+    display: inline-block;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 
@@ -120,38 +152,6 @@
     background-color: #fadada;
 }
 
-
-.loading {
-    opacity: 0.6;
-    pointer-events: none;
-}
-
-.delete_button:disabled {
+.notifications_footer .delete_button:disabled {
     cursor: not-allowed;
-}
-
-.spinner {
-    width: 14px;
-    height: 14px;
-    border: 2px solid rgba(222, 0, 0, 0.2);
-    border-top: 2px solid #de0000;
-    border-radius: 50%;
-    display: inline-block;
-    animation: spin 0.7s linear infinite;
-}
-
-.spinnerSmall {
-    width: 12px;
-    height: 12px;
-    border: 2px solid rgba(0, 157, 60, 0.2);
-    border-top: 2px solid #009d3c;
-    border-radius: 50%;
-    display: inline-block;
-    animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
 }

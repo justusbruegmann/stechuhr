@@ -112,7 +112,7 @@ export default function Notifications({ notifications, updateNotification, killN
 
                                 <div className={styles.status}>
                                     {loadingReadId === notification.id ? (
-                                        <span className={styles.spinnerSmall}></span>
+                                        <span className={styles.spinnerIsRead}></span>
                                     ) : (
                                         <span className={notification.isRead ? styles.read : styles.unread}>
                                             {notification.isRead ? "Gelesen" : "Ungelesen"}
@@ -173,7 +173,7 @@ export default function Notifications({ notifications, updateNotification, killN
                                     onClick={() => handleDelete(notification.id)}
                                 >
                                     {loadingDeleteId === notification.id ? (
-                                        <span className={styles.spinner}></span>
+                                        <span className={styles.spinnerDelete}></span>
                                     ) : (
                                         "Löschen"
                                     )}
