@@ -1,10 +1,10 @@
 'use client';
 import * as React from 'react';
 import User from "@/types/User";
-import { capitalize } from "@/utils/StringUtils";
+import {capitalize} from "@/utils/StringUtils";
 import styles from './answerRequestModal.module.css';
-import { useCurrentModal } from "@/contexts/ModalContext";
-import { UserWithExtraFields } from "@/app/manager_view/page";
+import {useCurrentModal} from "@/contexts/ModalContext";
+import {UserWithExtraFields} from "@/app/manager_view/page";
 import RequestEntry from "@/components/managerView/requestEntry";
 import Request from "@/types/Request";
 
@@ -13,8 +13,8 @@ export type AnswerRequestModalProps = {
     updateLocalState?: (newEntries: Partial<Record<keyof User, any>>) => void; // ToDo: Change this
 };
 
-export default function AnswerRequestModal({ user, updateLocalState }: AnswerRequestModalProps) {
-    const { close } = useCurrentModal();
+export default function AnswerRequestModal({user, updateLocalState}: AnswerRequestModalProps) {
+    const {close} = useCurrentModal();
     const [requests, setRequests] = React.useState<Request[]>(user.openRequests);
     const [busy, setBusy] = React.useState(false);
 
@@ -35,25 +35,27 @@ export default function AnswerRequestModal({ user, updateLocalState }: AnswerReq
     return (
         <div className={styles.container}>
             <h2 className={styles.header}>{capitalize(user.username)}</h2>
-            <hr className={styles.separator} />
+            <hr className={styles.separator}/>
 
-            {requests.length === 0 ? (
-                <p className={styles.empty}>Keine offenen Anträge</p>
-            ) : (
-                requests.map((request, index) => (
-                    <>
-                        <RequestEntry
-                            request={request}
-                            answerRequest={answerRequest}
-                        />
+            <div className={styles.requestEntriesContainer}>
+                {requests.length === 0 ? (
+                    <p className={styles.empty}>Keine offenen Anträge</p>
+                ) : (
+                    requests.map((request, index) => (
+                        <>
+                            <RequestEntry
+                                request={request}
+                                answerRequest={answerRequest}
+                            />
 
-                        {index < requests.length - 1 &&
-                            <hr className={styles.separator} />
-                        }
+                            {index < requests.length - 1 &&
+                                <hr className={styles.separator}/>
+                            }
 
-                    </>
-                ))
-            )}
+                        </>
+                    ))
+                )}
+            </div>
         </div>
     );
 }
