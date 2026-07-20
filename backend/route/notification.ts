@@ -22,9 +22,13 @@ router.get('/users/:id/notifications', authMiddleware("user", true), async (req,
 
 router.post('/notifications/', authMiddleware("user", true), async (req, res) => {
     try {
-        const body: any = req.body;
+        const body = req.body;
         if (!body.date) {
             return res.status(400).send("bad request");
+        }
+        const date = new Date(body.date);
+        if (isNaN(date.getTime())) {
+            return res.status(400).send("invalid date");
         }
         const userid = Number(req.headers.userid);
         const notification = await notificationPost(userid, body.date);

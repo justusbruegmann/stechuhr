@@ -27,15 +27,7 @@ export async function postNotification(userId: number, managerId: number | null,
 }
 
 export async function getNotification(userId: number, id: number) {
-    const result = await db.select({
-        id: notifications.id,
-        userid: notifications.userId,
-        managerid: notifications.managerId,
-        type: notifications.type,
-        description: notifications.description,
-        isRead: notifications.isRead,
-        createdAt: notifications.createdAt,
-    }).from(notifications).where(and(eq(notifications.userId, userId), eq(notifications.id, id)))
+    const result = await db.select().from(notifications).where(and(eq(notifications.userId, userId), eq(notifications.id, id)))
     return result;
 }
 

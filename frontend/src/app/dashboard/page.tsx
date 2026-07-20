@@ -65,6 +65,7 @@ export default function Dashboard() {
     }
     useEffect(() => {
         authCheck().then(r => console.log("Logged in"));
+        loadNotifications();
     }, [router])
 
     async function loadNotifications() {
@@ -82,9 +83,6 @@ export default function Dashboard() {
             setNotifications(notificationList);
         }
     }
-    useEffect(() => {
-        loadNotifications();
-    }, [])
     const updateNotification = (id: number, isRead: boolean) => {
         setNotifications((prev) =>
             prev.map((n) => n.id === id ? { ...n, isRead } : n)
