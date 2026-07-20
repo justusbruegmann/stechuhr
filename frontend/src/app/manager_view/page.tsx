@@ -1,5 +1,6 @@
 'use client'
 import User from "@/types/User";
+import Request from "@/types/Request";
 
 import React, {useEffect} from "react"
 import Header from "@/components/layout/Header";
@@ -16,6 +17,7 @@ import Summary from "@/types/summary";
 import {getSummaryForUser} from "@/scripts/summary";
 import {startOfTheMonthDateString, startOfTheWeekDateString, todayDateString} from "@/utils/TimeUtils";
 import {DateString} from "@/types/misc";
+import {getAllRequestsAManagerIsResponsibleFor} from "@/scripts/requests";
 
 
 type UserWithSummaryEntries = User & {
@@ -41,7 +43,8 @@ export default function ManagerView() {
         setLoading(true);
         const {close} = showModal("spinningLoader")
 
-        loadUsers()
+        Promise.all([loadUsers(), loadRequests()])
+        // loadUsers()
             .then(_ => {
                 close();
                 setLoading(false);
@@ -92,6 +95,32 @@ export default function ManagerView() {
 
         const extendedUsers = Object.fromEntries(extendedUser.map(user => [user.id, user]));
         setUsers(extendedUsers);
+    }
+
+    async function loadRequests() {
+        let currentlyLoggedInUserId;
+        try {
+            currentlyLoggedInUserId = Number(localStorage.getItem("userid"));
+            // ToDo: Fix localStorage type of userid to number
+        } catch (error) {
+            console.error(error);
+            return;
+        }
+
+        let requests: Request[] = [];
+        try {
+            const response: Request[] = await getAllRequestsAManagerIsResponsibleFor(currentlyLoggedInUserId);
+            if (Array.isArray(response)) {
+                requests = response;
+            }
+        } catch (error) {
+            console.error(error);
+            return;
+        }
+
+        console.log("Response:")
+        console.log(requests);
+        return requests;
     }
 
 
