@@ -14,7 +14,12 @@ import DailyDetailsPane from "@/components/timeAdjustment/DailyDetailsPane";
 import { useRouter } from "next/navigation";
 
 import { loginToken } from "@/scripts/auth";
-import { getNotificationList, postNotification } from "@/scripts/notifications";
+import { deleteTimeEntry, getTimeEntries } from "@/scripts/timeEntriesScript";
+import { getNotificationList } from "@/scripts/notifications";
+import { DateString } from "@/types/misc";
+import { generateDateString } from "@/utils/TimeUtils";
+import User from "@/types/User";
+import { getUserById } from "@/scripts/userManagement";
 
 
 export default function Dashboard() {
@@ -24,25 +29,47 @@ export default function Dashboard() {
 
     /**
      * The dailyEntries state is used as a central state to store a relevant section of all logged time entries for the frontend.
-     * It is structured as a map where the key is the date string (Date.toDateString())
+     * It is structured as a map where the key is the DateString (TimeUtils.generateDateString())
      * and the value is an array of TimeEntry objects.
      */
-    const [dailyEntries, setDailyEntries] = useState<Record<string, TimeEntry[]>>({});
-
+    const [dailyEntries, setDailyEntries] = useState<Record<DateString, TimeEntry[]>>({});
+    const [currentUser, setCurrentUser] = useState<User>();
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
     const currentlyOpenModal = useRef<
         { id: string; type: "OverviewModal" } |
-        { id: string; type: "DailyDetails"; date: Date } |
+        { id: string; type: "DailyDetails"; date: DateString } |
         { id: string; type: "NotificationsModal" } |
         null
     >(null);
 
-    const addEntryForDate = (datum: Date, entry: TimeEntry) => {
+    const addEntryForDate = (date: DateString, entry: TimeEntry) => {
         setDailyEntries((prev) => ({
             ...prev,
-            [datum.toDateString()]: [...(prev[datum.toDateString()] || []), entry]
+            [date]: [...(prev[date] || []), entry]
         }));
+    };
+
+    const updateEntryEndTime = (endTime: Date) => {
+        // By design, it should not be possible for a TimeEntry to have a startTime before today and not have an endTime.
+        const dateString = generateDateString(endTime);
+        const todaysEntries = dailyEntries[dateString] ?? [];
+
+        const hasUnfinished = todaysEntries.some(entry => !entry.endTime);
+        if (!hasUnfinished) {
+            throw new Error("There are no unfinished TimeEntries");
+        }
+
+        setDailyEntries(prev => {
+            const entries = prev[dateString] ?? [];
+            const index = entries.findIndex(entry => !entry.endTime);
+            if (index === -1) return prev;
+
+            const updated = [...entries];
+            updated[index] = { ...updated[index], endTime: endTime.toISOString() };
+
+            return { ...prev, [dateString]: updated };
+        });
     };
 
     async function authCheck() {
@@ -63,63 +90,130 @@ export default function Dashboard() {
 
         localStorage.setItem("role", login.role);
     }
-    useEffect(() => {
-        authCheck().then(r => console.log("Logged in"));
-    }, [router])
+
+    async function loadTimeEntries(year: number, month: number) {
+        const token = localStorage.getItem("token");
+        const userid = localStorage.getItem("userid");
+        if (!token || !userid) { router.push("/login"); return; }
+
+        const startDate = generateDateString(new Date(year, month, 1));
+        const endDate = generateDateString(new Date(year, month + 1, 0));
+
+        const [work, holiday, sick] = await Promise.all([
+            getTimeEntries(token, Number(userid), "work", startDate, endDate),
+            getTimeEntries(token, Number(userid), "holiday", startDate, endDate),
+            getTimeEntries(token, Number(userid), "sick", startDate, endDate),
+        ]);
+
+        const allEntries: TimeEntry[] = [...work, ...holiday, ...sick];
+
+        const grouped = allEntries.reduce<Record<DateString, TimeEntry[]>>(
+            (collection, timeEntry) => {
+                const key = generateDateString(new Date(timeEntry.startTime));
+                if (!collection[key]) collection[key] = [];
+                collection[key].push(timeEntry);
+                return collection;
+            },
+            {},
+        );
+
+        setDailyEntries((prev) => ({ ...prev, ...grouped }));
+    }
 
     async function loadNotifications() {
-        const token = localStorage.getItem("token")
-        const userid = localStorage.getItem("userid")
+        const token = localStorage.getItem("token");
+        const userid = localStorage.getItem("userid");
 
         if (!token || !userid) {
-            return
+            return;
         }
-        // ! NOCH NICHT FERTIG & NOCH NICHT GETESTET
-        //await postNotification(token, Number(userid), new Date().toISOString());
-        // ! NOCH NICHT FERTIG & NOCH NICHT GETESTET
+
         const notificationList = await getNotificationList(token, Number(userid));
-        if (notificationList && notificationList != 400 && notificationList != 401 && notificationList != 500) {
+        if (notificationList && notificationList !== 400 && notificationList !== 401 && notificationList !== 500) {
             setNotifications(notificationList);
         }
     }
-    useEffect(() => {
-        loadNotifications();
-    }, [])
+
     const updateNotification = (id: number, isRead: boolean) => {
         setNotifications((prev) =>
-            prev.map((n) => n.id === id ? { ...n, isRead } : n)
+            prev.map((notification) => notification.id === id ? { ...notification, isRead } : notification)
         );
     }
+
     const killNotification = (id: number) => {
         setNotifications((prev) =>
-            prev.filter((n) => n.id !== id)
+            prev.filter((notification) => notification.id !== id)
         );
     }
 
+    const handleCalendarMonthChange = useCallback((year: number, month: number) => {
+        loadTimeEntries(year, month);
+    }, []);
 
+    useEffect(() => {
+        authCheck().then(async () => {
+            const token = localStorage.getItem("token")
+            const userid = localStorage.getItem("userid")
 
-    const deleteEntry = (id: string) => {
-        console.log(id);
+            if (!token || !userid) {
+                router.push("/login")
+                return
+            }
 
-        setDailyEntries((prev) =>
-            Object.fromEntries(
-                Object.entries(prev).map(([date, entries]) => [
-                    date,
-                    entries.filter((entry) => entry.id !== id)
-                ])
-            )
-        );
+            // Load user
+            // Since this is currently only needed for the <Overview>, we preload it but need not await for the site to
+            // be usable 
+            loadCurrentUser();
+        });
+
+        const today = new Date();
+        loadTimeEntries(today.getFullYear(), today.getMonth());
+        loadNotifications();
+    }, [router])
+
+    async function loadCurrentUser() {
+        try {
+            const user: User = await getUserById(Number(localStorage.getItem("userid")))
+            setCurrentUser(user);
+        } catch (e) {
+            console.error(e);
+        }
     }
 
-    const createOverviewContent = () => (
-        <Overview entries={dailyEntries} deleteEntry={deleteEntry} />
-    );
 
-    const createDailyDetailsContent = (datum: Date) => (
+    const deleteEntry = async (id: number) => {
+        console.log("Delete " + id);
+
+        await deleteTimeEntry(id).then(
+            () => {
+                setDailyEntries((prev) =>
+                    Object.fromEntries(
+                        Object.entries(prev).map(([dateString, entries]) => [
+                            dateString,
+                            entries.filter((entry) => entry.id !== id)
+                        ])
+                    )
+                );
+            }
+        ).catch((error) => {
+            console.error(`Error deleting time entry ${id}: `, error);
+        })
+    }
+
+    function createOverviewContent() {
+        if (!currentUser) {
+            console.log("Failed to load user");
+            return;
+        }
+
+        return <Overview entries={dailyEntries} deleteEntry={deleteEntry} user={currentUser} />
+    }
+
+    const createDailyDetailsContent = (date: DateString) => (
         <DailyDetailsPane
-            date={datum}
-            entries={dailyEntries[datum.toDateString()] || []}
-            onAddEntry={(entry: TimeEntry) => addEntryForDate(datum, entry)}
+            date={date}
+            entries={dailyEntries[date] || []}
+            onAddEntry={(entry: TimeEntry) => addEntryForDate(date, entry)}
             deleteEntry={deleteEntry}
         />
     );
@@ -134,10 +228,12 @@ export default function Dashboard() {
                     createDailyDetailsContent(currentlyOpenModal.current.date)
                 );
             } else if (currentlyOpenModal.current.type === "OverviewModal") {
-                updateModalContent(
-                    currentlyOpenModal.current.id,
-                    createOverviewContent()
-                );
+                if (currentUser) {
+                    updateModalContent(
+                        currentlyOpenModal.current.id,
+                        createOverviewContent()
+                    );
+                }
             } else if (currentlyOpenModal.current.type === "NotificationsModal") {
                 updateModalContent(
                     currentlyOpenModal.current.id,
@@ -149,14 +245,15 @@ export default function Dashboard() {
                 );
             }
         }
-    }, [dailyEntries, notifications, updateModalContent]);
+    }, [dailyEntries, notifications, currentUser, updateModalContent]);
 
     const openOverviewModal = useCallback(() => {
-        const { id } = showModal("sidepane", <Overview entries={dailyEntries} deleteEntry={deleteEntry} />)
+        const { id } = showModal("sidepane", createOverviewContent())
         currentlyOpenModal.current = { id, type: "OverviewModal" };
     }, [dailyEntries, showModal, addEntryForDate]);
 
-    const showDailyDetails = useCallback((datum: Date) => {
+    const showDailyDetails = useCallback((datum: DateString) => {
+        console.log("show daily details for " + datum);
         const { id } = showModal("sidepane", createDailyDetailsContent(datum));
         currentlyOpenModal.current = { id, type: "DailyDetails", date: datum };
     }, [dailyEntries, showModal, addEntryForDate]);
@@ -167,11 +264,11 @@ export default function Dashboard() {
                 notifications={notifications}
                 updateNotification={updateNotification}
                 killNotification={killNotification}
-            />)
+            />
+        );
         currentlyOpenModal.current = { id, type: "NotificationsModal" };
         loadNotifications();
-    }, [notifications, loadNotifications, showModal]);
-
+    }, [notifications, showModal]);
 
 
     return (
@@ -180,9 +277,11 @@ export default function Dashboard() {
                 <Header name={"dashboard"} onNotificationsClick={openNotificationModal} />
             </div>
             <div className={styles.viewArea}>
-                <Timecard openOverview={openOverviewModal} addEntry={addEntryForDate} />
+                <Timecard openOverview={openOverviewModal} isOverviewOpenable={!currentUser}
+                    addEntry={addEntryForDate} updateEntry={updateEntryEndTime} />
+
                 <div className={styles.calendarWrapper}>
-                    <Calendar showDailyDetails={showDailyDetails} timeEntries={dailyEntries} />
+                    <Calendar user={currentUser} showDailyDetails={showDailyDetails} timeEntries={dailyEntries} onMonthChange={handleCalendarMonthChange} />
                 </div>
             </div>
         </div>

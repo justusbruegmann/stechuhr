@@ -57,15 +57,23 @@ export default function UserItem({user, onDeleteAction, loadUsersAction, manager
                             updateModalContent(modalId, buildContent(true));
                             const role = (document.getElementById("selectRole") as HTMLSelectElement).value;
                             const managerId = (document.getElementById("selectManager") as HTMLSelectElement).value;
-                            const managerUpdate = await updateManager(user.id, Number(managerId), token, Number(userIdOfAdmin));
-                            const roleUpdate = await updateRole(user.id, role, token, Number(userIdOfAdmin));
-                            if (managerUpdate === 204 && roleUpdate === 204) {
-                                loadUsersAction();
-                                close();
-                                return;
-                            }
-                            alert("ein Fehler ist auf gekommen");
-                            updateModalContent(modalId, buildContent(false));
+                            await updateManager(user.id, Number(managerId), token, Number(userIdOfAdmin)).then(async (r) => {
+                                console.log(r);
+                                await updateRole(user.id, role, token, Number(userIdOfAdmin)).then((r) => {
+                                    console.log(r);
+                                    loadUsersAction();
+                                    close();
+                                    return;
+                                }).catch((err) => {
+                                    console.log(err)
+                                    alert("ein Fehler ist auf gekommen");
+                                    updateModalContent(modalId, buildContent(false));
+                                })
+                            }).catch((err) => {
+                                console.log(err)
+                                alert("ein Fehler ist auf gekommen");
+                                updateModalContent(modalId, buildContent(false));
+                            })
                         };
 
                         const buildContent = (loading: boolean) => (
