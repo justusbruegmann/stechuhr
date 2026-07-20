@@ -35,6 +35,7 @@ export default function Dashboard() {
     const [dailyEntries, setDailyEntries] = useState<Record<DateString, TimeEntry[]>>({});
     const [currentUser, setCurrentUser] = useState<User>();
     const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [notificationsLoading, setNotificationsLoading] = useState(false);
 
     const currentlyOpenModal = useRef<
         { id: string; type: "OverviewModal" } |
@@ -202,8 +203,10 @@ export default function Dashboard() {
         // ! NOCH NICHT FERTIG & NOCH NICHT GETESTET
         //await postNotification(token, Number(userid), new Date().toISOString());
         // ! NOCH NICHT FERTIG & NOCH NICHT GETESTET
+
+        setNotificationsLoading(true);
+        
         const notificationList = await getNotificationList(token, Number(userid));
-        console.log(notificationList);
         if (notificationList && notificationList != 400 && notificationList != 401 && notificationList != 500) {
             setNotifications(notificationList);
         }

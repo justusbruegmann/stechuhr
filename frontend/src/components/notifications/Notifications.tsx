@@ -16,6 +16,8 @@ type Props = {
 
 export default function Notifications({ notifications, updateNotification, killNotification }: Props) {
     const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+    const [loadingDeleteId, setLoadingDeleteId] = useState<number | null>(null);
+    const [loadingReadId, setLoadingReadId] = useState<number | null>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -30,20 +32,26 @@ export default function Notifications({ notifications, updateNotification, killN
 
     const handleReadStatusChange = async (id: number, isRead: boolean) => {
         setOpenDropdownId(null);
-
+        
         const token = localStorage.getItem("token");
         const userId = localStorage.getItem("userid");
         if (!token || !userId) {
             return;
         }
+        
+        setLoadingReadId(id);
 
-        const result = await patchNotification(token, Number(userId), id, isRead);
-        if (!result || result == 400 || result == 401) {
-            console.error("Notification update fehlgeschlagen", result);
-            return;
+        try {
+            const result = await patchNotification(token, Number(userId), id, isRead);
+            if (!result || result == 400 || result == 401) {
+                console.error("Notification update fehlgeschlagen", result);
+                return;
+            }
+
+            updateNotification(id, isRead);
+        } finally {
+            setLoadingReadId(null);
         }
-
-        updateNotification(id, isRead);
     };
     const handleDelete = async (id: number) => {
         const token = localStorage.getItem("token");
@@ -51,15 +59,21 @@ export default function Notifications({ notifications, updateNotification, killN
         if (!token || !userId) {
             return;
         }
+        
+        setLoadingDeleteId(id);
 
+        try {
+            const result = await deleteNotification(token, Number(userId), id);
 
-        const result = await deleteNotification(token, Number(userId), id);
-        if (!result || result == 400 || result == 401) {
-            console.error("Notification delete fehlgeschlagen", result);
-            return;
+            if (!result || result == 400 || result == 401) {
+                console.error("Notification delete fehlgeschlagen", result);
+                return;
+            }
+
+            killNotification(id);
+        } finally {
+            setLoadingDeleteId(null);
         }
-
-        killNotification(id);
     }
 
     const formatDate = (dateString: string) => {
@@ -77,9 +91,18 @@ export default function Notifications({ notifications, updateNotification, killN
             <h3 className={styles.title}>Benachrichtigungen</h3>
             <hr className={styles.separator} />
             {
-                notifications.map((notification) => (
-                    <Card key={notification.id}>
-                        <div className={styles.notifications_container}>
+                notifications.map((notification) => {
+                    const isLoading =
+                        loadingDeleteId === notification.id ||
+                        loadingReadId === notification.id;
+
+                    return (<Card key={notification.id}>
+                        <div
+                            className={`
+                                ${styles.notifications_container} 
+                                ${isLoading ? styles.loading : ""}
+                                `}
+                        >
                             <div className={styles.notifications_header}>
                                 {notification.type === "worktime_exceeded" ? (
                                     <p className={styles.title}>Zeitregelung missachtet</p>
@@ -88,17 +111,27 @@ export default function Notifications({ notifications, updateNotification, killN
                                 )}
 
                                 <div className={styles.status}>
-                                    <span className={notification.isRead ? styles.read : styles.unread}>
-                                        {notification.isRead ? "Gelesen" : "Ungelesen"}
-                                    </span>
+                                    {loadingReadId === notification.id ? (
+                                        <span className={styles.spinnerSmall}></span>
+                                    ) : (
+                                        <span className={notification.isRead ? styles.read : styles.unread}>
+                                            {notification.isRead ? "Gelesen" : "Ungelesen"}
+                                        </span>
+                                    )}
+
 
                                     <div className={styles.dropdown_wrapper}>
                                         <span
                                             className={styles.arrow}
-                                            onClick={() =>
-                                                setOpenDropdownId(openDropdownId === notification.id ? null : notification.id)
-                                            }
+                                            onClick={() => {
+                                                if (isLoading) return;
+
+                                                setOpenDropdownId(
+                                                    openDropdownId === notification.id ? null : notification.id
+                                                );
+                                            }}
                                         >
+
                                             ▾
                                         </span>
 
@@ -106,13 +139,21 @@ export default function Notifications({ notifications, updateNotification, killN
                                             <div className={styles.menu}>
                                                 <div
                                                     className={styles.menu_item}
-                                                    onClick={() => handleReadStatusChange(notification.id, false)}
+                                                    onClick={() => {
+                                                        if (!isLoading) {
+                                                            handleReadStatusChange(notification.id, false);
+                                                        }
+                                                    }}
                                                 >
                                                     Ungelesen
                                                 </div>
                                                 <div
                                                     className={styles.menu_item}
-                                                    onClick={() => handleReadStatusChange(notification.id, true)}
+                                                    onClick={() => {
+                                                        if (!isLoading) {
+                                                            handleReadStatusChange(notification.id, true);
+                                                        }
+                                                    }}
                                                 >
                                                     Gelesen
                                                 </div>
@@ -126,13 +167,22 @@ export default function Notifications({ notifications, updateNotification, killN
 
                             <div className={styles.notifications_footer}>
                                 <p className={styles.time}>{formatDate(notification.createdAt)}</p>
-                                <button className={styles.delete_button} onClick={() => handleDelete(notification.id)}>
-                                    Löschen
+                                <button
+                                    className={styles.delete_button}
+                                    disabled={isLoading}
+                                    onClick={() => handleDelete(notification.id)}
+                                >
+                                    {loadingDeleteId === notification.id ? (
+                                        <span className={styles.spinner}></span>
+                                    ) : (
+                                        "Löschen"
+                                    )}
                                 </button>
                             </div>
                         </div>
                     </Card>
-                ))
+                    );
+                })
             }
         </div>
     )
