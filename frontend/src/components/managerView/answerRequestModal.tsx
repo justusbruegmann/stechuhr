@@ -58,7 +58,7 @@ export default function AnswerRequestModal({user, updateLocalState}: AnswerReque
             }
 
             {loading && (
-                <p className={styles.empty}>Loading ...</p>
+                <div className={styles.spinningLoader}/>
             )}
         </div>
     );
