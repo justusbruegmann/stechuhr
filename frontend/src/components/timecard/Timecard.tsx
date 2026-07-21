@@ -58,7 +58,8 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
             "id": entry.id,
             "userId": entry.userId,
             "startTime": entry.startTime,
-            "endTime": entry.endTime
+            "endTime": entry.endTime,
+            "type": entry.type,
         };
     }
 

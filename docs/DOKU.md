@@ -1,12 +1,11 @@
 # How2CenterADiv Stechuhr
 ## Matrikelnummern:
-    justusbruegmann: 4865545
-    SebastianAnhalt: 7020807
-    mika630: 1586623
-    FHG : nummer Einfügen Bitte beachten Github Email und git Email unterschiedlich da Firmen Laptop
-    brdly06: Nummer einfügen
-
-
+    - justusbruegmann: 4865545
+    - SebastianAnhalt: 7020807
+    - mika630: 1586623
+    - FHG : nummer Einfügen Bitte beachten Github Email und git Email unterschiedlich da Firmen Laptop
+    - brdly06: Nummer einfügen
+AI als Formulierungshilfe verwendet
 # Was macht die Anwendung? (Mika)
 # Struktur des Repo (Sebastian)
 
@@ -50,6 +49,7 @@ Die Aufteilung der Domain-Logik und der Funktionen der Anwendung können im Deta
 
 
 # Setup der Dev Umgebung (Justus)
+
 > Wichtig:  
 > node und npm sind vorrausgesetzt sowie ein postgresSQL DBconnectionlink  
 > Es gibt das Ganze SQL DB Script als sql Datei im docs Verzeichnis
@@ -157,6 +157,32 @@ Backend (Terminal 1):
 # Webdesign (Aaron & Felix)
 
 
+
+# Was macht die Anwendung
+Die Anwendung dient zur Erfassung von Arbeitszeiten von Nutzern. Zudem erhält man einen Überblick über seine Zeiteinträge und kann diese jederzeit einsehen. Es gibt drei verschiedene Rollen von Anwendern:
+
+## Rollen
+### User
+Als User ist es möglich sich über die Timecard ein- und auszustechen. Man erhält eine Überischt über die heute gearbeiteten Stunden, und über sein Saldo für den Tag, Woche und Monat. Im Kalender kann man außerdem auf einen Blick seine Zeitereignisse sehen. 
+Zudem ist es möglich Abwesenheitsanträge in Form von Urlaub oder Krankheit zu erstellen. Auch vergessene Ein- und Ausstechzeiten kann man nachtragen.
+
+### Manager
+Als Manager hat man die selben Funktionen wie ein normaler User. Jedoch verfügt der Manager noch über die Manager-Ansicht über die er einen Überblick über seine zuständigen Mitarbeiter bekommt. Hier kann er deren Anträge genehmigen und wenn nötig auch Urlaubstage, Krankheitstage und Zeitereignisse anpassen.
+
+### Admin
+Als Admin ist es nicht möglich sich einzustechen, bzw. Zeiteinträge, Abwesenheitsanträge etc. zu erstellen. Die Admin Rolle dient nur zur Verwaltung der Benutzer der Anwendung. Es ist möglich neue Nutzer anzulegen, zu löschen und auch vorgeschriebene Arbeitszeiten und Urlaubstage anzupassen.
+
+## Login
+| Bild | Beschreibung |
+|------|--------------|
+| <img src="images/login/LoginPage.png" width="1500"> | Die Login-Seite dient zur Anmeldung des Benutzers. Es gibt zwei Textfelder. In das obere Feld wird der Benutzername eingegeben, in das untere das Passwort. Nach erfolgreicher Eingabe gelangt der Benutzer über den Button "Login“ auf sein Dashboard. |
+
+## Timecard
+| Bild | Beschreibung |
+|------|--------------|
+| <img src="images/login/LoginPage.png" width="1500"> | Über die Timecard ist es möglich sich ein- und auszustechen. Dies erfolgt über den grünen/roten Button. Nachdem man auf einstempeln bzw. auf ausstempeln geklickt hat wird der Button für einen Moment deaktiviert und zeigt einen spinner an. Dies liegt daran das der Button seinen Zustand erst ändert, wenn die Änderungen bereits erfolgreich in die Datenbank übernommen wurden. Die Timecard zeigt zudem auch die aktuelle Uhrzeit, ob man bereits ein- oder ausgestemeplt ist und wie lange man an dem aktuellen Tag schon gearbeitet hat. Ganz unten gibt es einen Button "xy" welcher auf das xy verweißt. |
+
+## xy
 
 # Struktur des Repositories
 Das Repository ist als Monorepo in zwei Hauptteilen aufgebaut: Backend und Frontend. Zusätzlich liegt die Dokumentation des gesamten Monorepos im Ordner /docs.
@@ -303,30 +329,29 @@ Sie sind grob nach Anwendungsgebiet gruppiert.
 In diesem Kapitel werden diejenigen Ende-zu-Ende-Features der Anwendung beschrieben, die für das jeweilige Gruppenmitglied bewertet werden sollen.
 
 ## justusbruegmann: Auth
+KI als Formulierungshilfe verwendet
 ### Ideen
 Aufgrund von Kommunikation aus dem ersten Semester, dass nur das absolute Minimum an Fremdpakete verwendet werden soll, wurde angenommen das auch Login usw selbst gebaut werden müssen.
 Deshalb wurde bereits vor der Kommunikation, dass solche Pakete erlaubt sind, das Feature schon fertiggestellt.
 
-
-
-Es wurde sich Aktiv gegen JWTs entschieden da dort der Zugang nicht schnell entfernt werden kann.
+Es wurde sich aktiv gegen JWTs entschieden, da dort der Zugang nicht schnell entfernt werden kann.
 Ebenfalls soll ein Admin als Verwalter Accounts erstellen da kein Mitarbeiter sein Account selbst anlegen soll.
-Im fall einer Kündigung oder ähnliches kann der Admin sehr schnell Zugang zur Zeiterfassung entfernen damit kein Unsinn getrieben wird.
+Im Fall einer Kündigung oder ähnliches kann der Admin sehr schnell Zugang zur Zeiterfassung entfernen, damit kein Unsinn getrieben wird.
 
-Es gibt 3 Rollen in er Anwendung:
+Es gibt 3 Rollen in der Anwendung:
 - User: Ein ganz normaler Mitarbeiter
-- Manager: Ein vorgesetzter von einem Nutzer welcher Urlaubsanträge oder ähnliches bearbeiten kann sowie Arbeitszeiten seiner untergebenen sehen kann. User + zusatz Rechte
-- Admin: Reiner Verwaltungsaccount kann keine timeEntries erstellen.
+- Manager: Ein Vorgesetzter von einem Nutzer welcher Urlaubsanträge oder ähnliches bearbeiten kann sowie Arbeitszeiten seiner Untergebenen sehen kann. User + Zusatzrechte
+- Admin: Reiner Verwaltungsaccount, kann keine timeEntries erstellen.
 
 ### Gesamtprojekt
-Als erstes landet der Nutzer auf der Login page und muss sich dort einloggen.  
-Wenn er ein one time password hat dann muss dieses verändert werden.
-Wenn kein one time password gesetzt ist und die login daten Valide wird dieser zum dashboard weitergeleitet
+Als Erstes landet der Nutzer auf der Login-Page und muss sich dort einloggen.  
+Wenn er ein One-Time-Password hat dann muss dieses geändert werden.
+Wenn kein One-Time-Password gesetzt ist und die Login-Daten valide sind, wird dieser zum Dashboard weitergeleitet
   
-Die Auth läuft im Hintergrund beim öffnen einer page zum check onb der Token noch valid ist oder überhaupt einer existiert.
+Die Auth läuft im Hintergrund beim Öffnen einer Page um zu überprüfen ob der Token noch valide ist oder überhaupt einer existiert.
   
-Ebenfalls wird ein für die anderen Routen eine Middleware gegeben ob die mitgegebenen Authorization und userid einem User gehören.
-Dies ist dabei für fast jede Route relevant da nur Nutzer welche zur Anwendung gehören diese Aktionen ausführen sollen.
+Ebenfalls wird für die anderen Routen eine Middleware bereitgestellt, ob die mitgegebenen Authorization und Userid Header zu einem User gehören.
+Dies ist dabei für fast jede Route relevant, da nur Nutzer welche zur Anwendung gehören diese Aktionen ausführen sollen.
 ```typescript
 const ROLESPERMS: Record<UserRole,number> = {user: 1, manager: 2 , admin:3};
 
@@ -357,7 +382,7 @@ export function authMiddleware(requiredRole: UserRole, rolesAboveAllowed: boolea
     }
 }
 ```
-rolesAboveAllowed sagt aus ob eine Route welche ein user zugreifen darf auch ein Manager oder Admin zugreifen darf
+rolesAboveAllowed sagt aus, ob eine Route, welche ein User zugreifen darf, auch ein Manager oder Admin zugreifen darf.
 
 
 ### Code
