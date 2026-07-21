@@ -49,17 +49,5 @@ export async function otpChange(userid: number,currentpwd: string, newpwd: strin
     const url = `${BASE_URL}/users/otp/${userid}`;
     const body = {"currentpwd": currentpwd, "newpwd": newpwd};
     return await sendRequest("PATCH", url, body, undefined,true);
-    /*
-    const headers = {"content-type": "application/json"};
-    const response = await fetch(url, {method: "put", body: JSON.stringify(body), headers: headers});
-    if (response.status === 200) {
-        return await response.text();
-    }
-    if (response.status === 401) {
-        return 401;
-    }
-    if (response.status === 400) {
-        return 400;
-    }*/
 }
 

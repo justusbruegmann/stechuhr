@@ -5,7 +5,8 @@ import Button from "@/components/layout/Button";
 import Image from "next/image";
 import type User from "@/types/User";
 import {useModal} from "@/contexts/ModalContext";
-import {updateManager, updateRole} from "@/scripts/userManagement";
+import {updateManager, updateRole, resetPassword} from "@/scripts/userManagement";
+import CopyToClipboard from "@/components/usermanagement/CopyToClipboard";
 
 type Props = {
     user: User;
@@ -111,6 +112,27 @@ export default function UserItem({user, onDeleteAction, loadUsersAction, manager
                         ({id: modalId, close} = showModal("popup", buildContent(false)));
 
 
+                    }}/>
+                    <Button label={<Image src={"/pwdReset.svg"} alt="pwdReset" width="16" height="16"/>} type={"error"}
+                            height={2} width={2} loading={isDoing} onClick={async () => {
+                        if (isDoing) {
+                            alert("chaging password");
+                            return;
+                        }
+                        setisDoing(true);
+                        resetPassword(user.id).then(async (r) => {
+                            const {close: closePasswordModal} = showModal("popup", <div>
+                                <h3>Einmalpasswort</h3>
+                                <br/>
+                                <p>Passwort speichern und dem Nutzer zu schicken</p>
+                                <p>Das Passwort wird nur einmal angezeigt</p>
+                                <br/>
+                                <CopyToClipboard text={r.password}/>
+                                <Button label={"Schließen"} type={"accent"} height={2}
+                                        width={"calc(100% - .75rem)"}
+                                        className={styles.inputs} onClick={() => closePasswordModal()}/>
+                            </div>);
+                        })
                     }}/>
                 </div>
             </div>
