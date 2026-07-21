@@ -2,6 +2,7 @@ import {
     getNotificationList, postNotification, getNotification, patchNotification, deleteNotification
 } from "../repository/notification";
 import { getUserById } from "../service/userManagement";
+import type { TimeEntry } from "../types/timeEntry";
 import { getTimeEntriesService } from "../service/timeEntriesService";
 import Holidays from "date-holidays";
 
@@ -36,10 +37,7 @@ async function findLastWorkDay(userId: number, referenceDay: string) {
     const holidays = new Holidays("DE", "BW");
 
     let checkDay = shiftDateString(referenceDay, -1);
-    let workEntries: {
-        startTime: Date;
-        endTime: Date | null;
-    }[] = [];
+    let workEntries: TimeEntry[] = [];
 
     const maxLookback = 90;
     let iterations = 0;
@@ -93,10 +91,7 @@ async function findLastWorkDay(userId: number, referenceDay: string) {
     return null;
 }
 
-function calculateWorkTime(workEntries: {
-    startTime: Date;
-    endTime: Date | null;
-}[]) {
+function calculateWorkTime(workEntries: {startTime: Date; endTime: Date | null;}[]) {
     const sortedEntries = [...workEntries].sort(
         (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
     );

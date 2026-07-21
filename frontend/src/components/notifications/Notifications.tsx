@@ -42,7 +42,7 @@ export default function Notifications({ notifications, updateNotification, killN
         setLoadingReadId(id);
 
         try {
-            const result = await patchNotification(token, Number(userId), id, isRead);
+            const result = await patchNotification(id, isRead);
             if (!result || result == 400 || result == 401) {
                 console.error("Notification update fehlgeschlagen", result);
                 return;
@@ -63,7 +63,7 @@ export default function Notifications({ notifications, updateNotification, killN
         setLoadingDeleteId(id);
 
         try {
-            const result = await deleteNotification(token, Number(userId), id);
+            const result = await deleteNotification(id);
 
             if (!result || result == 400 || result == 401) {
                 console.error("Notification delete fehlgeschlagen", result);

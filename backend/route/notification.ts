@@ -70,7 +70,7 @@ router.patch('/notifications/:id', validateUserID, authMiddleware("user", true),
 
         const body = req.body as NotificationPatchBody;
         const notification = await notificationPatch(id, body.read);
-        return res.status(204).send(notification);
+        return res.status(200).send(notification);
     } catch (e) {
         res.status(500).send("internal error");
     }
@@ -88,8 +88,8 @@ router.delete('/notifications/:id', validateUserID, authMiddleware("user", true)
             return res.status(403).send("forbidden");
         }
 
-        const notification = await notificationDelete(id);
-        return res.status(204).send("deleted successfully");
+        await notificationDelete(id);
+        return res.status(200).send({ message: "deleted successfully" });
     } catch (e) {
         res.status(500).send("internal error");
     }
