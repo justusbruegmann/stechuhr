@@ -41,18 +41,20 @@ export default function AnswerRequestModal({user, updateLocalState}: AnswerReque
                     {user.openRequests.length === 0 ? (
                         <p className={styles.empty}>Keine offenen Anträge</p>
                     ) : (
-                        user.openRequests.map((request, index) => (
-                            <React.Fragment key={request.id}>
-                                <RequestEntry
-                                    request={request}
-                                    answerRequest={answerRequest}
-                                />
+                        [...user.openRequests]
+                            .sort((requestA, requestB) => requestA.startDate.localeCompare(requestB.startDate))
+                            .map((request, index) => (
+                                <React.Fragment key={request.id}>
+                                    <RequestEntry
+                                        request={request}
+                                        answerRequest={answerRequest}
+                                    />
 
-                                {index < user.openRequests.length - 1 &&
-                                    <hr className={styles.separator}/>
-                                }
-                            </React.Fragment>
-                        ))
+                                    {index < user.openRequests.length - 1 &&
+                                        <hr className={styles.separator}/>
+                                    }
+                                </React.Fragment>
+                            ))
                     )}
                 </div>
             }
