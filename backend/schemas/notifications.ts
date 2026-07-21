@@ -1,8 +1,8 @@
 import * as z from 'zod';
 
 export const notificationPostBodySchema = z.object({
-    date: z.string().refine((val) => !isNaN(new Date(val).getTime()), {
-        message: "invalid date",
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+        message: "invalid date format, expected YYYY-MM-DD"
     }),
 });
 

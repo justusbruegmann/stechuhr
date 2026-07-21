@@ -201,7 +201,7 @@ export default function Dashboard() {
             return
         }
         // ! NOCH NICHT FERTIG & NOCH NICHT GETESTET
-        //await postNotification(token, Number(userid), new Date().toISOString());
+        //await postNotification(token, Number(userid), todayDateString());
         // ! NOCH NICHT FERTIG & NOCH NICHT GETESTET
 
         setNotificationsLoading(true);
