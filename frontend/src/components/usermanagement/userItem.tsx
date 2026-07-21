@@ -33,9 +33,9 @@ export default function UserItem({user, onDeleteAction, loadUsersAction, manager
                 <p className={styles.item}>{getManagerByID(user.managerid)?.username ?? "-"}</p>
                 <p className={styles.item}>{user.workload}</p>
                 <p className={styles.item}>{user.holidays}</p>
-                <div className={styles.column}>
+                <div className={styles.rows}>
                     <Button label={<Image src={"/delete.svg"} alt="delete" width="16" height="16"/>} type={"error"}
-                            height={2} width={2} loading={isDoing} onClick={async () => {
+                            height={2} width={2} loading={isDoing} tooltip={"Nutzer Löschen"} onClick={async () => {
                         if (isDoing) {
                             alert("Deleting user");
                             return;
@@ -43,8 +43,8 @@ export default function UserItem({user, onDeleteAction, loadUsersAction, manager
                         setisDoing(true);
                         onDeleteAction(user.id)
                     }}/>
-                    <Button label={<Image src={"/edit.svg"} alt="delete" width="16" height="16"/>} type={"accent"}
-                            height={2} width={2} onClick={async () => {
+                    <Button label={<Image src={"/edit.svg"} alt="update User" width="16" height="16"/>} type={"accent"}
+                            height={2} width={2} tooltip={"Nutzer Anpassen"} onClick={async () => {
                         const token = localStorage.getItem("token");
                         const userIdOfAdmin = localStorage.getItem("userid");
                         if (!token || !userIdOfAdmin) {
@@ -113,8 +113,8 @@ export default function UserItem({user, onDeleteAction, loadUsersAction, manager
 
 
                     }}/>
-                    <Button label={<Image src={"/pwdReset.svg"} alt="pwdReset" width="16" height="16"/>} type={"error"}
-                            height={2} width={2} loading={isDoing} onClick={async () => {
+                    <Button label={<Image src={"/pwdReset.svg"} alt="pwdReset" width="20" height="20" style={{"filter": "invert()"}} />} type={"warning"}
+                            height={2} width={2} loading={isDoing} tooltip={"Passwort Reset"} onClick={async () => {
                         if (isDoing) {
                             alert("chaging password");
                             return;
