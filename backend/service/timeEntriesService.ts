@@ -57,10 +57,11 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date, u
 
 export async function getTimeEntriesService(userid: number, type?: "work" | "holiday" | "sick", startDate?: DateString, endDate?: DateString){
     try{
-        if(startDate && endDate && startDate > endDate){
+        const end = endDate ? endDate+"T23:59:59" : undefined;
+        if(startDate && end && startDate > end){
             return "end date is before start date";
         }
-        const timeEntries = await getTimeEntries(userid, type, startDate, endDate);
+        const timeEntries = await getTimeEntries(userid, type, startDate, end);
         return timeEntries;
     }
     catch(e){
