@@ -36,7 +36,8 @@ router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
             createdTimeEntry == "out of working time" || 
             createdTimeEntry == "last time entry has no endtime" ||
             createdTimeEntry == "not able to work on holidays" ||
-            createdTimeEntry == "endtime is before starttime"
+            createdTimeEntry == "endtime is before starttime" ||
+            createdTimeEntry == "time entry overlaps with an other entry"
         ){
             return res.status(400).json({"error": createdTimeEntry});
         }
@@ -70,7 +71,8 @@ router.patch('/timeentries/:id', authMiddleware("user", true), async (req, res) 
         if(
             patchEndTime == "end time is already set" || 
             patchEndTime == "end time is before start time" || 
-            patchEndTime == "end time can not be in the future"
+            patchEndTime == "end time can not be in the future" ||
+            patchEndTime == "time entry overlaps with an other entry"
         ){
             return res.status(400).json(patchEndTime);
         }

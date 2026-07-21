@@ -1,4 +1,4 @@
-import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLastTimeEntry, deleteTimeEntry } from '../repository/timeEntriesRepository';
+import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLastTimeEntry, deleteTimeEntry, getOverlappingTimeEntries } from '../repository/timeEntriesRepository';
 import { time_entry_type } from '../drizzle/schema';
 import Holidays from 'date-holidays';
 import { DateString } from '../types/misc';
@@ -22,6 +22,12 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
         if(endtime && endtime < starttime){  //look if endtime is before starttime
             return "endtime is before starttime";
         }
+
+        const overlapping = await getOverlappingTimeEntries(userid, starttime, endtime);
+        if(overlapping.length > 0){
+            return "time entry overlaps with an other entry";
+        }
+
         const timeEntry = await createTimeEntry(userid, starttime, type, endtime);
         return timeEntry;
     }
@@ -49,6 +55,12 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date, u
         if(newEndTime > new Date()){
             return "end time can not be in the future";
         }
+
+        const overlapping = await getOverlappingTimeEntries(userid, timeEntry.startTime, newEndTime, timeEntryId);
+        if(overlapping.length > 0){
+            return "time entry overlaps with an other entry";
+        }
+
         const endTime = await setEndTime(timeEntryId, newEndTime);
         return endTime;
     }

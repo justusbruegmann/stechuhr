@@ -92,8 +92,6 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         const {token, userid} = auth;
         setLoading(true);
         const result = await createTimeEntry(token, userid, buttonClickedTime, "work");
-        const id = result.id;
-        console.log(result.id);
         setLoading(false);
         if(!result || result.error === "Admins are not allowed to clock in."){
             return alert(result.error);
@@ -125,7 +123,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         const update = await setEndTime(token, userid, parseInt(lastTimeEntry.id), buttonClickedTime);
         setLoading(false);
         if(update == 401 || !update?.id){
-            console.error("Fehler beim Ausstempeln", result);
+            console.error("Fehler beim Ausstempeln", update);
             return;
         }
         setClicked(true);
