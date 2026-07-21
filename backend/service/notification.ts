@@ -182,16 +182,15 @@ export async function notificationPost(userId: number, date: string) {
 }
 // ! NOCH NICHT FERTIG, REQUESTS FEHLEN NOCH
 
-export async function notificationGet(userId: number, id: number) {
+export async function notificationGet(id: number) {
     try {
-        const notification = await getNotification(userId, id);
+        const notification = await getNotification(id);
         return notification;
     } catch (e) {
         console.error(e);
         throw e;
     }
 }
-
 export async function notificationPatch(id: number, isRead: boolean) {
     try {
         const notification = await patchNotification(id, isRead);
