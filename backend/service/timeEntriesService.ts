@@ -11,7 +11,7 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
         if(starttime.getDay() == 0 || starttime.getDay() == 6){ //no work on weekends
             return "not able to work on weekends";
         }
-        if(holidays.isHoliday(new Date(starttime.getFullYear(), starttime.getMonth(), starttime.getDate()))){ //no work on holidays
+        if(holidays.isHoliday(new Date(starttime.getFullYear(), starttime.getMonth(), starttime.getDate()))){ //no work on holidays 
             return "not able to work on holidays";
         }
         if(starttime.getHours() >= 23 || starttime.getHours() < 6){ //only possible work between 6 and 23 o'clock
