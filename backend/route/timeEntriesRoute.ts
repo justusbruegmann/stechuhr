@@ -10,7 +10,7 @@ router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
         const reqBody: any = req.body;
         const validTypes = ["work", "holiday", "sick"];
         if(!reqBody?.type || !validTypes.includes(reqBody.type)){
-            return res.status(400).send("type is required and has to be work, holiday or sick");
+            return res.status(400).send("type is required and has to be work, holiday or sick");    
         }
         if (res.locals.user.role === "admin") {
             return res.status(400).json({error: "Admins are not allowed to clock in."});
@@ -23,8 +23,11 @@ router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
         }
         if(reqBody.endtime){
             if(isNaN(new Date(reqBody.endtime).getTime())){
-            return res.status(400).send("endtime is not valid");
-        }
+                return res.status(400).send("endtime is not valid");
+            }
+            if(new Date(reqBody.endtime).getTime() === new Date(reqBody.starttime).getTime()){
+                return res.status(400).send("endtime must be after start time");
+            }
         }
         const userid = res.locals.user.id;
         const createdTimeEntry = await createTimeEntryService(userid, new Date(reqBody.starttime),  reqBody.endtime ? new Date(reqBody.endtime) : undefined, reqBody.type);
@@ -64,7 +67,11 @@ router.patch('/timeentries/:id', authMiddleware("user", true), async (req, res) 
         if(patchEndTime == "time entry not found"){
             return res.status(404).json(patchEndTime);
         }
-        if(patchEndTime == "end time is already set" || patchEndTime == "end time is before start time"){
+        if(
+            patchEndTime == "end time is already set" || 
+            patchEndTime == "end time is before start time" || 
+            patchEndTime == "end time can not be in the future"
+        ){
             return res.status(400).json(patchEndTime);
         }
         if(patchEndTime == "not authorized to modify this entry"){
@@ -90,6 +97,12 @@ router.get('/users/:userId/timeentries', authMiddleware("user", true), async (re
         const {type, startDate, endDate} = req.query;
         if (type && !["work", "holiday", "sick"].includes(type as string)) {
             return res.status(400).send("type must be: work, holiday, sick");
+        }
+        if (startDate && isNaN(new Date(startDate as string).getTime())) {
+            return res.status(400).send("startDate is not valid");
+        }
+        if (endDate && isNaN(new Date(endDate as string).getTime())) {
+            return res.status(400).send("endDate is not valid");
         }
         const start = startDate ? startDate as string : undefined;
         const end = endDate ? endDate+"T23:59:59" : undefined;
@@ -150,7 +163,7 @@ router.delete('/timeentries/:id', authMiddleware("user", true),async (req,res) =
         if(result == "time entry not found" || result == "not authorized to delete this entry"){
             return res.status(result == "time entry not found" ? 404 : 403).json({"error": result});
         }
-        return res.status(200).send(result);
+        return res.status(200).json(result);
     }
     catch(error){
         res.status(500).send("internal error");

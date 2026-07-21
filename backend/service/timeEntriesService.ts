@@ -46,6 +46,9 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date, u
         if(timeEntry.startTime != null && timeEntry.startTime > newEndTime){
             return "end time is before start time";
         }
+        if(newEndTime > new Date()){
+            return "end time can not be in the future";
+        }
         const endTime = await setEndTime(timeEntryId, newEndTime);
         return endTime;
     }
@@ -55,7 +58,7 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date, u
     }
 }
 
-export async function getTimeEntriesService(userid: number, type?: "work" | "holiday" | "sick", startDate?: DateString, endDate?: DateString){
+export async function getTimeEntriesService(userid: number, type?: (typeof time_entry_type.enumValues)[number], startDate?: DateString, endDate?: DateString){
     try{
         if(startDate && endDate && startDate > endDate){
             return "end date is before start date";

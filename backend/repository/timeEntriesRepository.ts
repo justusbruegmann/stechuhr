@@ -18,10 +18,10 @@ export async function setEndTime(timeEntryId: number, endTime: Date) {
     return result[0];
 }
 
-export async function getTimeEntries(userId: number, type?: string, startDate?: DateString, endDate?: DateString) {
+export async function getTimeEntries(userId: number, type?: (typeof time_entry_type.enumValues)[number], startDate?: DateString, endDate?: DateString) {
     const conditions = [eq(timeEntries.userId, userId)];
     if(type){
-        conditions.push(eq(timeEntries.type, type as "work" | "holiday" | "sick"));
+        conditions.push(eq(timeEntries.type, type));
     }
     if(startDate){
         conditions.push(gte(timeEntries.startTime, new Date(startDate)));
@@ -44,6 +44,6 @@ export async function getLastTimeEntry(userId: number){
 }
 
 export async function deleteTimeEntry(timeEntryId: number){
-    const result = await db.delete(timeEntries).where(eq(timeEntries.id, timeEntryId));
-    return result;
+    const result = await db.delete(timeEntries).where(eq(timeEntries.id, timeEntryId)).returning();
+    return result[0];
 }

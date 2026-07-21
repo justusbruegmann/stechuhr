@@ -53,7 +53,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         return{token, userid: parseInt(userid)};
     }
 
-    function mapEntry(entry: any): TimeEntry{
+    function mapEntry(entry: TimeEntry): TimeEntry{
         return {
             "id": entry.id,
             "userId": entry.userId,
@@ -102,6 +102,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         }
         setClicked(false);
         addEntry(generateDateString(new Date(result.startTime)), mapEntry(result));
+        getTodaysWorkTime();
     }
 
     async function setEndTimeEntry() {
@@ -127,6 +128,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         }
         setClicked(true);
         updateEntry(buttonClickedTime);
+        getTodaysWorkTime();
     }
 
     async function getTodaysWorkTime() {
