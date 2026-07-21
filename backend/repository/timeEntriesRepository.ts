@@ -38,8 +38,12 @@ export async function getSingleTimeEntry(timeEntryId: number) {
     return result;
 }
 
-export async function getLastTimeEntry(userId: number){
-    const result = await db.select().from(timeEntries).where(eq(timeEntries.userId, userId)).orderBy(desc(timeEntries.startTime)).limit(1);
+export async function getLastTimeEntry(userId: number, type?: (typeof time_entry_type.enumValues)[number]){
+    const conditions = [eq(timeEntries.userId, userId)];
+    if(type){
+        conditions.push(eq(timeEntries.type, type));
+    }
+    const result = await db.select().from(timeEntries).where(and (...conditions)).orderBy(desc(timeEntries.startTime)).limit(1);
     return result;
 }
 

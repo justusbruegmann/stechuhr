@@ -121,7 +121,11 @@ router.get('/users/:userId/timeentries', authMiddleware("user", true), async (re
 router.get('/timeentries/last', authMiddleware("user", true), async (req, res) => {
     try{
         const userid = res.locals.user.id;
-        const timeEntry = await getLastTimeEntryService(userid);
+        const {type} = req.query;
+        if (type && !["work", "holiday", "sick"].includes(type as string)) {
+            return res.status(400).send("type must be: work, holiday, sick");
+        }
+        const timeEntry = await getLastTimeEntryService(userid, type as "work"|"holiday"|"sick");
         return res.status(200).json(timeEntry);
     }
     catch(error){

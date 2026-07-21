@@ -89,9 +89,9 @@ export async function getSingleTimeEntryService(timeEntryId: number, userid: num
     }
 }
 
-export async function getLastTimeEntryService(userid:number){
+export async function getLastTimeEntryService(userid:number, type: (typeof time_entry_type.enumValues)[number]){
     try{
-        const lastTimeEntry = await getLastTimeEntry(userid);
+        const lastTimeEntry = await getLastTimeEntry(userid, type);
         return lastTimeEntry;
     }
     catch(e){

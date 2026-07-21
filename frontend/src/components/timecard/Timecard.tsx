@@ -69,7 +69,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         }
         const {token, userid} = auth;
 
-        const lastTimeEntry = (await getLastTimeEntry(token, userid))[0];
+        const lastTimeEntry = (await getLastTimeEntry(token, userid, "work"))[0];
 
         if (lastTimeEntry == 401 || !lastTimeEntry) {
             setClicked(true);
@@ -92,6 +92,8 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         const {token, userid} = auth;
         setLoading(true);
         const result = await createTimeEntry(token, userid, buttonClickedTime, "work");
+        const id = result.id;
+        console.log(result.id);
         setLoading(false);
         if(!result || result.error === "Admins are not allowed to clock in."){
             return alert(result.error);
@@ -112,7 +114,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         }
         const {token, userid} = auth;
         setLoading(true);
-        const result = await getLastTimeEntry(token, userid);
+        const result = await getLastTimeEntry(token, userid, "work");
         if(result == 401 || !result || !Array.isArray(result)){
             console.error("Fehler beim holen des letzten Zeiteintrags", result);
             setLoading(false);
