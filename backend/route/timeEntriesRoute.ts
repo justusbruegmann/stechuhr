@@ -92,7 +92,7 @@ router.get('/users/:userId/timeentries', authMiddleware("user", true), async (re
             return res.status(400).send("type must be: work, holiday, sick");
         }
         const start = startDate ? startDate as string : undefined;
-        const end = endDate ? endDate+"T23:59:59" : undefined;
+        const end = endDate ? endDate as string : undefined;
         const timeEntries = await getTimeEntriesService(userid, type as "work"|"holiday"|"sick", start, end);
         if(timeEntries == "end date is before start date"){
             return res.status(400).json(timeEntries);
