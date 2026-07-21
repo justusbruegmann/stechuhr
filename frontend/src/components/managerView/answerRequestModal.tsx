@@ -42,7 +42,7 @@ export default function AnswerRequestModal({user, updateLocalState}: AnswerReque
                         <p className={styles.empty}>Keine offenen Anträge</p>
                     ) : (
                         user.openRequests.map((request, index) => (
-                            <>
+                            <React.Fragment key={request.id}>
                                 <RequestEntry
                                     request={request}
                                     answerRequest={answerRequest}
@@ -51,7 +51,7 @@ export default function AnswerRequestModal({user, updateLocalState}: AnswerReque
                                 {index < user.openRequests.length - 1 &&
                                     <hr className={styles.separator}/>
                                 }
-                            </>
+                            </React.Fragment>
                         ))
                     )}
                 </div>

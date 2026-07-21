@@ -2,7 +2,7 @@
 import User from "@/types/User";
 import Request from "@/types/Request";
 
-import React, {useEffect} from "react"
+import React, {useEffect, useRef} from "react"
 import Header from "@/components/layout/Header";
 import {useModal} from "@/contexts/ModalContext";
 import styles from './manager_view.module.css';
@@ -37,7 +37,11 @@ export default function ManagerView() {
     /**
      * Loading and storing users
      */
-    const {showModal} = useModal();
+    const {showModal, updateModalContent} = useModal();
+    // Track the currently open modal, and for which user it is loaded
+    const answerModalId = useRef<string | null>(null);
+    const [answerModalUserId, setAnswerModalUserId] = React.useState<number | null>(null);
+
     const [users, setUsers] = React.useState<Record<number, UserWithExtraFields>>({});
     const [loading, setLoading] = React.useState(true);
 
@@ -112,9 +116,6 @@ export default function ManagerView() {
             console.error(error);
             return;
         }
-
-        console.log("Response:")
-        console.log(requests);
         return requests;
     }
 
@@ -181,39 +182,26 @@ export default function ManagerView() {
                 },
             };
         });
-
-        //ToDo: update modal content
-
-
-        //
-        // useEffect(() => {
-        //     if (currentlyOpenModal.current) {
-        //         if (currentlyOpenModal.current.type === "DailyDetails") {
-        //             console.log("Trying to update daily details")
-        //             updateModalContent(
-        //                 currentlyOpenModal.current.id,
-        //                 createDailyDetailsContent(currentlyOpenModal.current.date)
-        //             );
-        //         } else if (currentlyOpenModal.current.type === "OverviewModal") {
-        //             if (currentUser) {
-        //                 updateModalContent(
-        //                     currentlyOpenModal.current.id,
-        //                     createOverviewContent()
-        //                 );
-        //             }
-        //         }
-        //     }
-        // }, [dailyEntries, updateModalContent]);
-
-
     }
 
+    function renderAnswerRequestModal(userId: number) {
+        return <AnswerRequestModal user={users[userId]} updateLocalState={updateRequests}/>
+    }
 
-    function answerRequests(userId: number) {
-        showModal("popup",
-            <AnswerRequestModal user={users[userId]} updateLocalState={updateRequests}/> //ToDo: updateLocalState functionality
+    function openAnswerRequestModal(userId: number) {
+        const {id} = showModal("popup", renderAnswerRequestModal(userId))
+        answerModalId.current = id;
+        setAnswerModalUserId(userId);
+    }
+
+    // Update modal content when the async setUsers() is done updating the state
+    useEffect(() => {
+        if (answerModalUserId === null || !answerModalId.current) return;
+        updateModalContent(
+            answerModalId.current,
+            <AnswerRequestModal user={users[answerModalUserId]} updateLocalState={updateRequests} />
         );
-    }
+    }, [users, answerModalUserId]);
 
 
     const columns = ["Name", `Urlaub (${currentYear})`, `Krankheitstage (${currentYear})`, "Arbeitszeit diese Woche", ""];
@@ -237,7 +225,7 @@ export default function ManagerView() {
                             <Button label={"Bearbeiten"} type={"primary"}
                                     onClick={() => editUser(user.id)}/>
                             <Button label={"Anträge"} type={"accent"}
-                                    onClick={() => answerRequests(user.id)}/>
+                                    onClick={() => openAnswerRequestModal(user.id)}/>
                         </div>
                     </td>
                 </tr>);
