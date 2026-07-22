@@ -244,7 +244,7 @@ export default function Kalender({ user, showDailyDetails, timeEntries, onMonthC
                         if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
                             return (
                                 <div key={index} className={styles.calendar_today} style={dayStyle}
-                                    onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day-1)))}>                                    {day && <div className={styles.calendar_day_text}>{day}</div>}
+                                    onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day+1)))}>                                    {day && <div className={styles.calendar_day_text}>{day}</div>}
                                     <div className={styles.calendar_day_symbols_container}>
                                         {handleEntries(index, day)}
                                     </div>
