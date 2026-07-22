@@ -2,6 +2,7 @@ import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLast
 import { time_entry_type } from '../drizzle/schema';
 import Holidays from 'date-holidays';
 import { DateString } from '../types/misc';
+import { TimeEntry } from '../types/timeEntry';
 
 export async function createTimeEntryService(userid: number, starttime: Date, endtime: Date | undefined, type: (typeof time_entry_type.enumValues)[number]){
     const holidays = new Holidays('DE', 'BW');
@@ -70,7 +71,7 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date, u
     }
 }
 
-export async function getTimeEntriesService(userid: number, type?: (typeof time_entry_type.enumValues)[number], startDate?: DateString, endDate?: DateString){
+export async function getTimeEntriesService(userid: number, type?: (typeof time_entry_type.enumValues)[number], startDate?: DateString, endDate?: DateString) : Promise<TimeEntry[] | string>{
     try{
         const end = endDate ? endDate+"T23:59:59" : undefined;
         if(startDate && end && startDate > end){
