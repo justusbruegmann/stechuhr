@@ -31,7 +31,12 @@ router.post('/notifications/', authMiddleware("user", true), validateRequestBody
     try {
         const body = req.body as NotificationPostBody;
         const userid = Number(res.locals.user.id);
-        const notification = await notificationPost(userid, body.date);
+        const notification = await notificationPost(
+            userid,
+            body.managerId,
+            body.type,
+            body.description
+        );
         return res.status(201).send(notification);
     } catch (e) {
         res.status(500).send("internal error");
