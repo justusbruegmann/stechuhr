@@ -1,9 +1,12 @@
 import * as z from 'zod';
 
 export const notificationPostBodySchema = z.object({
-    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
-        message: "invalid date format, expected YYYY-MM-DD"
-    }),
+    managerId: z.number().nullable(),
+    type: z.enum([
+        "request",
+        "worktime_exceeded"
+    ]),
+    description: z.string().min(1),
 });
 
 export type NotificationPostBody = z.infer<typeof notificationPostBodySchema>;
