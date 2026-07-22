@@ -35,7 +35,6 @@ export async function createRequest(userId: number, type: "holiday" | "sick", st
         throw new InvalidDateRangeError();
     }
 
-
     const timeEntrieList = await timeEntriesService.getTimeEntriesService(userId, undefined, startDate, endDate);
 
     if (timeEntrieList.length != 0) {
@@ -50,8 +49,11 @@ export async function createRequest(userId: number, type: "holiday" | "sick", st
 
     if (type === "holiday") {
         const holidays = user.holidays;
-        const summaryStartDate = `${new Date().getFullYear}-01-01`;
-        const summaryEndDate = `${new Date().getFullYear}-12-31`;
+
+        const currentYear = new Date().getFullYear()
+        const summaryStartDate = `${currentYear}-01-01` as DateString;
+        const summaryEndDate = `${currentYear}-12-31` as DateString;
+
         const takenHolidays = (await summaryService.generateSummary(user, summaryStartDate, summaryEndDate)).vacationDaysTaken;
 
         if ((holidays - takenHolidays) < getDaysInRange(startDate, endDate)) {
@@ -80,21 +82,31 @@ export async function updateRequest(requestId: number, requesterId: number, appr
     }
 
     if (approved) {
-        const startDate = new Date(request.startDate);
+
         const range = getDaysInRange(request.startDate, request.endDate)
         const user = await userManagementService.getUserById(request.userId)
         if (!user) {
             throw new Error();
         }
-        const averageWorktimePerDay = decimalHoursToTime(user.workload);
+        const averageWorktimePerDay = decimalHoursToTime(user.workload / 5);
 
-        for (let i = 0; i <= range; i++) {
-            const startDateAsDate = startDate;
-            const endDateAsDate = startDate;
-            startDateAsDate.setDate(startDate.getDate() + i);
-            startDateAsDate.setHours(8);
-            endDateAsDate.setDate(startDate.getDate() + i);
-            startDateAsDate.setHours(8 + averageWorktimePerDay.hours, averageWorktimePerDay.minutes, averageWorktimePerDay.seconds);
+        const startDate = parseDateString(request.startDate);
+
+        for (let i = 0; i < range; i++) {
+
+            const startDateAsDate = new Date(startDate);
+            startDateAsDate.setDate(startDate.getDate() + i)
+            
+            startDateAsDate.setHours(8, 0, 0, 0);
+
+            const endDateAsDate = new Date(startDateAsDate);
+            endDateAsDate.setHours(
+                8 + averageWorktimePerDay.hours,
+                averageWorktimePerDay.minutes,
+                averageWorktimePerDay.seconds,
+                0
+            );
+
             await timeEntriesService.createTimeEntryService(request.userId, startDateAsDate, endDateAsDate, request.type)
         }
         deleteRequest(requestId, requesterId);
@@ -130,6 +142,11 @@ function getDaysInRange(startDateString: string, endDateString: string): number 
     const diffInDays = Math.round((end.getTime() - start.getTime()) / msPerDay);
 
     return diffInDays + 1;
+}
+
+function parseDateString(date: string): Date {
+    const [year, month, day] = date.split("-").map(Number);
+    return new Date(year, month - 1, day);
 }
 
 function decimalHoursToTime(decimalHours: number) {
