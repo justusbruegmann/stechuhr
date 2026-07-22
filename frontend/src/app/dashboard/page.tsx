@@ -57,7 +57,7 @@ export default function Dashboard() {
 
         const hasUnfinished = todaysEntries.some(entry => !entry.endTime);
         if (!hasUnfinished) {
-            throw new Error("There are no unfinished TimeEntries");
+            //throw new Error("There are no unfinished TimeEntries");
         }
 
         setDailyEntries(prev => {
