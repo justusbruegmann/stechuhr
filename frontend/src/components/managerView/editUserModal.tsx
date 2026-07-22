@@ -72,37 +72,36 @@ export default function EditUserModal({userId, user, updateLocalState}: EditUser
     }
 
 
-    return <>
-        {
-            loading &&
-            <div className="loading">Loading ...</div>
-        }
-        {!loading &&
-            <div className={styles.container}>
-                <h2 className={styles.header}>
-                    {capitalize((userState?.username || "Loading..."))}
-                </h2>
+    return <div className={styles.container}>
+        <h2 className={styles.header}>
+            {capitalize((userState?.username || "Loading..."))}
+        </h2>
+        <hr className={styles.separator}/>
 
-                <hr className={styles.separator}/>
+            {
+                loading &&
+                <div className={styles.spinningLoader}/>
+            }
+            {!loading &&
+                <div className={styles.content}>
+                    <div className={styles.row}>
+                        <p><b>Urlaubstage</b></p>
+                        <input type="number" id="vacationDays" name="Vacation Days" min="0" max="365"
+                               defaultValue={userState?.holidays}/>
+                    </div>
+                    <div className={styles.row}>
+                        <p><b>Arbeitszeit</b></p>
+                        <input type="number" id="workload" name="Workload" min="0" max="168"
+                               defaultValue={userState?.workload}/>
+                    </div>
 
-                <div className={styles.row}>
-                    <p><b>Urlaubstage</b></p>
-                    <input type="number" id="vacationDays" name="Vacation Days" min="0" max="365"
-                           defaultValue={userState?.holidays}/>
+                    <div className={styles.footer}>
+                        <Button label={"Speichern"} type={"accent"} onClick={() => save()}/>
+                        <Button label={"Abbrechen"} type={"primary"} onClick={() => close()}/>
+                    </div>
                 </div>
-                <div className={styles.row}>
-                    <p><b>Arbeitszeit</b></p>
-                    <input type="number" id="workload" name="Workload" min="0" max="168"
-                           defaultValue={userState?.workload}/>
-                </div>
-
-                <div className={styles.footer}>
-                    <Button label={"Speichern"} type={"accent"} onClick={() => save()}/>
-                    <Button label={"Abbrechen"} type={"primary"} onClick={() => close()}/>
-                </div>
-            </div>
-        }
-    </>
+            }
+    </div>
 
 
 }

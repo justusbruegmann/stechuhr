@@ -1,4 +1,4 @@
-import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLastTimeEntry, deleteTimeEntry } from '../repository/timeEntriesRepository';
+import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLastTimeEntry, deleteTimeEntry, getOverlappingTimeEntries } from '../repository/timeEntriesRepository';
 import { time_entry_type } from '../drizzle/schema';
 import Holidays from 'date-holidays';
 import { DateString } from '../types/misc';
@@ -10,7 +10,7 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
         if(starttime.getDay() == 0 || starttime.getDay() == 6){ //no work on weekends
             return "not able to work on weekends";
         }
-        if(holidays.isHoliday(new Date(starttime.getFullYear(), starttime.getMonth(), starttime.getDate()))){ //no work on holidays
+        if(holidays.isHoliday(new Date(starttime.getFullYear(), starttime.getMonth(), starttime.getDate()))){ //no work on holidays 
             return "not able to work on holidays";
         }
         if(starttime.getHours() >= 23 || starttime.getHours() < 6){ //only possible work between 6 and 23 o'clock
@@ -22,6 +22,12 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
         if(endtime && endtime < starttime){  //look if endtime is before starttime
             return "endtime is before starttime";
         }
+
+        const overlapping = await getOverlappingTimeEntries(userid, starttime, endtime);
+        if(overlapping.length > 0){
+            return "time entry overlaps with an other entry";
+        }
+
         const timeEntry = await createTimeEntry(userid, starttime, type, endtime);
         return timeEntry;
     }
@@ -46,6 +52,15 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date, u
         if(timeEntry.startTime != null && timeEntry.startTime > newEndTime){
             return "end time is before start time";
         }
+        if(newEndTime > new Date()){
+            return "end time can not be in the future";
+        }
+
+        const overlapping = await getOverlappingTimeEntries(userid, timeEntry.startTime, newEndTime, timeEntryId);
+        if(overlapping.length > 0){
+            return "time entry overlaps with an other entry";
+        }
+
         const endTime = await setEndTime(timeEntryId, newEndTime);
         return endTime;
     }
@@ -55,12 +70,13 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date, u
     }
 }
 
-export async function getTimeEntriesService(userid: number, type?: "work" | "holiday" | "sick", startDate?: DateString, endDate?: DateString){
+export async function getTimeEntriesService(userid: number, type?: (typeof time_entry_type.enumValues)[number], startDate?: DateString, endDate?: DateString){
     try{
-        if(startDate && endDate && startDate > endDate){
+        const end = endDate ? endDate+"T23:59:59" : undefined;
+        if(startDate && end && startDate > end){
             return "end date is before start date";
         }
-        const timeEntries = await getTimeEntries(userid, type, startDate, endDate);
+        const timeEntries = await getTimeEntries(userid, type, startDate, end);
         return timeEntries;
     }
     catch(e){
@@ -86,9 +102,9 @@ export async function getSingleTimeEntryService(timeEntryId: number, userid: num
     }
 }
 
-export async function getLastTimeEntryService(userid:number){
+export async function getLastTimeEntryService(userid:number, type: (typeof time_entry_type.enumValues)[number]){
     try{
-        const lastTimeEntry = await getLastTimeEntry(userid);
+        const lastTimeEntry = await getLastTimeEntry(userid, type);
         return lastTimeEntry;
     }
     catch(e){

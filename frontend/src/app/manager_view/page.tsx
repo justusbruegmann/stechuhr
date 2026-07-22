@@ -1,7 +1,8 @@
 'use client'
 import User from "@/types/User";
+import Request from "@/types/Request";
 
-import React, {useEffect} from "react"
+import React, {useEffect, useRef} from "react"
 import Header from "@/components/layout/Header";
 import {useModal} from "@/contexts/ModalContext";
 import styles from './manager_view.module.css';
@@ -16,14 +17,17 @@ import Summary from "@/types/summary";
 import {getSummaryForUser} from "@/scripts/summary";
 import {startOfTheMonthDateString, startOfTheWeekDateString, todayDateString} from "@/utils/TimeUtils";
 import {DateString} from "@/types/misc";
+import {getAllRequestsAManagerIsResponsibleFor} from "@/scripts/requests";
+import AnswerRequestModal from "@/components/managerView/answerRequestModal";
 
 
-type UserWithSummaryEntries = User & {
+export type UserWithExtraFields = User & {
     summaryEntries: {
         vacationDaysThisYear: number | null;
         sickDaysThisYear: number | null;
         hoursWorkedThisWeek: number | null;
-    };
+    },
+    openRequests: Request[],
 };
 
 
@@ -33,8 +37,12 @@ export default function ManagerView() {
     /**
      * Loading and storing users
      */
-    const {showModal} = useModal();
-    const [users, setUsers] = React.useState<Record<number, UserWithSummaryEntries>>({});
+    const {showModal, updateModalContent} = useModal();
+    // Track the currently open modal, and for which user it is loaded
+    const answerModalId = useRef<string | null>(null);
+    const [answerModalUserId, setAnswerModalUserId] = React.useState<number | null>(null);
+
+    const [users, setUsers] = React.useState<Record<number, UserWithExtraFields>>({});
     const [loading, setLoading] = React.useState(true);
 
     useEffect(() => {
@@ -76,7 +84,9 @@ export default function ManagerView() {
                 ))
         );
 
-        const extendedUser: UserWithSummaryEntries[] = response.map((user: User, index: number) => {
+        const openRequests = await loadRequests();
+
+        const extendedUser: UserWithExtraFields[] = response.map((user: User, index: number) => {
             const summaryMonth = summariesMonth[index];
             const summaryWeek = summariesWeek[index];
 
@@ -86,12 +96,27 @@ export default function ManagerView() {
                     vacationDaysThisYear: summaryMonth?.vacationDaysTaken ?? null,
                     sickDaysThisYear: summaryMonth?.sickDaysTaken ?? null,
                     hoursWorkedThisWeek: summaryWeek ? Math.floor(summaryWeek.timeWorkedInMinutes / 60) : null
-                }
+                },
+                openRequests: openRequests ? openRequests.filter(request => request.userId === user.id) : [],
             };
         });
 
         const extendedUsers = Object.fromEntries(extendedUser.map(user => [user.id, user]));
         setUsers(extendedUsers);
+    }
+
+    async function loadRequests() {
+        let requests: Request[] = [];
+        try {
+            const response: Request[] = await getAllRequestsAManagerIsResponsibleFor();
+            if (Array.isArray(response)) {
+                requests = response;
+            }
+        } catch (error) {
+            console.error(error);
+            return;
+        }
+        return requests;
     }
 
 
@@ -144,6 +169,41 @@ export default function ManagerView() {
     }
 
 
+    function updateRequests(userId: number, remainingRequests: Request[]) {
+        setUsers(prevUsers => {
+            const user = prevUsers[userId];
+            if (!user) return prevUsers;
+
+            return {
+                ...prevUsers,
+                [userId]: {
+                    ...user,
+                    openRequests: remainingRequests,
+                },
+            };
+        });
+    }
+
+    function renderAnswerRequestModal(userId: number) {
+        return <AnswerRequestModal user={users[userId]} updateLocalState={updateRequests}/>
+    }
+
+    function openAnswerRequestModal(userId: number) {
+        const {id} = showModal("popup", renderAnswerRequestModal(userId))
+        answerModalId.current = id;
+        setAnswerModalUserId(userId);
+    }
+
+    // Update modal content when the async setUsers() is done updating the state
+    useEffect(() => {
+        if (answerModalUserId === null || !answerModalId.current) return;
+        updateModalContent(
+            answerModalId.current,
+            <AnswerRequestModal user={users[answerModalUserId]} updateLocalState={updateRequests} />
+        );
+    }, [users, answerModalUserId]);
+
+
     const columns = ["Name", `Urlaub (${currentYear})`, `Krankheitstage (${currentYear})`, "Arbeitszeit diese Woche", ""];
 
     const rows = Object.keys(users).map((id) => {
@@ -165,7 +225,7 @@ export default function ManagerView() {
                             <Button label={"Bearbeiten"} type={"primary"}
                                     onClick={() => editUser(user.id)}/>
                             <Button label={"Anträge"} type={"accent"}
-                                    onClick={() => alert("Felix, ich warte immer noch auf einen Endpunkt, um Anträge abrufen zu können...")}/>
+                                    onClick={() => openAnswerRequestModal(user.id)}/>
                         </div>
                     </td>
                 </tr>);

@@ -14,6 +14,11 @@
     color: var(--background);
 }
 
+.button-warning {
+    background: var(--the-laend-yellow);
+    color: #fff;
+}
+
 .button-success {
     background: var(--init-green);
     color: var(--background);

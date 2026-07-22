@@ -7,5 +7,5 @@ export default interface Request{
     startDate: DateString,
     endDate: DateString,
     remark?: string,
-    isApporved?: boolean
+    isApproved?: boolean
 }

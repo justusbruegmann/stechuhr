@@ -486,14 +486,13 @@ Die Manager-Ansicht ist daher der Teil der Anwendung, der für Manager-Accounts 
 Die Manager-Ansicht ist in der Anwendung unter der Route /manager_view erreichbar.
 Sie besteht aus einer einzigen großen Tabelle, die für jeden dem angemeldeten Manager untergebenen Mitarbeiter seine vertraglich vereinbarten und bereits genommenen Urlaubstage, seine festgeschriebenen Krankheitstage und eine Zusammenfassung über die geschuldete und bereits geleistete Wochenarbeitszeit anzeigt.
 Außerdem können über den Button "Bearbeiten" in einem Popup die Wochenarbeitszeit und die Urlaubstage angepasst werden.
-
-//ToDo
 Zuletzt kann der Manager hier über den Button "Anträge" in einem Popup offene Anträge seiner untergebenen Mitarbeiter einsehen und akzeptieren oder ablehnen.
-+ Bild davon
 
 ![Manager-Ansicht](images/managerView/managerView.png)
 
 ![Bearbeiten-Popup](images/managerView/popupEdit.png)
+
+![Anträge-Popup](images/managerView/popupRequests.png)
 
 Zum Styling des Frontends ([Manager View](/frontend/src/app/manager_view/manager_view.module.css), [User Table](/frontend/src/components/managerView/userTable.module.css), [EditUserModal](/frontend/src/components/managerView/editUserModal.module.css)) wurde in Teilen KI verwendet.
 Eine genaue Kennzeichnung ist hier schier unmöglich, da die KI einen bestehenden Grundstock an CSS erweitert hat, der dann manuell noch an vielen Stellen nachgebessert wurde.
@@ -513,9 +512,18 @@ Sie sehen dann grafisch dieselbe Fehlermeldung wie Manager-Accounts, die keine u
 #### Implementierung
 Beim Laden der Seite ruft das Frontend die Liste der untergebenen Mitarbeiter des angemeldeten Managers ab.
 Außerdem lädt es für jeden dieser Mitarbeiter je zwei Zusammenfassungen: eine über die aktuelle Woche und eine über den aktuellen Monat.
-// ToDo: Zusätzlich wird zu jedem Mitarbeiter die Liste der offenen Anträge geladen.
+Zusätzlich wird zu jedem Mitarbeiter die Liste der offenen Anträge geladen.
 
 Solange auf die Antworten des Backends gewartet wird, zeigt das Frontend einen Ladebildschirm an.
+Dies kann durch die Menge an gleichzeitigen Anfragen trotz der eingebauten Parallelisierung eine ganze Weile dauern. Für eine produktionsreife Anwendung könnte man hier über Optimierungen nachdenken, z.B.:
+- spezifischere Endpunkte im Backend gestalten, die die Wochenarbeitszeit und Monatlichen Urlaubstage in einem einzigen Request zurückliefern
+- durch Caching wenigstens beim wiederholten Besuch der Manager-Ansicht die Anfragen an das Backend reduzieren
+- Teile der Seite schon rendern (Tabelle), während noch z.B. Zusammenfassungen geladen werden
+- präventiv die Daten der Manager-Ansicht preloaden, während der Benutzer noch auf dem Dashboard ist
+
+
+> Aus Designgründen gefällt mir der API-Endpunkt für dieses Projekt in seiner derzeitigen Form besser, als eine durch Domain-Logik spezialisierte Form.
+Der Rest der Ideen sprengt den Rahmen dessen, was ich an Zeit und Aufwand bereit bin, noch in das Projekt zu investieren. Bitte habt ein paar Sekunden Geduld beim Laden der Seite.
 
 Aus den Antworten wird ein erweitertes User-Objekt zusammengesetzt, in dem die relevanten Daten für jeden Mitarbeiter zusammengefasst sind:
 ```typescript
@@ -527,11 +535,23 @@ type UserWithSummaryEntries = User & {
     };
 };
 ```
-Es folgen Definitionen für die handler-Funktionen zum Bearbeiten von Mitarbeiterdaten
-// ToDo
-und zum Akzeptieren/Ablehnen von Anträgen.
+Es folgen Definitionen für die handler-Funktionen zum Bearbeiten von Mitarbeiterdaten und zum Akzeptieren/Ablehnen von Anträgen.
 
 Schließlich werden die Daten als fertige React.ReactNode-Elemente an die UserTable-Komponente übergeben, die sie in einer Tabelle darstellt.
+
+Die Bearbeitungsfunktionen öffnen jeweils ein Popup: das EditUserModal zum Bearbeiten von Arbeitszeiten und Urlaubstagen, und das RequestsModal zum Anzeigen und Bearbeiten von Anträgen.
+Die Definitionen dieser Modals sind in /src/components/managerView zu finden.
+
+Beide funktionieren ähnlich: sie erhalten den initialen Stand der Daten, die sie darstellen sollen und eine Callback-Funktion, die den lokalen Zustand aktuell halten, ohne nach jeder Änderung eine erneute Server-Anfrage triggern zu müssen.
+Trotzdem haben beide jeweils eine Besonderheit:
+
+**EditUserModal:** \
+Das EditUserModal fordert nur die userId als notwendigen Parameter. Wird kein fertiges user-Objekt übergeben, lädt es die Daten des Benutzers selbstständig nach, um sie im Modal darstellen zu können. Falls der User aber schon im Vorfeld geladen wurde, kann er als user-Objekt übergeben werden, um die erneute Anfrage zu vermeiden.
+Da die Manager-Ansicht der einzige Punkt der Anwendung ist, an dem das Modal eingebunden ist, bleibt diese Funktion momentan unbenutzt. Da es aber nun schon einmal existiert und ich die Möglichkeit nicht ausschließen konnte, dass sie in der weiteren Entwicklung der Anwendung noch hätte Verwendung finden können, habe ich sie nicht entfernt.
+
+**RequestsModal:** \
+Das RequestsModal muss mit einer schrumpfenden Liste von Anträgen umgehen können, da beantwortete Anträge aus der Ansicht entfernt werden.
+Deshalb existiert hier ein useEffect-Hook, der bei jeder Änderung des lokalen Stands der Anträge des geöffneten Users den Inhalt des Modals neu rendert.
 
 ### Backend
 Gemäß dem generellen Aufbau des Backends besteht jeder Endpunkt aus drei Schichten: 
