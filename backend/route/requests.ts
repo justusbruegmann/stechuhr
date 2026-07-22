@@ -126,23 +126,11 @@ router.post(
                     message: error.message,
                 });
             }
-            if (error instanceof RequestOverlapWithTimeEntryError) {
+            if (error instanceof (RequestOverlapWithTimeEntryError || RequestOverlapWithRequestError || NotEnoughHolidaysLeft)) {
                 return res.status(409).json({
                     code: error.code,
                     message: error.message,
                 });
-            }
-            if (error instanceof RequestOverlapWithRequestError) {
-                return res.status(409).json({
-                    code: error.code,
-                    message: error.message
-                })
-            }
-            if (error instanceof NotEnoughHolidaysLeft) {
-                return res.status(409).json({
-                    code: error.code,
-                    message: error.message
-                })
             }
             return res.status(500).json({
                 code: "INTERNAL_SERVER_ERROR",
