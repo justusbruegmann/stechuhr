@@ -2,6 +2,12 @@
     padding: 10px;
 }
 
+.errorMessage {
+    color: var(--sew-red);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
 .container-popup-buttons {
     display: flex;
     justify-content: flex-end;

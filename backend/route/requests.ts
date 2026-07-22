@@ -5,7 +5,7 @@ import { getRequestsRequestParameterSchema, getRequestsRequestParameter, request
 import * as requestsService from "../service/requests";
 import * as userManagementService from "../service/userManagement";
 import { validateRequestBody } from "../middleware/validateRequestBody";
-import { InvalidDateRangeError, NotFoundError, RequestOverlapWithRequestError, RequestOverlapWithTimeEntryError, UnauthorizedError } from "../errors/requestErrors";
+import { InvalidDateRangeError, NotEnoughHolidaysLeft, NotFoundError, RequestOverlapWithRequestError, RequestOverlapWithTimeEntryError, UnauthorizedError } from "../errors/requestErrors";
 import { validateUserID } from "../middleware/validateUserID";
 
 const router = Router();
@@ -127,13 +127,19 @@ router.post(
                 });
             }
             if (error instanceof RequestOverlapWithTimeEntryError) {
-                return res.status(400).json({
+                return res.status(409).json({
                     code: error.code,
                     message: error.message,
                 });
             }
             if (error instanceof RequestOverlapWithRequestError) {
-                return res.status(400).json({
+                return res.status(409).json({
+                    code: error.code,
+                    message: error.message
+                })
+            }
+            if (error instanceof NotEnoughHolidaysLeft) {
+                return res.status(409).json({
                     code: error.code,
                     message: error.message
                 })

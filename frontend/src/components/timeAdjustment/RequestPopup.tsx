@@ -18,6 +18,7 @@ export default function RequestPopup({ date }: RequestPopupProps) {
   const [startDate, setStartDate] = useState(formatDate(date));
   const [endDate, setEndDate] = useState(formatDate(date));
   const [remark, setRemark] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   function upadateStartDate(date: string) {
     setStartDate(date);
@@ -61,9 +62,18 @@ export default function RequestPopup({ date }: RequestPopupProps) {
     );
   }
 
-  async function createRequest(){
-    const createdRequest = await script.createRequest(type, startDate, endDate, remark);
-    return createdRequest;
+  async function createRequest() {
+    try {
+      setErrorMessage("");
+      const createdRequest = await script.createRequest(type, startDate, endDate, remark);
+      close();
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message)
+      } else {
+        setErrorMessage("Ein unbekannter Fehler ist aufgetreten.")
+      }
+    }
   }
 
   return (
@@ -72,6 +82,14 @@ export default function RequestPopup({ date }: RequestPopupProps) {
 
       <br />
       <Tabs tabs={tabs} />
+      <br />
+
+      {errorMessage && (
+        <div className={styles["errorMessage"]}>
+          {errorMessage}
+        </div >
+      )}
+
       <br />
 
       <div className={styles["container-popup-buttons"]}>
@@ -88,19 +106,17 @@ export default function RequestPopup({ date }: RequestPopupProps) {
           type="accent"
           height={2.5}
           width={9}
-          onClick={() => {
+          onClick={async () => {
             if (checkDateFormat(startDate) && checkDateFormat(endDate)) {
               if (startDate <= endDate) {
-                createRequest();
-                // toDo: add close() when successful and Error text when not
+                await createRequest();
               } else {
-                alert("Die Abwesenheit darf nicht enden bevor sie angefangen hat")
+                setErrorMessage("Die Abwesenheit darf nicht enden bevor sie angefangen hat.");
               }
 
             } else {
-              alert("Bitte beide Daten in korrektem Format angeben")
+              setErrorMessage("Bitte beide Daten in korrektem Format angeben.");
             }
-
           }}
         />
       </div>
