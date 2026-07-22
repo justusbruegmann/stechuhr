@@ -57,7 +57,7 @@ export async function getOverlappingTimeEntries(userId: number, startTime: Date,
     }
     const result = await db.select().from(timeEntries).where(and(...conditions));
     return result;
-}
+} 
 
 export async function deleteTimeEntry(timeEntryId: number){
     const result = await db.delete(timeEntries).where(eq(timeEntries.id, timeEntryId)).returning();
