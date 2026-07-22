@@ -2,6 +2,7 @@ import { db } from '../app'
 import { timeEntries, time_entry_type } from '../drizzle/schema';
 import { eq, desc, gte, lte, and, lt, gt, ne, or, isNull } from "drizzle-orm";
 import { DateString } from '../types/misc';
+import { TimeEntry } from '../types/timeEntry';
 
 export async function createTimeEntry(userId: number, startTime: Date, type: (typeof time_entry_type.enumValues) [number], endTime?: Date) {
     const result = await db.insert(timeEntries).values({
@@ -18,7 +19,7 @@ export async function setEndTime(timeEntryId: number, endTime: Date) {
     return result[0];
 }
 
-export async function getTimeEntries(userId: number, type?: (typeof time_entry_type.enumValues)[number], startDate?: DateString, endDate?: DateString) {
+export async function getTimeEntries(userId: number, type?: (typeof time_entry_type.enumValues)[number], startDate?: DateString, endDate?: DateString) : Promise<TimeEntry[]> {
     const conditions = [eq(timeEntries.userId, userId)];
     if(type){
         conditions.push(eq(timeEntries.type, type));

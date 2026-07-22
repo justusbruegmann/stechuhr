@@ -18,7 +18,7 @@ interface PopupProps {
     addEntry: (date: DateString, entry: TimeEntry) => void;
     updateEntry: (endTime: Date) => void;
 }
-//
+
 export default function Timecard({openOverview, isOverviewOpenable = false, addEntry, updateEntry}: PopupProps) {
     const [time, setTime] = useState<Date | null>(null);
     const [clicked, setClicked] = useState(true);
