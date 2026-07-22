@@ -56,7 +56,9 @@ export async function createRequest(userId: number, type: "holiday" | "sick", st
 
         const takenHolidays = (await summaryService.generateSummary(user, summaryStartDate, summaryEndDate)).vacationDaysTaken;
 
-        if ((holidays - takenHolidays) < getDaysInRange(startDate, endDate)) {
+        const requestedHolidayDays = getWorkingDaysInRange(startDate, endDate);
+
+        if ((holidays - takenHolidays) < requestedHolidayDays) {
             throw new NotEnoughHolidaysLeft();
         }
     }
@@ -97,6 +99,12 @@ export async function updateRequest(requestId: number, requesterId: number, appr
             const startDateAsDate = new Date(startDate);
             startDateAsDate.setDate(startDate.getDate() + i)
             
+            const dayOfWeek = startDateAsDate.getDate()
+
+            if(dayOfWeek === 0 || dayOfWeek === 6) {
+                continue;
+            }
+
             startDateAsDate.setHours(8, 0, 0, 0);
 
             const endDateAsDate = new Date(startDateAsDate);
@@ -142,6 +150,26 @@ function getDaysInRange(startDateString: string, endDateString: string): number 
     const diffInDays = Math.round((end.getTime() - start.getTime()) / msPerDay);
 
     return diffInDays + 1;
+}
+
+function getWorkingDaysInRange(startDate: DateString, endDate: DateString): number {
+    const start = parseDateString(startDate);
+    const end = parseDateString(endDate);
+
+    let workingDays = 0;
+    const current = new Date(start);
+
+    while (current <= end) {
+        const day = current.getDay();
+
+        if (day !== 0 && day !== 6) {
+            workingDays++;
+        }
+
+        current.setDate(current.getDate() + 1);
+    }
+
+    return workingDays;
 }
 
 function parseDateString(date: string): Date {
