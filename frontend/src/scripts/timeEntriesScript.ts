@@ -1,4 +1,3 @@
-import { error } from "node:console";
 import sendRequest from "@/utils/requestWrapper";
 
 const BASE_URL: string | undefined = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -106,8 +105,12 @@ export async function getSingleTimeEntry(token: string, userid: number, timeEntr
     }
 }
 
-export async function getLastTimeEntry(token: string, userid: number){
-    const url = `${BASE_URL}/timeentries/last`;
+export async function getLastTimeEntry(token: string, userid: number, type?: "work"|"holiday"|"sick"){
+    const params = new URLSearchParams();
+    if(type){
+        params.append("type", type);
+    }
+    const url = `${BASE_URL}/timeentries/last?${params.toString()}`;
     const headers = {
         "content-type": "application/json",
         "Authorization": token,
