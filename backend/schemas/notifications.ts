@@ -1,5 +1,5 @@
 import * as z from 'zod';
-
+ 
 export const notificationPostBodySchema = z.object({
     managerId: z.number().nullable(),
     type: z.enum([
