@@ -76,6 +76,7 @@ export async function updateRequest(requestId: number, requesterId: number, appr
     if (approved === false) {
         deleteRequest(requestId, requesterId);
         //Generiere eine notification
+        return;
     }
 
     if (approved) {
