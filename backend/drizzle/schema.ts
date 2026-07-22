@@ -31,7 +31,7 @@ export const notificationTypeEnum = pgEnum("notification_type", [
     "worktime_exceeded",
 ]);
 
-// Tables
+// Tables  
 export const time_entry_type = pgEnum("time_entry_type", ["work", "holiday", "sick"]);
 
 export const timeEntries = pgTable("timeEntries", {
