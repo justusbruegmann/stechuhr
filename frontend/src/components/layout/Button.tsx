@@ -4,7 +4,7 @@ import * as React from 'react';
 import styles from './Button.module.css';
 
 type Props = {
-    type?: 'primary' | 'accent' | 'success' | 'error';
+    type?: 'primary' | 'accent' | 'success' | 'error' | "warning";
     label: React.ReactNode;
     width?: number | string;
     height?: number | string;
@@ -13,6 +13,7 @@ type Props = {
     style?: React.CSSProperties;
     loading?: boolean;
     disabled?: boolean;
+    tooltip?: string;
 };
 
 export default function Button({
@@ -24,13 +25,15 @@ export default function Button({
                                    className,
                                    style,
                                    loading,
-                                   disabled
+                                   disabled,
+                                   tooltip,
                                }: Props) {
     const variantClass =
         type === 'primary' ? styles['button-normal']
             : type === 'accent' ? styles['button-accent']
                 : type === 'success' ? styles['button-success']
-                    : styles['button-error'];
+                    : type === "warning" ? styles['button-warning']
+                        : styles['button-error'];
 
     const computedStyle: React.CSSProperties = {};
     if (width !== undefined) computedStyle.width = typeof width === 'number' ? `${width}rem` : width;
@@ -42,8 +45,10 @@ export default function Button({
     // @ts-ignore
     return (
         <div className={styles.wrapper} style={mergedStyle}>
-            <button className={mergedClassName} style={{height: '100%', width: '100%'}} onClick={onClick} disabled={disabled || loading} suppressHydrationWarning>
-                {loading ? <span className={`${styles.spinner} ${type === 'primary' ? styles.darkSpinner : ''}`} /> : label}
+            <button className={mergedClassName} style={{height: '100%', width: '100%'}} onClick={onClick}
+                    disabled={disabled || loading} title={tooltip} suppressHydrationWarning >
+                {loading ?
+                    <span className={`${styles.spinner} ${type === 'primary' ? styles.darkSpinner : ''}`}/> : label}
             </button>
         </div>
     );

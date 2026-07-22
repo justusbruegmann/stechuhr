@@ -11,8 +11,7 @@ import {useRouter} from "next/navigation";
 import {loginUsername} from "@/scripts/auth";
 
 
-
-export default function Page(){
+export default function Page() {
     const router = useRouter();
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -59,6 +58,7 @@ export default function Page(){
             let result: any;
             try {
                 result = await loginUsername(username.trim(), password.trim());
+                console.log(result);
             } catch (e) {
                 console.error(e);
             }
@@ -112,11 +112,38 @@ export default function Page(){
                     Login
                 </div>
                 <input type="text" id="usernameInput" className={`${styles["login-input"]}`} placeholder="  Username"
-                       onChange={(e) => setUsername(e.target.value)}   onKeyDown={handleEnter}/>
+                       onChange={(e) => setUsername(e.target.value)} onKeyDown={handleEnter}/>
                 <input type="password" id="passwordInput" className={`${styles["login-input"]}`}
-                       placeholder="  Password" onChange={(e) => setPassword(e.target.value)}   onKeyDown={handleEnter}/>
+                       placeholder="  Password" onChange={(e) => setPassword(e.target.value)} onKeyDown={handleEnter}/>
+                <div style={{"margin": "1rem"}}>
+                    <label htmlFor="visibility">Password anzeigen:</label>
+                    <Image src={"/eye.svg"} alt={"showPasswordIcon"} width={20} height={20}
+                           style={{"filter": "invert()", "marginLeft": "0.25rem", "position": "relative", "top": "5px"}}
+                           id="visibility"
+                           onPointerDown={(e) => {
+                               const passwordInput = document.getElementById("passwordInput") as HTMLInputElement;
+                               passwordInput.type = "text"
+                               const icon = document.getElementById("visibility") as HTMLElement;
+                               icon.style.marginLeft = "0.25rem";
+                               icon.style.position = "relative";
+                               icon.style.top = "5px";
+                               icon.style.filter = "invert() opacity(0.5)";
+
+                           }}
+                           onMouseUp={(e) => {
+                               const passwordInput = document.getElementById("passwordInput") as HTMLInputElement;
+                               passwordInput.type = "password";
+                               const icon = document.getElementById("visibility") as HTMLElement;
+                               icon.style.marginLeft = "0.25rem";
+                               icon.style.position = "relative";
+                               icon.style.top = "5px";
+                               icon.style.filter = "invert() opacity(1)";
+                           }}
+                    />
+                </div>
                 <div className={`${styles["login-center"]}`}>
-                    {!validInputs && <p className={styles.invalidUsername}>Nutzername und Passwort sind ungültig </p>}
+                    {!validInputs &&
+                        <p className={styles.invalidUsername}>Nutzername und Passwort sind ungültig </p>}
                 </div>
                 <Button style={{margin: '.75rem'}} label={"Login"} type={"accent"} height={2.5}
                         width={"calc(100% - 1rem)"}

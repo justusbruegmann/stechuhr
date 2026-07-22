@@ -38,14 +38,17 @@ export default function ManualEntryPopup({date, onCreate}: Props) {
         id: -1,
         userId: -1,
         startTime: new Date(date.setHours(startHours, startMinutes)).toISOString(),
-        endTime: new Date(date.setHours(endHours, endMinutes)).toISOString()
+        endTime: new Date(date.setHours(endHours, endMinutes)).toISOString(),
+          type: "work"
+
       };
       onCreate(entry);
     } else {
       const entry: TimeEntry = {
         id: -1,
         userId: -1,
-        startTime: new Date(date.setHours(startHours, startMinutes)).toISOString()
+        startTime: new Date(date.setHours(startHours, startMinutes)).toISOString(),
+          type: "work"
       };
       onCreate(entry);
     }

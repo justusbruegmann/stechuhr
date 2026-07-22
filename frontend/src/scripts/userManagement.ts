@@ -92,24 +92,6 @@ export async function updateRole(userId: number, role: string, tokenOfAdmin: str
         "role": role.toLowerCase(),
     }
     return await sendRequest("PATCH", url, body)
-    /*
-    const headers = {
-        "content-type": "application/json",
-        "Authorization": tokenOfAdmin,
-        "userid": `${useridOfAdmin}`
-    }
-    const body = {
-        "role": role.toLowerCase(),
-    }
-    const result: Response = await fetch(url, {method: "patch", body: JSON.stringify(body), headers: headers});
-    if (result.status === 204) {
-        return 204;
-    } else if (result.status === 401) {
-        return 401
-    } else {
-
-        return 400
-    }*/
 }
 
 export async function updateManager(userId: number, managerId: number, tokenOfAdmin: string, useridOfAdmin: number) {
@@ -118,22 +100,12 @@ export async function updateManager(userId: number, managerId: number, tokenOfAd
         "managerid": managerId,
     }
     return await sendRequest("PATCH",url,body)
-    /*const headers = {
-        "content-type": "application/json",
-        "Authorization": tokenOfAdmin,
-        "userid": `${useridOfAdmin}`
-    }
-    const body = {
-        "managerid": managerId,
-    }
-    const result = await fetch(url, {method: "patch", body: JSON.stringify(body), headers: headers});
-    if (result.status === 204) {
-        return 204;
-    } else if (result.status === 401) {
-        return 401
-    } else {
-        return 400
-    }*/
+}
+
+export async function resetPassword(userId:number) {
+    const url = `${BASE_URL}/users/${userId}/password`;
+    return await sendRequest("PATCH", url,);
+
 }
 
 
