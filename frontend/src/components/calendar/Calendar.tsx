@@ -6,7 +6,7 @@ import { useState } from "react";
 import Holidays from 'date-holidays';
 import TimeEntry from "@/types/TimeEntry";
 import { DateString } from "@/types/misc";
-import { generateDateString } from "@/utils/TimeUtils";
+import { generateDateString, generateDateStringLocal } from "@/utils/TimeUtils";
 import User from "@/types/User";
 
 
@@ -244,7 +244,7 @@ export default function Kalender({ user, showDailyDetails, timeEntries, onMonthC
                         if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
                             return (
                                 <div key={index} className={styles.calendar_today} style={dayStyle}
-                                    onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day+1)))}>                                    {day && <div className={styles.calendar_day_text}>{day}</div>}
+                                    onClick={() => showDailyDetails(generateDateStringLocal(new Date(currentYear, currentMonth, day)))}>                                    {day && <div className={styles.calendar_day_text}>{day}</div>}
                                     <div className={styles.calendar_day_symbols_container}>
                                         {handleEntries(index, day)}
                                     </div>
@@ -253,7 +253,7 @@ export default function Kalender({ user, showDailyDetails, timeEntries, onMonthC
                         }
                         return (
                             <div key={index} className={styles.calendar_day} style={dayStyle}
-                                onClick={() => showDailyDetails(generateDateString(new Date(currentYear, currentMonth, day)))}>                                {day && <div className={styles.calendar_day_text}>{day}</div>}
+                                onClick={() => showDailyDetails(generateDateStringLocal(new Date(currentYear, currentMonth, day)))}>                                {day && <div className={styles.calendar_day_text}>{day}</div>}
                                 <div className={styles.calendar_day_symbols_container}>
                                     {handleEntries(index, day)}
                                 </div>

@@ -115,7 +115,7 @@ export default function Page() {
                        onChange={(e) => setUsername(e.target.value)} onKeyDown={handleEnter}/>
                 <input type="password" id="passwordInput" className={`${styles["login-input"]}`}
                        placeholder="  Password" onChange={(e) => setPassword(e.target.value)} onKeyDown={handleEnter}/>
-                <div style={{"margin": "1rem"}}>
+                <div style={{"margin": ".3rem"}}>
                     <label htmlFor="visibility">Password anzeigen:</label>
                     <Image src={"/eye.svg"} alt={"showPasswordIcon"} width={20} height={20}
                            style={{"filter": "invert()", "marginLeft": "0.25rem", "position": "relative", "top": "5px"}}

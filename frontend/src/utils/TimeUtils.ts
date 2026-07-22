@@ -56,6 +56,10 @@ export function generateDateString(date: Date): string {
     return date.toISOString().slice(0, 10);
 }
 
+export function generateDateStringLocal(date: Date): string {
+    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    return generateDateString(utcDate);}
+
 /**
  * This strange workaround only exists because timezones are a pain in the ass(rse) and javascript Dates can not be created
  * with an explicit timezone.
