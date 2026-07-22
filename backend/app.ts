@@ -65,11 +65,13 @@ import summary from "./route/summary";
 import requests from "./route/requests";
 import {authMiddleware} from "./middleware/auth";
 import timeEntriesRoute from "./route/timeEntriesRoute";
+import notification from "./route/notification";
 
 app.use(userMangement);
 app.use(auth);
 app.use(summary);
 app.use(timeEntriesRoute);
+app.use(notification);
 app.use(requests);
 
 app.get("/", (req, res) => {
