@@ -2,6 +2,7 @@ import * as repository from "../repository/requests";
 import * as userManagementService from "../service/userManagement";
 import * as timeEntriesService from "../service/timeEntriesService";
 import * as summaryService from "../service/summary";
+import * as notificationService from "../service/notification";
 import { DateString } from "../types/misc";
 import { InvalidDateRangeError, RequestOverlapWithTimeEntryError, RequestOverlapWithRequestError, UnauthorizedError, NotFoundError, NotEnoughHolidaysLeft } from "../errors/requestErrors";
 
@@ -79,7 +80,8 @@ export async function updateRequest(requestId: number, requesterId: number, appr
 
     if (approved === false) {
         deleteRequest(requestId, requesterId);
-        //Generiere eine notification
+        const message = getNotificationMessage(request.type, request.startDate, request.endDate, false);
+        notificationService.notificationPost(request.userId, request.managerId, "request", message);
         return;
     }
 
@@ -115,8 +117,10 @@ export async function updateRequest(requestId: number, requesterId: number, appr
                 0
             );
 
-            await timeEntriesService.createTimeEntryService(request.userId, startDateAsDate, endDateAsDate, request.type)
+            await timeEntriesService.createTimeEntryService(request.userId, startDateAsDate, endDateAsDate, request.type);
         }
+        const message = getNotificationMessage(request.type, request.startDate, request.endDate, false);
+        notificationService.notificationPost(request.userId, request.managerId, "request", message);
         deleteRequest(requestId, requesterId);
         return;
     }
@@ -185,4 +189,23 @@ function decimalHoursToTime(decimalHours: number) {
     const seconds = totalSeconds % 60;
 
     return { hours, minutes, seconds };
+}
+
+function getNotificationMessage(type: "sick" | "holiday", startDate: DateString, endDate: DateString, approved: boolean): string {
+    let requestType: string = ""
+    if (type === "sick") {
+        requestType = "Krankheit"
+    }
+    if (type === "holiday") {
+        requestType = "Urlaub"
+    }
+
+    let isApproved: string;
+    if (approved) {
+        isApproved = "genehmigt"
+    } else {
+        isApproved = "abgelent"
+    }
+
+    return `Dein Antrag auf ${requestType} vom ${startDate} bis zum ${endDate} wurde ${isApproved}.`
 }
