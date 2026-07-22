@@ -10,7 +10,9 @@ export const getRequestsRequestParameterSchema = z.object(
     {
         userId: z
             .coerce.number()
-            .positive()
+            .positive(),
+        startDate: dateStringSchema.optional(),
+        endDate: dateStringSchema.optional()
     }
 )
 

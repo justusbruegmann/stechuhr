@@ -8,7 +8,7 @@ export default async function sendRequest(
     const token = localStorage.getItem("token");
     const loggedInUserId = localStorage.getItem("userid");
     if (!ignoreHeader && (!token || !loggedInUserId)) {
-            throw new Error("token or userid not found in local storage");
+        throw new Error("token or userid not found in local storage");
     }
 
     const headersPreset = {
@@ -25,15 +25,25 @@ export default async function sendRequest(
     let response;
     if (body !== undefined && body !== null) {
         const bodyJson = JSON.stringify(body)
-        response = await fetch(url, {method: method, body: bodyJson, headers: headers})
+        response = await fetch(url, { method: method, body: bodyJson, headers: headers })
     } else {
-        response = await fetch(url, {method: method, headers: headers})
-    }
-
-    if (!response.ok) {
-        throw new Error(response.statusText);
+        response = await fetch(url, { method: method, headers: headers })
     }
 
     const text = await response.text();
-    return text ? JSON.parse(text) : null;
+
+    let responseBody;
+    if (text) {
+        responseBody = JSON.parse(text);
+
+    }
+
+    if (response.ok) {
+        return responseBody ?? null;
+    }
+
+    if (responseBody && typeof responseBody === "object" && "message" in responseBody) {
+        throw new Error(responseBody.message);
+    }
+    throw new Error(response.statusText)
 }

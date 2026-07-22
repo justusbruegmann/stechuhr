@@ -1,10 +1,18 @@
 import { db } from '../app';
 import { requests } from '../drizzle/schema';
-import { eq, and, gt } from "drizzle-orm";
+import { eq, and, gte, lte } from "drizzle-orm";
 import Request from '../types/requests'
+import { DateString } from '../types/misc';
 
-export async function getAllRequestsForUser(userId: number) {
-    return await db.select().from(requests).where(eq(requests.userId, userId));
+export async function getRequestsForUser(userId: number, startDate?: DateString, endDate?: DateString) {
+    const conditions = [eq(requests.userId, userId)]
+    if (startDate) {
+        conditions.push(gte(requests.endDate, startDate));
+    }
+    if (endDate) {
+        conditions.push(lte(requests.startDate, endDate));
+    }
+    return await db.select().from(requests).where(and(...conditions));
 }
 
 export async function getAllRequestsAManagerIsResponsibleFor(managerId: number) {

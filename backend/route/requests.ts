@@ -4,8 +4,9 @@ import { validateQueryParameters } from "../middleware/validateQueryParameters";
 import { getRequestsRequestParameterSchema, getRequestsRequestParameter, requestsRequestBodySchema, requestsRequestBody, updateRequestsRequestBodySchema, UpdateRequestBody } from "../schemas/requests";
 import * as requestsService from "../service/requests";
 import * as userManagementService from "../service/userManagement";
-import User from "../types/users";
 import { validateRequestBody } from "../middleware/validateRequestBody";
+import { InvalidDateRangeError, NotEnoughHolidaysLeft, NotFoundError, RequestOverlapWithRequestError, RequestOverlapWithTimeEntryError, UnauthorizedError } from "../errors/requestErrors";
+import { validateUserID } from "../middleware/validateUserID";
 
 const router = Router();
 
@@ -16,57 +17,90 @@ router.get(
     async (req, res) => {
         const queryParams = res.locals.queryParams as getRequestsRequestParameter;
 
-        const userId = queryParams.userId;
-
+        const { userId, startDate, endDate } = queryParams;
         const requesterId = res.locals.user.id;
 
         if (requesterId == userId) {
-            const requests = await requestsService.getAllRequestsForUser(userId);
-            return res.status(200).json(requests);
+            try {
+                const requests = await requestsService.getRequestsForUser(userId, startDate, endDate);
+                return res.status(200).json(requests);
+            } catch (error) {
+                if (error instanceof InvalidDateRangeError) {
+                    return res.status(400).json({
+                        code: error.code,
+                        message: error.message
+                    });
+                }
+                return res.status(500).json({
+                    code: "INTERNAL_SERVER_ERROR",
+                    message: "Etwas ist schiefgelaufen",
+                })
+            }
         }
 
         try {
             const user = await userManagementService.getUserById(userId);
             if (user?.managerid == requesterId) {
-                const requests = await requestsService.getAllRequestsForUser(userId);
+                const requests = await requestsService.getRequestsForUser(userId, startDate, endDate);
 
                 return res.status(200).json(requests);
-            } else {
-                return res.status(401).send("Unauthorized")
             }
-        } catch {
-            return res.status(401).send("Unauthorized");
+
+            return res.status(401).json({
+                code: "UNAUTHORIZED",
+                message: "Sie haben nicht die nötige Berechtigung"
+            });
+        } catch (error) {
+            if (error instanceof InvalidDateRangeError) {
+                return res.status(400).json({
+                    code: error.code,
+                    message: error.message,
+                });
+            }
+            return res.status(400).send("Bad Request")
         }
 
     });
 
 router.get(
-    '/requests/manager/:managerId',
+    '/requests/manager',
     authMiddleware("manager"),
     async (req, res) => {
+        const managerId = res.locals.user.id;
         try {
-            const managerId = Number(req.params.managerId);
             const requests = await requestsService.getAllRequestsAManagerIsResponsibleFor(managerId);
             return res.status(200).json(requests);
         } catch {
-            return res.status(404).send("Not Found");
+            return res.status(500).json({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Etwas ist schiefgelaufen",
+            })
         }
     });
 
 router.get(
     '/requests/:id',
+    validateUserID,
     authMiddleware("user", true),
     async (req, res) => {
         const requesterId = res.locals.user.id;
+        const requestId = Number(req.params.id);
         try {
-            const requestId = Number(req.params.id);
             const request = await requestsService.getSingleRequestById(requestId);
-            if (request && (request.userId === requesterId || request.managerId === requesterId)) {
-                return res.status(200).json(request);
-            } else {
-                return res.status(401).send("Unauthorized");
+            if (request.userId !== requesterId || request.managerId !== requesterId) {
+                return res.status(401).json({
+                    code: "UNAUTHORIZED",
+                    message: "Sie haben nicht die nötige Berechtigung"
+                });
             }
-        } catch {
+            return res.status(200).json(request);
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                return res.status(404).json({
+                    code: error.code,
+                    message: error.message,
+                });
+            }
             return res.status(400).send("Bad Request");
         }
     });
@@ -85,52 +119,86 @@ router.post(
             const createdRequest = await requestsService.createRequest(userId, type, startDate, endDate, remark);
 
             return res.status(201).send();
-        } catch (e) {
-            console.error(e);
-            return res.status(400).send("Bad Request");
+        } catch (error) {
+            if (error instanceof InvalidDateRangeError) {
+                return res.status(400).json({
+                    code: error.code,
+                    message: error.message,
+                });
+            }
+            if (error instanceof (RequestOverlapWithTimeEntryError || RequestOverlapWithRequestError || NotEnoughHolidaysLeft)) {
+                return res.status(409).json({
+                    code: error.code,
+                    message: error.message,
+                });
+            }
+            return res.status(500).json({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Etwas ist schiefgelaufen",
+            })
         }
     });
 
 router.patch(
     '/requests/:id',
+    validateUserID,
     authMiddleware("manager"),
     validateRequestBody(updateRequestsRequestBodySchema),
     async (req, res) => {
-        try {
-            const id = Number(req.params.id);
-            const requesterId = res.locals.user.id;
-            const { approved } = req.body;
 
+        const id = Number(req.params.id);
+        const requesterId = res.locals.user.id;
+        const { approved } = req.body as UpdateRequestBody;
+
+        try {
             const updatedRequest = await requestsService.updateRequest(id, requesterId, approved);
 
+            return res.status(200).json(updatedRequest);
 
-            if (updatedRequest) {
-                return res.status(200).json(updatedRequest);
-            } else {
-                return res.status(401).send("Unauthorized");
+        } catch (error) {
+            if (error instanceof UnauthorizedError) {
+                return res.status(401).json({
+                    code: error.code,
+                    message: error.message,
+                });
             }
-        } catch {
-            return res.status(400).send("Bad request");
+            if (error instanceof NotFoundError) {
+                return res.status(404).json({
+                    code: error.code,
+                    message: error.message,
+                });
+            }
+            return res.status(500).json({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Etwas ist schiefgelaufen",
+            });
         }
     });
 
 router.delete(
     '/requests/:id',
+    validateUserID,
     authMiddleware("user", true),
     async (req, res) => {
-        try {
-            const id = Number(req.params.id);
-            const requesterId = res.locals.user.id;
 
+        const id = Number(req.params.id);
+        const requesterId = res.locals.user.id;
+
+        try {
             const deletedRequest = await requestsService.deleteRequest(id, requesterId);
 
-            if (deletedRequest) {
-                return res.status(200).json(deletedRequest);
-            } else {
-                return res.status(401).send("Unauthorized");
+            return res.status(200).json(deletedRequest);
+        } catch (error) {
+            if (error instanceof UnauthorizedError) {
+                return res.status(401).json({
+                    code: error.code,
+                    message: error.message,
+                });
             }
-        } catch {
-            return res.status(400).send("Bad request");
+            return res.status(500).json({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Etwas ist schiefgelaufen",
+            });
         }
     }
 )

@@ -3,11 +3,21 @@
 import Button from "@/components/layout/Button";
 import { useModal } from "@/contexts/ModalContext";
 import TestComponent from "@/app/ctest/TestComponent";
+import { getAllRequestsAManagerIsResponsibleFor, getSingleRequestById, updateRequest, deleteRequest } from "@/scripts/requests";
 
-//asd
+
 export default function Ctest() {
 
     const { showModal } = useModal();
+
+    async function a(){
+        try {
+            const requestList = await deleteRequest(14);
+            console.log(requestList);
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     return (
         <>
@@ -41,6 +51,11 @@ export default function Ctest() {
                     showModal("spinningLoader", <p>Logging in</p>)
                 } />
             <br />
+            
+            <Button label={"Update Request"} type={"primary"} height={3} width={15}
+                onClick={() =>
+                    a()
+                } />
         </>
     );
 }
