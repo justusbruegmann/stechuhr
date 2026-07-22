@@ -6,14 +6,12 @@ import {
     managerUpdate,
     OTPChange,
     roleUpdate,
-    userCreation,
     userDelete,
     usersGet
 } from "../service/userManagement";
 import {authMiddleware} from "../middleware/auth";
 import {EmploymentRequest, employmentRequestSchema} from "../schemas/employment";
 import {isLoggedInUser, isUserManagedByManager} from "../utils/authorization";
-import {isValidUserId} from "../utils/inputValidation";
 import User from "../types/users";
 import {validateUserID} from "../middleware/validateUserID";
 import {validateBody} from "../middleware/validateUserBody";
@@ -24,7 +22,7 @@ router.post('/users/', authMiddleware("admin"), validateBody, async (req, res) =
 
     try {
         const body: any = req.body;
-        const createdUser = await userCreation(body.username, body.role, body.managerId, body.workload, body.holidays);
+        const createdUser = await service.userCreation(body.username, body.role, body.managerId, body.workload, body.holidays);
         if (createdUser === "manager does not exist" || createdUser == "role does not exist" || createdUser === "username exists") {
             return res.status(400).json({"error": createdUser});
         }
@@ -59,6 +57,23 @@ router.patch('/users/otp/:id', validateUserID, async (req, res) => {
             return res.status(400).send("need 8 characters, upper/lowercase, numbers,special");
         }
         return res.status(200).json({"status": "changed successfully"});
+    } catch (error) {
+        return res.status(500).send("internal error");
+    }
+})
+
+router.patch("/users/:id/password", validateUserID, authMiddleware("admin") , async (req, res) => {
+    try {
+        // normaly not use the req.params.id but here needed
+        const newPassword = await service.passwordReset(Number(req.params.id));
+
+        if (newPassword === "user does not exist") {
+            return res.status(400).send("bad request");
+        }
+        if (newPassword === "password reset error") {
+            return res.status(500).send("internal error");
+        }
+        return res.status(200).json({password: newPassword});
     } catch (error) {
         return res.status(500).send("internal error");
     }

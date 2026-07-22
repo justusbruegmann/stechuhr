@@ -53,7 +53,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         return{token, userid: parseInt(userid)};
     }
 
-    function mapEntry(entry: any): TimeEntry{
+    function mapEntry(entry: TimeEntry): TimeEntry{
         return {
             "id": entry.id,
             "userId": entry.userId,
@@ -70,7 +70,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         }
         const {token, userid} = auth;
 
-        const lastTimeEntry = (await getLastTimeEntry(token, userid))[0];
+        const lastTimeEntry = (await getLastTimeEntry(token, userid, "work"))[0];
 
         if (lastTimeEntry == 401 || !lastTimeEntry) {
             setClicked(true);
@@ -103,6 +103,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         }
         setClicked(false);
         addEntry(generateDateString(new Date(result.startTime)), mapEntry(result));
+        getTodaysWorkTime();
     }
 
     async function setEndTimeEntry() {
@@ -112,7 +113,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         }
         const {token, userid} = auth;
         setLoading(true);
-        const result = await getLastTimeEntry(token, userid);
+        const result = await getLastTimeEntry(token, userid, "work");
         if(result == 401 || !result || !Array.isArray(result)){
             console.error("Fehler beim holen des letzten Zeiteintrags", result);
             setLoading(false);
@@ -123,11 +124,12 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         const update = await setEndTime(token, userid, parseInt(lastTimeEntry.id), buttonClickedTime);
         setLoading(false);
         if(update == 401 || !update?.id){
-            console.error("Fehler beim Ausstempeln", result);
+            console.error("Fehler beim Ausstempeln", update);
             return;
         }
         setClicked(true);
         updateEntry(buttonClickedTime);
+        getTodaysWorkTime();
     }
 
     async function getTodaysWorkTime() {

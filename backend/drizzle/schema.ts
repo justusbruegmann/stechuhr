@@ -26,9 +26,12 @@ export const requestTypeEnum = pgEnum("request_type", [
     // ... your actual values
 ]);
 
-export const notificationTypeEnum = pgEnum("notification_type", ["info", "warning"]);
+export const notificationTypeEnum = pgEnum("notification_type", [
+    "request",
+    "worktime_exceeded",
+]);
 
-// Tables
+// Tables  
 export const time_entry_type = pgEnum("time_entry_type", ["work", "holiday", "sick"]);
 
 export const timeEntries = pgTable("timeEntries", {
@@ -59,7 +62,7 @@ export const notifications = pgTable("notifications", {
     managerId: integer("managerId").references(() => users.id, {
         onDelete: "set null",
     }),
-    time: timestamp("time", {withTimezone: true}).notNull().defaultNow(),
+    createdAt: timestamp("createdAt", {withTimezone: true}).notNull().defaultNow(),
     type: notificationTypeEnum("type").notNull(),
     description: text("description").notNull(),
     isRead: boolean("isRead").notNull().default(false),

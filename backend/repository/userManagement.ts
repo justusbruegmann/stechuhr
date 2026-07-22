@@ -102,6 +102,14 @@ export async function updateRole(userId: number, role:string) {
     return result;
 }
 
+export async function resetPassword(password: string, userId: number) {
+    const pw: string = await hashPassword(password);
+    const result = await db.update(users).set({"pw": pw, "isotp": true}).where(eq(users.id, userId))
+    return result;
+}
+
+//---------------------------------------
+
 export async function updateEmploymentDetails(userId: number, updateFields: {workload?: number, holidays?: number}) {
     return db.update(users).set(updateFields).where(eq(users.id, userId));
 }

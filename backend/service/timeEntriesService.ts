@@ -1,4 +1,4 @@
-import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLastTimeEntry, deleteTimeEntry } from '../repository/timeEntriesRepository';
+import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLastTimeEntry, deleteTimeEntry, getOverlappingTimeEntries } from '../repository/timeEntriesRepository';
 import { time_entry_type } from '../drizzle/schema';
 import Holidays from 'date-holidays';
 import { DateString } from '../types/misc';
@@ -23,6 +23,12 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
         if(endtime && endtime < starttime){  //look if endtime is before starttime
             return "endtime is before starttime";
         }
+
+        const overlapping = await getOverlappingTimeEntries(userid, starttime, endtime);
+        if(overlapping.length > 0){
+            return "time entry overlaps with an other entry";
+        }
+
         const timeEntry = await createTimeEntry(userid, starttime, type, endtime);
         return timeEntry;
     }
@@ -47,6 +53,15 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date, u
         if(timeEntry.startTime != null && timeEntry.startTime > newEndTime){
             return "end time is before start time";
         }
+        if(newEndTime > new Date()){
+            return "end time can not be in the future";
+        }
+
+        const overlapping = await getOverlappingTimeEntries(userid, timeEntry.startTime, newEndTime, timeEntryId);
+        if(overlapping.length > 0){
+            return "time entry overlaps with an other entry";
+        }
+
         const endTime = await setEndTime(timeEntryId, newEndTime);
         return endTime;
     }
@@ -56,7 +71,7 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date, u
     }
 }
 
-export async function getTimeEntriesService(userid: number, type?: "work" | "holiday" | "sick", startDate?: DateString, endDate?: DateString) : Promise<TimeEntry[] | string>{
+export async function getTimeEntriesService(userid: number, type?: (typeof time_entry_type.enumValues)[number], startDate?: DateString, endDate?: DateString) : Promise<TimeEntry[] | string>{
     try{
         const end = endDate ? endDate+"T23:59:59" : undefined;
         if(startDate && end && startDate > end){
@@ -88,9 +103,9 @@ export async function getSingleTimeEntryService(timeEntryId: number, userid: num
     }
 }
 
-export async function getLastTimeEntryService(userid:number){
+export async function getLastTimeEntryService(userid:number, type: (typeof time_entry_type.enumValues)[number]){
     try{
-        const lastTimeEntry = await getLastTimeEntry(userid);
+        const lastTimeEntry = await getLastTimeEntry(userid, type);
         return lastTimeEntry;
     }
     catch(e){
