@@ -36,7 +36,7 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
     if (!token) {
       return null;
     }
-    console.log("Required: " + isToTimeRequired)
+
     if (isToTimeRequired) {
       const [endHours, endMinutes] = endTime.split(":").map(Number);
 
@@ -45,7 +45,10 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
         if (!userid) {
           return null;
         }
-        const createdTimeEntry: TimeEntry = await createTimeEntry(token, userid, new Date(date.setHours(startHours, startMinutes)), "work", new Date(date.setHours(endHours, endMinutes)));
+        const createdTimeEntry = await createTimeEntry(token, userid, new Date(date.setHours(startHours, startMinutes)), "work", new Date(date.setHours(endHours, endMinutes)));
+        if (createdTimeEntry.error) {
+          return null;
+        }
         const entry: TimeEntry = {
           id: createdTimeEntry.id,
           userId: createdTimeEntry.userId,
@@ -64,7 +67,10 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
         if (!userid) {
           return null;
         }
-        const createdTimeEntry: TimeEntry = await createTimeEntry(token, userid, new Date(date.setHours(startHours, startMinutes)), "work");
+        const createdTimeEntry = await createTimeEntry(token, userid, new Date(date.setHours(startHours, startMinutes)), "work");
+        if (createdTimeEntry.error) {
+          return null;
+        }
         const entry: TimeEntry = {
           id: createdTimeEntry.id,
           userId: createdTimeEntry.userId,

@@ -98,10 +98,10 @@ export async function updateRequest(requestId: number, requesterId: number, appr
 
             const startDateAsDate = new Date(startDate);
             startDateAsDate.setDate(startDate.getDate() + i)
-            
+
             const dayOfWeek = startDateAsDate.getDate()
 
-            if(dayOfWeek === 0 || dayOfWeek === 6) {
+            if (dayOfWeek === 0 || dayOfWeek === 6) {
                 continue;
             }
 

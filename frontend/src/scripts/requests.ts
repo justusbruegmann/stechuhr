@@ -7,7 +7,7 @@ if (!BASE_URL) {
     throw new Error("no BASE_URL provided");
 }
 
-export async function getRequestsForUser(userId: number, startDate?: DateString, endDate?: DateString) {
+export async function getRequestsForUser(userId: number, startDate?: DateString, endDate?: DateString): Promise<Request[]> {
     const params = new URLSearchParams({
         userId: userId.toString(),
     });
@@ -27,7 +27,7 @@ export async function getRequestsForUser(userId: number, startDate?: DateString,
     }
 }
 
-export async function getAllRequestsAManagerIsResponsibleFor() {
+export async function getAllRequestsAManagerIsResponsibleFor(): Promise<Request[]> {
     const url = `${BASE_URL}/requests/manager`;
     try {
         return await sendRequest("GET", url);
@@ -37,7 +37,7 @@ export async function getAllRequestsAManagerIsResponsibleFor() {
     }
 }
 
-export async function getSingleRequestById(requestId: number) {
+export async function getSingleRequestById(requestId: number): Promise<Request> {
     const url = `${BASE_URL}/requests/${requestId}`;
     try {
         return await sendRequest("GET", url);
@@ -47,7 +47,7 @@ export async function getSingleRequestById(requestId: number) {
     }
 }
 
-export async function createRequest(type: "holiday" | "sick", startDate: string, endDate: string, remark?: string) {
+export async function createRequest(type: "holiday" | "sick", startDate: string, endDate: string, remark?: string): Promise<Request> {
     const url = `${BASE_URL}/requests`;
     try {
         return await sendRequest("POST", url, {
@@ -62,7 +62,7 @@ export async function createRequest(type: "holiday" | "sick", startDate: string,
     }
 }
 
-export async function updateRequest(requestId: number, approved?: boolean | null) {
+export async function updateRequest(requestId: number, approved?: boolean | null): Promise<Request> {
     const url = `${BASE_URL}/requests/${requestId}`;
     try {
         return await sendRequest("PATCH", url, {
@@ -74,7 +74,7 @@ export async function updateRequest(requestId: number, approved?: boolean | null
     }
 }
 
-export async function deleteRequest(requestId: number) {
+export async function deleteRequest(requestId: number): Promise<Request> {
     const url = `${BASE_URL}/requests/${requestId}`;
     try {
         return await sendRequest("DELETE", url);
