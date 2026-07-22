@@ -94,10 +94,10 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         setLoading(true);
         const result = await createTimeEntry(token, userid, buttonClickedTime, "work");
         setLoading(false);
-        if(!result || result.error === "Admins are not allowed to clock in."){
+        if(result.error === "Admins are not allowed to clock in."){
             return alert(result.error);
         }
-        if(result == 401 || !result?.id){
+        if(!result || result.error || !result?.id){
             console.error("Fehler beim Einstempeln", result);
             return;
         }
@@ -130,6 +130,16 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         setClicked(true);
         updateEntry(buttonClickedTime);
         getTodaysWorkTime();
+    }
+
+    async function test(){
+        console.log("click");
+        const auth = checkAuth();
+        if (!auth){
+            return;
+        }
+        const { token, userid } = auth;
+        const result = createTimeEntry(token, userid, new Date("2026-07-22T19:33:45"), "work");
     }
 
     async function getTodaysWorkTime() {
@@ -201,7 +211,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
             </Button>
             <hr className={Styles["gap"]}></hr>
             <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"}
-                    onClick={() => openOverview()} loading={isOverviewOpenable}></Button>
+                    onClick={() => test()} loading={isOverviewOpenable}></Button>
         </Card>
     );
 }
