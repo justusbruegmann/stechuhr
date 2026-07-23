@@ -3,18 +3,19 @@ import * as userManagementService from "../service/userManagement";
 import * as timeEntriesService from "../service/timeEntriesService";
 import * as notificationService from "../service/notification";
 import { DateString } from "../types/misc";
-import { InvalidDateRangeError, RequestOverlapWithTimeEntryError, RequestOverlapWithRequestError, UnauthorizedError, NotFoundError, NotEnoughHolidaysLeft } from "../errors/requestErrors";
-import Request from "../types/requests"
+import { InvalidDateRangeError, RequestOverlapWithTimeEntryError, RequestOverlapWithRequestError, UnauthorizedError, NotFoundError, NotEnoughHolidaysLeftError, UserNotFoundError, NoManagerAssignedError } from "../errors/requestErrors";
+import Request from "../types/requests";
+import User from "../types/users";
 
-export async function getRequestsForUser(userId: number, startDate?: DateString, endDate?: DateString, type?: "holiday" | "sick"): Promise<Request[]> {
+export function getRequestsForUser(userId: number, startDate?: DateString, endDate?: DateString, type?: "holiday" | "sick"): Promise<Request[]> {
     if (startDate && endDate && startDate > endDate) {
         throw new InvalidDateRangeError()
     }
-    return await repository.getRequestsForUser(userId, startDate, endDate, type);
+    return repository.getRequestsForUser(userId, startDate, endDate, type);
 }
 
-export async function getAllRequestsAManagerIsResponsibleFor(managerId: number): Promise<Request[]> {
-    return await repository.getAllRequestsAManagerIsResponsibleFor(managerId);
+export function getAllRequestsAManagerIsResponsibleFor(managerId: number): Promise<Request[]> {
+    return repository.getAllRequestsAManagerIsResponsibleFor(managerId);
 }
 
 export async function getSingleRequestById(id: number): Promise<Request> {
@@ -28,47 +29,33 @@ export async function getSingleRequestById(id: number): Promise<Request> {
 export async function createRequest(userId: number, type: "holiday" | "sick", startDate: DateString, endDate: DateString, remark?: string | null): Promise<Request> {
     const user = await userManagementService.getUserById(userId);
 
-    if (!user?.managerid) {
-        throw new Error();
+    if (!user) {
+        throw new UserNotFoundError();
     }
 
-    if (startDate > endDate) {
+    if (!user.managerid) {
+        throw new NoManagerAssignedError();
+    }
+
+    if (new Date(startDate) > new Date(endDate)) {
         throw new InvalidDateRangeError();
     }
 
     const timeEntryList = await timeEntriesService.getTimeEntriesService(userId, undefined, startDate, endDate);
-    if (timeEntryList.length != 0) {
+    if (timeEntryList.length !== 0) {
         throw new RequestOverlapWithTimeEntryError();
     }
 
     const requestList = await getRequestsForUser(userId, startDate, endDate);
 
-    if (requestList.length != 0) {
+    if (requestList.length !== 0) {
         throw new RequestOverlapWithRequestError();
     }
 
     if (type === "holiday") {
-        const holidays = user.holidays;
-
-        const currentYear = new Date().getFullYear()
-        const startDateForHolidayRequest = `${currentYear}-01-01` as DateString;
-        const endDateForHolidayRequest = `${currentYear}-12-31` as DateString;
-
-        const timeEntryListHolidayApproved = await timeEntriesService.getTimeEntriesService(userId, "holiday", startDateForHolidayRequest, endDateForHolidayRequest);
-
-        const requestListHoliday = await getRequestsForUser(userId, startDateForHolidayRequest, endDateForHolidayRequest, "holiday");
-
-        let counter: number = 0;
-        requestListHoliday.forEach((request) => {
-            counter = counter + getWorkingDaysInRange(request.startDate, request.endDate)
-        })
-        const requestedHolidayDays = getWorkingDaysInRange(startDate, endDate);
-
-        if ((holidays - (counter + timeEntryListHolidayApproved.length)) < requestedHolidayDays) {
-            throw new NotEnoughHolidaysLeft();
-        }
+        await validateEnoughHolidays(user, startDate, endDate);
     }
-    return await repository.createRequest(userId, user?.managerid, type, startDate, endDate, remark ?? undefined);
+    return repository.createRequest(userId, user.managerid, type, startDate, endDate, remark ?? undefined);
 }
 
 export async function updateRequest(requestId: number, requesterId: number, approved?: boolean | null): Promise<Request | void> {
@@ -120,7 +107,7 @@ export async function updateRequest(requestId: number, requesterId: number, appr
                 0
             );
 
-            await timeEntriesService.createTimeEntryService(request.userId, startDateAsDate, endDateAsDate, request.type);
+            timeEntriesService.createTimeEntryService(request.userId, startDateAsDate, endDateAsDate, request.type);
         }
 
         const message = getNotificationMessage(request.type, request.startDate, request.endDate, true);
@@ -145,6 +132,50 @@ export async function deleteRequest(requestId: number, requesterId: number): Pro
 
     const deletedRequest = await repository.deleteRequest(requestId);
     return deletedRequest;
+}
+
+async function validateEnoughHolidays(user: User, startDate: DateString, endDate: DateString): Promise<void> {
+const years = getYearsBetween(startDate, endDate);
+
+    for (const year of years) {
+        const yearStart = `${year}-01-01` as DateString;
+        const yearEnd = `${year}-12-31` as DateString;
+
+        const requestStart = startDate > yearStart ? startDate : yearStart;
+
+        const requestEnd = endDate < yearEnd ? endDate : yearEnd;
+
+        const approvedHolidayEntries = await timeEntriesService.getTimeEntriesService(user.id, "holiday", yearStart, yearEnd);
+
+        const pendingRequests = await getRequestsForUser(user.id, yearStart, yearEnd, "holiday");
+
+        const usedHolidayDays = approvedHolidayEntries.length +
+            pendingRequests.reduce(
+                (sum, request) =>
+                    sum +
+                    getWorkingDaysInRange(request.startDate, request.endDate),
+                0
+            );
+
+        const requestedDays = getWorkingDaysInRange(requestStart, requestEnd);
+
+        if (user.holidays - usedHolidayDays < requestedDays) {
+            throw new NotEnoughHolidaysLeftError();
+        }
+    }
+}
+
+function getYearsBetween(startDate: DateString, endDate: DateString): number[] {
+    const startYear = new Date(startDate).getFullYear();
+    const endYear = new Date(endDate).getFullYear();
+
+    const years: number[] = [];
+
+    for (let year = startYear; year <= endYear; year++) {
+        years.push(year);
+    }
+
+    return years;
 }
 
 function getDaysInRange(startDateString: string, endDateString: string): number {
