@@ -49,7 +49,7 @@ export async function getLastTimeEntry(userId: number, type?: (typeof time_entry
 }
 
 export async function getOverlappingTimeEntries(userId: number, startTime: Date, endTime?: Date, excludeId?: number) {
-    const conditions = [eq(timeEntries.userId, userId), or(isNull(timeEntries.endTime), gt(timeEntries.endTime, startTime))];
+    const conditions = [eq(timeEntries.userId, userId), or(isNull(timeEntries.endTime), gt(timeEntries.endTime, startTime)), eq(timeEntries.type, "work")];
     if (endTime) {
         conditions.push(lt(timeEntries.startTime, endTime));
     }
