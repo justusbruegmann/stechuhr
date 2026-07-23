@@ -132,16 +132,6 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         getTodaysWorkTime();
     }
 
-    async function test(){
-        console.log("click");
-        const auth = checkAuth();
-        if (!auth){
-            return;
-        }
-        const { token, userid } = auth;
-        const result = createTimeEntry(token, userid, new Date("2026-07-22T19:33:45"), "work");
-    }
-
     async function getTodaysWorkTime() {
         const auth = checkAuth();
         if (!auth){
@@ -211,7 +201,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
             </Button>
             <hr className={Styles["gap"]}></hr>
             <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"}
-                    onClick={() => test()} loading={isOverviewOpenable}></Button>
+                    onClick={() => openOverview()} loading={isOverviewOpenable}></Button>
         </Card>
     );
 }
