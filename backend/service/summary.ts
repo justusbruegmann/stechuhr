@@ -19,7 +19,7 @@ export async function generateSummary(user: User, startDate: DateString, endDate
         const durationInMinutes = Math.floor((end.getTime() - start.getTime()) / (1000 * 60));
         return total + durationInMinutes;
     }, 0);
-
+ 
     return {
         userId: user.id,
         startDate,
