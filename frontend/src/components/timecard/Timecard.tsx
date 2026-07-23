@@ -1,5 +1,5 @@
 "use client";
-
+ 
 import Button from "@/components/layout/Button";
 import Styles from "./Timecard.module.css";
 import Card from "@/components/layout/Card";
@@ -94,10 +94,10 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         setLoading(true);
         const result = await createTimeEntry(token, userid, buttonClickedTime, "work");
         setLoading(false);
-        if(!result || result.error === "Admins are not allowed to clock in."){
+        if(result.error === "Admins are not allowed to clock in."){
             return alert(result.error);
         }
-        if(result == 401 || !result?.id){
+        if(!result || result.error || !result?.id){
             console.error("Fehler beim Einstempeln", result);
             return;
         }

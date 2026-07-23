@@ -23,10 +23,10 @@ export async function createTimeEntry(token: string,userid: number, startTime: D
         return {error: text.error};
     }
     if(response.status == 400){
-        return 400;
+        return {error: response.status};
     }
     if(response.status == 401){
-        return 401;
+        return {error: response.status};
     }
     if(response.status == 201){
         return text;
