@@ -37,6 +37,7 @@ export async function passwordReset(userId: number) {
         }
         const password = generateRandomString(16);
         const change = await repo.resetPassword(password, user.id);
+        const deleteSession = await deleteSessionsOfUser(user.id);
         return password;
     } catch (e) {
         return "password reset error";
