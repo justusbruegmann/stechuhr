@@ -1,23 +1,23 @@
 import * as repository from "../repository/requests";
 import * as userManagementService from "../service/userManagement";
 import * as timeEntriesService from "../service/timeEntriesService";
-import * as summaryService from "../service/summary";
 import * as notificationService from "../service/notification";
 import { DateString } from "../types/misc";
 import { InvalidDateRangeError, RequestOverlapWithTimeEntryError, RequestOverlapWithRequestError, UnauthorizedError, NotFoundError, NotEnoughHolidaysLeft } from "../errors/requestErrors";
+import Request from "../types/requests"
 
-export async function getRequestsForUser(userId: number, startDate?: DateString, endDate?: DateString) {
+export async function getRequestsForUser(userId: number, startDate?: DateString, endDate?: DateString, type?: "holiday" | "sick"): Promise<Request[]> {
     if (startDate && endDate && startDate > endDate) {
         throw new InvalidDateRangeError()
     }
-    return await repository.getRequestsForUser(userId, startDate, endDate);
+    return await repository.getRequestsForUser(userId, startDate, endDate, type);
 }
 
-export async function getAllRequestsAManagerIsResponsibleFor(managerId: number) {
+export async function getAllRequestsAManagerIsResponsibleFor(managerId: number): Promise<Request[]> {
     return await repository.getAllRequestsAManagerIsResponsibleFor(managerId);
 }
 
-export async function getSingleRequestById(id: number) {
+export async function getSingleRequestById(id: number): Promise<Request> {
     const requestList = await repository.getSingleRequestById(id);
     if (requestList.length != 1) {
         throw new NotFoundError();
@@ -25,7 +25,7 @@ export async function getSingleRequestById(id: number) {
     return requestList[0];
 }
 
-export async function createRequest(userId: number, type: "holiday" | "sick", startDate: DateString, endDate: DateString, remark?: string | null) {
+export async function createRequest(userId: number, type: "holiday" | "sick", startDate: DateString, endDate: DateString, remark?: string | null): Promise<Request> {
     const user = await userManagementService.getUserById(userId);
 
     if (!user?.managerid) {
@@ -36,9 +36,8 @@ export async function createRequest(userId: number, type: "holiday" | "sick", st
         throw new InvalidDateRangeError();
     }
 
-    const timeEntrieList = await timeEntriesService.getTimeEntriesService(userId, undefined, startDate, endDate);
-
-    if (timeEntrieList.length != 0) {
+    const timeEntryList = await timeEntriesService.getTimeEntriesService(userId, undefined, startDate, endDate);
+    if (timeEntryList.length != 0) {
         throw new RequestOverlapWithTimeEntryError();
     }
 
@@ -52,22 +51,27 @@ export async function createRequest(userId: number, type: "holiday" | "sick", st
         const holidays = user.holidays;
 
         const currentYear = new Date().getFullYear()
-        const summaryStartDate = `${currentYear}-01-01` as DateString;
-        const summaryEndDate = `${currentYear}-12-31` as DateString;
+        const startDateForHolidayRequest = `${currentYear}-01-01` as DateString;
+        const endDateForHolidayRequest = `${currentYear}-12-31` as DateString;
 
-        const takenHolidays = (await summaryService.generateSummary(user, summaryStartDate, summaryEndDate)).vacationDaysTaken;
+        const timeEntryListHolidayApproved = await timeEntriesService.getTimeEntriesService(userId, "holiday", startDateForHolidayRequest, endDateForHolidayRequest);
 
+        const requestListHoliday = await getRequestsForUser(userId, startDateForHolidayRequest, endDateForHolidayRequest, "holiday");
+
+        let counter: number = 0;
+        requestListHoliday.forEach((request) => {
+            counter = counter + getWorkingDaysInRange(request.startDate, request.endDate)
+        })
         const requestedHolidayDays = getWorkingDaysInRange(startDate, endDate);
 
-        if ((holidays - takenHolidays) < requestedHolidayDays) {
+        if ((holidays - (counter + timeEntryListHolidayApproved.length)) < requestedHolidayDays) {
             throw new NotEnoughHolidaysLeft();
         }
     }
-
     return await repository.createRequest(userId, user?.managerid, type, startDate, endDate, remark ?? undefined);
 }
 
-export async function updateRequest(requestId: number, requesterId: number, approved?: boolean | null) {
+export async function updateRequest(requestId: number, requesterId: number, approved?: boolean | null): Promise<Request | void> {
     const request = await getSingleRequestById(requestId);
 
     if (!request) {
@@ -97,11 +101,10 @@ export async function updateRequest(requestId: number, requesterId: number, appr
         const startDate = parseDateString(request.startDate);
 
         for (let i = 0; i < range; i++) {
-
             const startDateAsDate = new Date(startDate);
             startDateAsDate.setDate(startDate.getDate() + i)
 
-            const dayOfWeek = startDateAsDate.getDate()
+            const dayOfWeek = startDateAsDate.getDay()
 
             if (dayOfWeek === 0 || dayOfWeek === 6) {
                 continue;
@@ -119,28 +122,29 @@ export async function updateRequest(requestId: number, requesterId: number, appr
 
             await timeEntriesService.createTimeEntryService(request.userId, startDateAsDate, endDateAsDate, request.type);
         }
-        const message = getNotificationMessage(request.type, request.startDate, request.endDate, false);
+
+        const message = getNotificationMessage(request.type, request.startDate, request.endDate, true);
         notificationService.notificationPost(request.userId, request.managerId, "request", message);
         deleteRequest(requestId, requesterId);
         return;
     }
-    const requestList = await repository.updateRequest(requestId, approved ?? null);
-    return requestList[0];
+    const updatedRequest = await repository.updateRequest(requestId, approved ?? null);
+    return updatedRequest;
 }
 
-export async function deleteRequest(requestId: number, requesterId: number) {
+export async function deleteRequest(requestId: number, requesterId: number): Promise<Request> {
     const request = await getSingleRequestById(requestId);
 
     if (!request) {
-        return new Error();
+        throw new Error();
     }
 
     if (request.userId !== requesterId && request.managerId !== requesterId) {
         throw new UnauthorizedError();
     }
 
-    const requestList = await repository.deleteRequest(requestId);
-    return requestList[0];
+    const deletedRequest = await repository.deleteRequest(requestId);
+    return deletedRequest;
 }
 
 function getDaysInRange(startDateString: string, endDateString: string): number {

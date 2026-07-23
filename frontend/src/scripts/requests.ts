@@ -7,7 +7,7 @@ if (!BASE_URL) {
     throw new Error("no BASE_URL provided");
 }
 
-export async function getRequestsForUser(userId: number, startDate?: DateString, endDate?: DateString): Promise<Request[]> {
+export async function getRequestsForUser(userId: number, startDate?: DateString, endDate?: DateString, type?: "holiday" | "sick"): Promise<Request[]> {
     const params = new URLSearchParams({
         userId: userId.toString(),
     });
@@ -16,6 +16,9 @@ export async function getRequestsForUser(userId: number, startDate?: DateString,
     }
     if (endDate) {
         params.append("endDate", endDate);
+    }
+    if (type) {
+        params.append("type", type)
     }
     const url = `${BASE_URL}/requests?${params.toString()}`;
 

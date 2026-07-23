@@ -17,12 +17,12 @@ router.get(
     async (req, res) => {
         const queryParams = res.locals.queryParams as getRequestsRequestParameter;
 
-        const { userId, startDate, endDate } = queryParams;
+        const { userId, startDate, endDate, type } = queryParams;
         const requesterId = res.locals.user.id;
 
         if (requesterId == userId) {
             try {
-                const requests = await requestsService.getRequestsForUser(userId, startDate, endDate);
+                const requests = await requestsService.getRequestsForUser(userId, startDate, endDate, type);
                 return res.status(200).json(requests);
             } catch (error) {
                 if (error instanceof InvalidDateRangeError) {
@@ -126,7 +126,7 @@ router.post(
                     message: error.message,
                 });
             }
-            if (error instanceof (RequestOverlapWithTimeEntryError || RequestOverlapWithRequestError || NotEnoughHolidaysLeft)) {
+            if (error instanceof RequestOverlapWithTimeEntryError || error instanceof RequestOverlapWithRequestError || error instanceof NotEnoughHolidaysLeft) {
                 return res.status(409).json({
                     code: error.code,
                     message: error.message,
