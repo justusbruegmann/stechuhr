@@ -6,6 +6,7 @@ import { DateString } from "../types/misc";
 import { InvalidDateRangeError, RequestOverlapWithTimeEntryError, RequestOverlapWithRequestError, UnauthorizedError, NotFoundError, NotEnoughHolidaysLeftError, UserNotFoundError, NoManagerAssignedError } from "../errors/requestErrors";
 import Request from "../types/requests";
 import User from "../types/users";
+import Holidays from "date-holidays";
 
 export function getRequestsForUser(userId: number, startDate?: DateString, endDate?: DateString, type?: "holiday" | "sick"): Promise<Request[]> {
     if (startDate && endDate && startDate > endDate) {
@@ -87,13 +88,15 @@ export async function updateRequest(requestId: number, requesterId: number, appr
 
         const startDate = parseDateString(request.startDate);
 
+        const holidays = new Holidays('DE', 'BW');
+
         for (let i = 0; i < range; i++) {
             const startDateAsDate = new Date(startDate);
             startDateAsDate.setDate(startDate.getDate() + i)
 
             const dayOfWeek = startDateAsDate.getDay()
 
-            if (dayOfWeek === 0 || dayOfWeek === 6) {
+            if (dayOfWeek === 0 || dayOfWeek === 6 || holidays.isHoliday(startDateAsDate)) {
                 continue;
             }
 
@@ -195,13 +198,14 @@ function getWorkingDaysInRange(startDate: DateString, endDate: DateString): numb
     const start = parseDateString(startDate);
     const end = parseDateString(endDate);
 
+    const holidays = new Holidays('DE', 'BW');
     let workingDays = 0;
     const current = new Date(start);
 
     while (current <= end) {
         const day = current.getDay();
 
-        if (day !== 0 && day !== 6) {
+        if (day !== 0 && day !== 6 && !holidays.isHoliday(current)) {
             workingDays++;
         }
 
