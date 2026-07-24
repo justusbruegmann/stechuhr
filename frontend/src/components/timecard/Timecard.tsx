@@ -198,7 +198,7 @@ export default function Timecard({ openOverview, isOverviewOpenable = false, add
                     setEndTimeEntry();
                 }
             }}
-                label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked ? "success" : "error"} height={2.5} width={"100%"} loading={loading}>
+                label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked ? "success" : "error"} height={2.5} width={"100%"} loading={loading || isOverviewOpenable}>
             </Button>
             <hr className={Styles["gap"]}></hr>
             <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"}
