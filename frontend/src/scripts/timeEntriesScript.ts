@@ -30,7 +30,7 @@ export async function createTimeEntry(token: string,userid: number, startTime: D
     }
     if(response.status == 201){
         return text;
-    }
+    } 
 }
 
 export async function setEndTime(token: string, userid: number, timeEntryId: number, endtime: Date){
@@ -45,10 +45,10 @@ export async function setEndTime(token: string, userid: number, timeEntryId: num
     };
     const response = await fetch(url, {method:"PATCH", body: JSON.stringify(body), headers: headers});
     if(response.status == 400){
-        return 400;
+        return {error: response.status};
     }
     if(response.status == 401){
-        return 401;
+        return {error: response.status};
     }
     if(response.status == 200){
         return await response.json();
@@ -74,14 +74,13 @@ export async function getTimeEntries(token: string, userid: number, type?: "work
     };
     const response = await fetch(url, {method:"GET", headers: headers});
     if(response.status == 400){
-        return 400;
+        return {error: response.status};
     }
     if(response.status == 401){
-        return 401;
+        return {error: response.status};
     }
     if(response.status == 200){
-        const result = await response.json();
-        return result;
+        return await response.json();
     }
 }
 
@@ -94,14 +93,13 @@ export async function getSingleTimeEntry(token: string, userid: number, timeEntr
     };
     const response = await fetch(url, {method:"GET", headers: headers})
     if(response.status == 400){
-        return 400;
+        return {error: response.status};
     }
     if(response.status == 401){
-        return 401;
+        return {error: response.status};
     }
     if(response.status == 200){
-        const result = await response.json();
-        return result;
+        return await response.json();
     }
 }
 
@@ -118,14 +116,13 @@ export async function getLastTimeEntry(token: string, userid: number, type?: "wo
     };
     const response = await fetch(url, {method:"GET", headers: headers})
     if(response.status == 400){
-        return 400;
+        return {error: response.status};
     }
     if(response.status == 401){
-        return 401;
+        return {error: response.status};
     }
     if(response.status == 200){
-        const result = await response.json();
-        return result;
+        return await response.json();
     }
 }
 

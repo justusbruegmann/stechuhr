@@ -1,132 +1,140 @@
-import{ createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLastTimeEntry, deleteTimeEntry, getOverlappingTimeEntries } from '../repository/timeEntriesRepository';
+import { createTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry, getLastTimeEntry, deleteTimeEntry, getOverlappingTimeEntries } from '../repository/timeEntriesRepository';
 import { time_entry_type } from '../drizzle/schema';
 import Holidays from 'date-holidays';
 import { DateString } from '../types/misc';
 import { TimeEntry } from '../types/timeEntry';
 
-export async function createTimeEntryService(userid: number, starttime: Date, endtime: Date | undefined, type: (typeof time_entry_type.enumValues)[number]){
-    const holidays = new Holidays('DE', 'BW');
-    try{
+export async function createTimeEntryService(userid: number, starttime: Date, endtime: Date | undefined, type: (typeof time_entry_type.enumValues)[number]): Promise<TimeEntry | string> {
+    try {
+        const holidays = new Holidays('DE', 'BW');
         const lastTimeEntry = (await getLastTimeEntry(userid))[0];
-        if(starttime.getDay() == 0 || starttime.getDay() == 6){ //no work on weekends
+        if (starttime.getDay() == 0 || starttime.getDay() == 6) { //no work on weekends
             return "not able to work on weekends";
         }
-        if(holidays.isHoliday(new Date(starttime.getFullYear(), starttime.getMonth(), starttime.getDate()))){ //no work on holidays 
+        if (holidays.isHoliday(new Date(starttime.getFullYear(), starttime.getMonth(), starttime.getDate()))) { //no work on holidays 
             return "not able to work on holidays";
         }
-        if(starttime.getHours() >= 23 || starttime.getHours() < 6){ //only possible work between 6 and 23 o'clock
-            return "out of working time";    
+        if (starttime.getHours() >= 23 || starttime.getHours() < 6) { //only possible work between 6 and 23 o'clock
+            return "out of working time";
         }
-        if(lastTimeEntry && lastTimeEntry.endTime == null){ //show if last time entry has an end time
-            return "last time entry has no endtime";     
-        }       
-        if(endtime && endtime < starttime){  //look if endtime is before starttime
+        if (lastTimeEntry && lastTimeEntry.endTime == null) { //show if last time entry has an end time
+            return "last time entry has no endtime";
+        }
+        if (endtime && endtime < starttime) {  //look if endtime is before starttime
             return "endtime is before starttime";
         }
 
         const overlapping = await getOverlappingTimeEntries(userid, starttime, endtime);
-        if(overlapping.length > 0){
+        if (overlapping.length > 0) {
             return "time entry overlaps with an other entry";
         }
 
         const timeEntry = await createTimeEntry(userid, starttime, type, endtime);
         return timeEntry;
     }
-    catch(e){
+    catch (e) {
         console.error(e);
         throw e;
     }
 }
 
-export async function setEndTimeService(timeEntryId: number, newEndTime: Date, userid: number){
-    try{
+export async function setEndTimeService(timeEntryId: number, newEndTime: Date, userid: number): Promise<TimeEntry | string> {
+    try {
         const timeEntry = (await getSingleTimeEntry(timeEntryId))[0];
-        if(!timeEntry){
+        if (!timeEntry) {
             return "time entry not found";
         }
-        if(timeEntry.userId !== userid){
+        if (timeEntry.userId !== userid) {
             return "not authorized to modify this entry";
         }
-        if(timeEntry.endTime != null){
+        if (timeEntry.endTime != null) {
             return "end time is already set";
         }
-        if(timeEntry.startTime != null && timeEntry.startTime > newEndTime){
+        if (timeEntry.startTime != null && timeEntry.startTime > newEndTime) {
             return "end time is before start time";
         }
-        if(newEndTime > new Date()){
+        if (newEndTime > new Date()) {
             return "end time can not be in the future";
         }
 
         const overlapping = await getOverlappingTimeEntries(userid, timeEntry.startTime, newEndTime, timeEntryId);
-        if(overlapping.length > 0){
+        if (overlapping.length > 0) {
             return "time entry overlaps with an other entry";
         }
 
         const endTime = await setEndTime(timeEntryId, newEndTime);
         return endTime;
     }
-    catch(e){
+    catch (e) {
         console.error(e);
         throw e;
     }
 }
 
-export async function getTimeEntriesService(userid: number, type?: (typeof time_entry_type.enumValues)[number], startDate?: DateString, endDate?: DateString) : Promise<TimeEntry[] | string>{
-    try{
-        const end = endDate ? endDate+"T23:59:59" : undefined;
-        if(startDate && end && startDate > end){
-            return "end date is before start date";
+export async function getTimeEntriesService(userid: number, type?: (typeof time_entry_type.enumValues)[number], startDate?: DateString, endDate?: DateString): Promise<TimeEntry[] | string> {
+    try {
+        const end = endDate ? endDate + "T23:59:59" : undefined;
+        if (startDate && end) {
+            if (new Date(startDate) > new Date(end))
+                return "end date is before start date";
         }
         const timeEntries = await getTimeEntries(userid, type, startDate, end);
         return timeEntries;
     }
-    catch(e){
+    catch (e) {
         console.error(e);
         throw e;
     }
 }
 
-export async function getSingleTimeEntryService(timeEntryId: number, userid: number){
-    try{
+export async function getSingleTimeEntryService(timeEntryId: number, userid: number): Promise<TimeEntry | string> {
+    try {
         const singleTimeEntry = (await getSingleTimeEntry(timeEntryId))[0];
-        if(!singleTimeEntry){
+        if (!singleTimeEntry) {
             return "no time entry found";
         }
-        if(singleTimeEntry.userId != userid){
+        if (singleTimeEntry.userId != userid) {
             return "not authorized to view this entry";
         }
         return singleTimeEntry;
     }
-    catch(e){
+    catch (e) {
         console.error(e);
         throw e;
     }
 }
 
-export async function getLastTimeEntryService(userid:number, type: (typeof time_entry_type.enumValues)[number]){
-    try{
-        const lastTimeEntry = await getLastTimeEntry(userid, type);
+export async function getLastTimeEntryService(userid: number, type?: (typeof time_entry_type.enumValues)[number]): Promise<TimeEntry | string> {
+    try {
+        const result = await getLastTimeEntry(userid, type);
+        const lastTimeEntry = result[0];
+        if (!lastTimeEntry) {
+            return "no time entry found";
+        }
+        if (lastTimeEntry.userId != userid) {
+            return "not authorized to view this entry";
+        }
         return lastTimeEntry;
     }
-    catch(e){
+    catch (e) {
         console.error(e);
         throw e;
     }
 }
 
-export async function deleteTimeEntryService(timeEntryId: number, userid: number){
-    try{
+export async function deleteTimeEntryService(timeEntryId: number, userid: number) {
+    try {
         const timeEntry = (await getSingleTimeEntry(timeEntryId))[0];
-        if(!timeEntry){
+        if (!timeEntry) {
             return "time entry not found";
         }
-        if(timeEntry.userId !== userid){
+        if (timeEntry.userId !== userid) {
             return "not authorized to delete this entry";
         }
         const deleted = await deleteTimeEntry(timeEntryId);
         return deleted;
     }
-    catch(e){
+    catch (e) {
         console.error(e);
         throw e;
     }
