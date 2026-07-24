@@ -53,7 +53,8 @@ router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
             createdTimeEntry == "last time entry has no endtime" ||
             createdTimeEntry == "not able to work on holidays" ||
             createdTimeEntry == "endtime is before starttime" ||
-            createdTimeEntry == "time entry overlaps with an other entry"
+            createdTimeEntry == "time entry overlaps with an other entry" ||
+            createdTimeEntry == "start time for work entries cannot be in the future"
         ) {
             return res.status(400).json({ "error": createdTimeEntry });
         }

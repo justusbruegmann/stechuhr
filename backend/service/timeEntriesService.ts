@@ -23,6 +23,9 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
         if (endtime && endtime < starttime) {  //look if endtime is before starttime
             return "endtime is before starttime";
         }
+        if (type === "work" && starttime > new Date()) {
+            return "start time for work entries cannot be in the future";
+        }
 
         const overlapping = await getOverlappingTimeEntries(userid, starttime, endtime);
         if (overlapping.length > 0) {
