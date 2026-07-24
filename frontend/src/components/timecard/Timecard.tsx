@@ -165,7 +165,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
     }
 
     return (
-        <Card width={"22vw"} styleOverrides={{flexDirection: "column", padding: "1.5rem"}}>
+        <Card width={"22vw"} styleOverrides={{flexDirection: "column", padding: "1.5rem", boxSizing: "border-box", alignSelf: "flex-start"}}>
             <div className={Styles["clock"]}><Image src={"/clock.svg"} width={40} height={40} alt={"Uhr"}></Image></div>
             <span className={`${Styles["timeStyle"]}`}>
                         {time ? time.toLocaleTimeString("de-DE", {hour12: false}) : "--:--:--"}
@@ -186,7 +186,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
                 <span className={`${Styles["workTimeTextHeader"]}`}>Heute gearbeitet</span>
                 <span className={`${Styles["workTimeTextBody"]}`}> {todaysWorkTime.hours}h {todaysWorkTime.minutes}m</span>
             </div>
-            <Button onClick={() => {
+            <Button className={`${Styles["buttonText"]}`} onClick={() => {
                 if(loading){
                     return;
                 }
