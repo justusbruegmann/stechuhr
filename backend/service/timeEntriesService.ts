@@ -134,6 +134,10 @@ export async function deleteTimeEntryService(timeEntryId: number, userid: number
         if (timeEntry.userId !== userid) {
             return "not authorized to delete this entry";
         }
+        const entryStartTime = new Date(timeEntry.startTime);
+        if ((timeEntry.type === "holiday" || timeEntry.type === "sick") && entryStartTime < new Date()) {
+            return "cannot delete old holidays or sick days";
+        }
         const deleted = await deleteTimeEntry(timeEntryId);
         return deleted;
     }

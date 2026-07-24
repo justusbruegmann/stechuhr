@@ -56,7 +56,7 @@ router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
             createdTimeEntry == "time entry overlaps with an other entry" ||
             createdTimeEntry == "start time for work entries cannot be in the future"
         ) {
-            return res.status(400).json({ "error": createdTimeEntry });
+            return res.status(400).json({ error: createdTimeEntry });
         }
         return res.status(201).json(createdTimeEntry);
     }
@@ -191,10 +191,13 @@ router.delete('/timeentries/:id', authMiddleware("user", true), async (req, res)
         const userid = res.locals.user.id;
         const result = await deleteTimeEntryService(Number(deletedTimeEntryId), userid);
         if (result == "time entry not found") {
-            return res.status(404).json({ "error": result });
+            return res.status(404).json({ error: result });
         }
         if (result == "not authorized to delete this entry") {
-            return res.status(403).json({ "error": result });
+            return res.status(403).json({ error: result });
+        }
+        if (result == "cannot delete old holidays or sick days") {
+            return res.status(400).json({ error: result })
         }
         return res.status(200).json(result);
     }
