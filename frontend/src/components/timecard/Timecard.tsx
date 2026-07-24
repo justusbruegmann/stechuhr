@@ -10,6 +10,7 @@ import { createTimeEntry, getLastTimeEntry, setEndTime, getTimeEntries, getSingl
 import { useRouter } from "next/navigation";
 import { DateString } from "@/types/misc";
 import { generateDateString } from "@/utils/TimeUtils";
+import { create } from "domain";
 
 
 interface PopupProps {

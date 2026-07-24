@@ -28,6 +28,9 @@ router.post('/timeentries/', authMiddleware("user", true), async (req, res) => {
         if (!reqBody?.type || !validTypes.includes(reqBody.type)) {
             return res.status(400).json({ error: "type is required and has to be work, holiday or sick" });
         }
+        if ((reqBody.type === "holiday" || reqBody.type === "sick") && !reqBody.endtime) {
+            return res.status(400).json({ error: "endtime is required for holiday and sick entries" });
+        }
         if (res.locals.user.role === "admin") {
             return res.status(400).json({ error: "Admins are not allowed to clock in." });
         }
