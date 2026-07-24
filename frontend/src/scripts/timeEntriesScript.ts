@@ -5,7 +5,7 @@ if (!BASE_URL) {
     throw new Error("no BASE_URL provided");
 }
 
-export async function createTimeEntry(token: string,userid: number, startTime: Date, type: "work" | "holiday" | "sick", endTime?:Date){
+export async function createTimeEntry(token: string, userid: number, startTime: Date, type: "work" | "holiday" | "sick", endTime?: Date) {
     const url = `${BASE_URL}/timeentries/`;
     const headers = {
         "content-type": "application/json",
@@ -17,11 +17,11 @@ export async function createTimeEntry(token: string,userid: number, startTime: D
         "endtime": endTime?.toISOString(),
         "type": type
     };
-    const response = await fetch(url, {method:"POST", body: JSON.stringify(body), headers: headers});
+    const response = await fetch(url, { method: "POST", body: JSON.stringify(body), headers: headers });
     return await response.json();
 }
 
-export async function setEndTime(token: string, userid: number, timeEntryId: number, endtime: Date){
+export async function setEndTime(token: string, userid: number, timeEntryId: number, endtime: Date) {
     const url = `${BASE_URL}/timeentries/${timeEntryId}`;
     const headers = {
         "content-type": "application/json",
@@ -31,19 +31,19 @@ export async function setEndTime(token: string, userid: number, timeEntryId: num
     const body = {
         "endtime": endtime
     };
-    const response = await fetch(url, {method:"PATCH", body: JSON.stringify(body), headers: headers});
+    const response = await fetch(url, { method: "PATCH", body: JSON.stringify(body), headers: headers });
     return await response.json();
 }
 
-export async function getTimeEntries(token: string, userid: number, type?: "work"|"holiday"|"sick", startDate?: string, endDate?: string){
+export async function getTimeEntries(token: string, userid: number, type?: "work" | "holiday" | "sick", startDate?: string, endDate?: string) {
     const params = new URLSearchParams();
-    if(type){
+    if (type) {
         params.append("type", type);
     }
-    if (startDate){
+    if (startDate) {
         params.append("startDate", startDate);
-    } 
-    if (endDate){
+    }
+    if (endDate) {
         params.append("endDate", endDate);
     }
     const url = `${BASE_URL}/users/${userid}/timeentries?${params.toString()}`;
@@ -52,24 +52,24 @@ export async function getTimeEntries(token: string, userid: number, type?: "work
         "Authorization": token,
         "userid": `${userid}`
     };
-    const response = await fetch(url, {method:"GET", headers: headers});
+    const response = await fetch(url, { method: "GET", headers: headers });
     return await response.json();
 }
 
-export async function getSingleTimeEntry(token: string, userid: number, timeEntryId: number){
+export async function getSingleTimeEntry(token: string, userid: number, timeEntryId: number) {
     const url = `${BASE_URL}/timeentries/${timeEntryId}`;
     const headers = {
         "content-type": "application/json",
         "Authorization": token,
         "userid": `${userid}`
     };
-    const response = await fetch(url, {method:"GET", headers: headers})
+    const response = await fetch(url, { method: "GET", headers: headers })
     return await response.json();
 }
 
-export async function getLastTimeEntry(token: string, userid: number, type?: "work"|"holiday"|"sick"){
+export async function getLastTimeEntry(token: string, userid: number, type?: "work" | "holiday" | "sick") {
     const params = new URLSearchParams();
-    if(type){
+    if (type) {
         params.append("type", type);
     }
     const url = `${BASE_URL}/timeentries/last?${params.toString()}`;
@@ -78,11 +78,11 @@ export async function getLastTimeEntry(token: string, userid: number, type?: "wo
         "Authorization": token,
         "userid": `${userid}`
     };
-    const response = await fetch(url, {method:"GET", headers: headers})
+    const response = await fetch(url, { method: "GET", headers: headers })
     return await response.json();
 }
 
-export async function deleteTimeEntry(timeEntryId: number){
+export async function deleteTimeEntry(timeEntryId: number) {
     const url = `${BASE_URL}/timeentries/${timeEntryId}`;
     return await sendRequest("DELETE", url);
 }
