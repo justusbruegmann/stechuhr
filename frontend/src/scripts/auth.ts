@@ -46,7 +46,7 @@ export async function loginUsername(username: string, password: string) {
 }
 
 export async function otpChange(userid: number,currentpwd: string, newpwd: string) {
-    const url = `${BASE_URL}/users/otp/${userid}`;
+    const url = `${BASE_URL}/users/${userid}/otp`;
     const body = {"currentpwd": currentpwd, "newpwd": newpwd};
     return await sendRequest("PATCH", url, body, undefined,true);
 }

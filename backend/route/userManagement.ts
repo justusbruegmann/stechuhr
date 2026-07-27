@@ -32,7 +32,7 @@ router.post('/users/', authMiddleware("admin"), validateBody, async (req, res) =
     }
 });
 
-router.patch('/users/otp/:id', validateUserID, async (req, res) => {
+router.patch('/users/:id/otp', validateUserID, async (req, res) => {
     try {
 
         const currentpwd: string = req.body.currentpwd;
