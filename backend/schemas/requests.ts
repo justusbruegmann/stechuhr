@@ -12,7 +12,8 @@ export const getRequestsRequestParameterSchema = z.object(
             .coerce.number()
             .positive(),
         startDate: dateStringSchema.optional(),
-        endDate: dateStringSchema.optional()
+        endDate: dateStringSchema.optional(),
+        type: requestType.optional()
     }
 )
 

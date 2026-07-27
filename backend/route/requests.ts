@@ -5,7 +5,7 @@ import { getRequestsRequestParameterSchema, getRequestsRequestParameter, request
 import * as requestsService from "../service/requests";
 import * as userManagementService from "../service/userManagement";
 import { validateRequestBody } from "../middleware/validateRequestBody";
-import { InvalidDateRangeError, NotEnoughHolidaysLeft, NotFoundError, RequestOverlapWithRequestError, RequestOverlapWithTimeEntryError, UnauthorizedError } from "../errors/requestErrors";
+import { InvalidDateRangeError, NotEnoughHolidaysLeftError, NotFoundError, RequestOverlapWithRequestError, RequestOverlapWithTimeEntryError, UnauthorizedError, UserNotFoundError } from "../errors/requestErrors";
 import { validateUserID } from "../middleware/validateUserID";
 
 const router = Router();
@@ -17,12 +17,12 @@ router.get(
     async (req, res) => {
         const queryParams = res.locals.queryParams as getRequestsRequestParameter;
 
-        const { userId, startDate, endDate } = queryParams;
+        const { userId, startDate, endDate, type } = queryParams;
         const requesterId = res.locals.user.id;
 
         if (requesterId == userId) {
             try {
-                const requests = await requestsService.getRequestsForUser(userId, startDate, endDate);
+                const requests = await requestsService.getRequestsForUser(userId, startDate, endDate, type);
                 return res.status(200).json(requests);
             } catch (error) {
                 if (error instanceof InvalidDateRangeError) {
@@ -33,7 +33,7 @@ router.get(
                 }
                 return res.status(500).json({
                     code: "INTERNAL_SERVER_ERROR",
-                    message: "Etwas ist schiefgelaufen",
+                    message: "Etwas ist schiefgelaufen"
                 })
             }
         }
@@ -54,7 +54,7 @@ router.get(
             if (error instanceof InvalidDateRangeError) {
                 return res.status(400).json({
                     code: error.code,
-                    message: error.message,
+                    message: error.message
                 });
             }
             return res.status(400).send("Bad Request")
@@ -73,7 +73,7 @@ router.get(
         } catch {
             return res.status(500).json({
                 code: "INTERNAL_SERVER_ERROR",
-                message: "Etwas ist schiefgelaufen",
+                message: "Etwas ist schiefgelaufen"
             })
         }
     });
@@ -98,7 +98,7 @@ router.get(
             if (error instanceof NotFoundError) {
                 return res.status(404).json({
                     code: error.code,
-                    message: error.message,
+                    message: error.message
                 });
             }
             return res.status(400).send("Bad Request");
@@ -123,19 +123,25 @@ router.post(
             if (error instanceof InvalidDateRangeError) {
                 return res.status(400).json({
                     code: error.code,
-                    message: error.message,
+                    message: error.message
                 });
             }
-            if (error instanceof (RequestOverlapWithTimeEntryError || RequestOverlapWithRequestError || NotEnoughHolidaysLeft)) {
+            if (error instanceof RequestOverlapWithTimeEntryError || error instanceof RequestOverlapWithRequestError || error instanceof NotEnoughHolidaysLeftError) {
                 return res.status(409).json({
                     code: error.code,
-                    message: error.message,
+                    message: error.message
+                });
+            }
+            if (error instanceof UserNotFoundError) {
+                return res.status(404).json({
+                    code: error.code,
+                    message: error.message
                 });
             }
             return res.status(500).json({
                 code: "INTERNAL_SERVER_ERROR",
-                message: "Etwas ist schiefgelaufen",
-            })
+                message: "Etwas ist schiefgelaufen"
+            });
         }
     });
 
@@ -159,18 +165,18 @@ router.patch(
             if (error instanceof UnauthorizedError) {
                 return res.status(401).json({
                     code: error.code,
-                    message: error.message,
+                    message: error.message
                 });
             }
             if (error instanceof NotFoundError) {
                 return res.status(404).json({
                     code: error.code,
-                    message: error.message,
+                    message: error.message
                 });
             }
             return res.status(500).json({
                 code: "INTERNAL_SERVER_ERROR",
-                message: "Etwas ist schiefgelaufen",
+                message: "Etwas ist schiefgelaufen"
             });
         }
     });
@@ -192,12 +198,12 @@ router.delete(
             if (error instanceof UnauthorizedError) {
                 return res.status(401).json({
                     code: error.code,
-                    message: error.message,
+                    message: error.message
                 });
             }
             return res.status(500).json({
                 code: "INTERNAL_SERVER_ERROR",
-                message: "Etwas ist schiefgelaufen",
+                message: "Etwas ist schiefgelaufen"
             });
         }
     }
