@@ -4,12 +4,13 @@ import Button from "@/components/layout/Button";
 import Styles from "./Timecard.module.css";
 import Card from "@/components/layout/Card";
 import Image from "next/image";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import TimeEntry from "@/types/TimeEntry";
-import {createTimeEntry, getLastTimeEntry, setEndTime, getTimeEntries} from "@/scripts/timeEntriesScript";
+import { createTimeEntry, getLastTimeEntry, setEndTime, getTimeEntries, getSingleTimeEntry } from "@/scripts/timeEntriesScript";
 import { useRouter } from "next/navigation";
-import {DateString} from "@/types/misc";
-import {generateDateString} from "@/utils/TimeUtils";
+import { DateString } from "@/types/misc";
+import { generateDateString } from "@/utils/TimeUtils";
+import { create } from "domain";
 
 
 interface PopupProps {
@@ -19,11 +20,11 @@ interface PopupProps {
     updateEntry: (endTime: Date) => void;
 }
 
-export default function Timecard({openOverview, isOverviewOpenable = false, addEntry, updateEntry}: PopupProps) {
+export default function Timecard({ openOverview, isOverviewOpenable = false, addEntry, updateEntry }: PopupProps) {
     const [time, setTime] = useState<Date | null>(null);
     const [clicked, setClicked] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [todaysWorkTime, setTodaysWorkTime] = useState<{hours: number, minutes: number}>({hours: 0, minutes: 0});
+    const [todaysWorkTime, setTodaysWorkTime] = useState<{ hours: number, minutes: number }>({ hours: 0, minutes: 0 });
     const router = useRouter();
 
     useEffect(() => {
@@ -34,26 +35,26 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         return () => clearInterval(interval);
     }, []);
 
-    useEffect(()=>{
+    useEffect(() => {
         getTodaysWorkTime();
         checkCurrentStatus();
-        const interval = setInterval(()=>{
+        const interval = setInterval(() => {
             getTodaysWorkTime();
         }, 60000);
-        return() => clearInterval(interval);
+        return () => clearInterval(interval);
     }, []);
 
-    function checkAuth(){
+    function checkAuth() {
         const token = localStorage.getItem("token");
         const userid = localStorage.getItem("userid");
         if (!token || !userid) {
             router.push("/login");
             return null;
         }
-        return{token, userid: parseInt(userid)};
+        return { token, userid: parseInt(userid) };
     }
 
-    function mapEntry(entry: TimeEntry): TimeEntry{
+    function mapEntry(entry: TimeEntry): TimeEntry {
         return {
             "id": entry.id,
             "userId": entry.userId,
@@ -65,14 +66,14 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
 
     async function checkCurrentStatus() {
         const auth = checkAuth();
-        if(!auth){
+        if (!auth) {
             return;
         }
-        const {token, userid} = auth;
+        const { token, userid } = auth;
 
-        const lastTimeEntry = (await getLastTimeEntry(token, userid, "work"))[0];
+        const lastTimeEntry = await getLastTimeEntry(token, userid, "work");
 
-        if (lastTimeEntry == 401 || !lastTimeEntry) {
+        if (!lastTimeEntry || lastTimeEntry.error || !lastTimeEntry.id) {
             setClicked(true);
             return;
         }
@@ -87,10 +88,10 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
     async function setTimeEntry() {
         const buttonClickedTime = new Date();
         const auth = checkAuth();
-        if(!auth){
+        if (!auth) {
             return;
         }
-        const {token, userid} = auth;
+        const { token, userid } = auth;
         setLoading(true);
         const result = await createTimeEntry(token, userid, buttonClickedTime, "work");
         setLoading(false);
@@ -108,22 +109,22 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
 
     async function setEndTimeEntry() {
         const auth = checkAuth();
-        if(!auth){
+        if (!auth) {
             return;
         }
-        const {token, userid} = auth;
+        const { token, userid } = auth;
         setLoading(true);
         const result = await getLastTimeEntry(token, userid, "work");
-        if(result == 401 || !result || !Array.isArray(result)){
+        if (result?.error || !result.id) {
             console.error("Fehler beim holen des letzten Zeiteintrags", result);
             setLoading(false);
             return;
         }
-        const lastTimeEntry = result[0];
+        const lastTimeEntry = result;
         const buttonClickedTime = new Date();
         const update = await setEndTime(token, userid, parseInt(lastTimeEntry.id), buttonClickedTime);
         setLoading(false);
-        if(update == 401 || !update?.id){
+        if (update == 401 || !update?.id) {
             console.error("Fehler beim Ausstempeln", update);
             return;
         }
@@ -134,7 +135,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
 
     async function getTodaysWorkTime() {
         const auth = checkAuth();
-        if (!auth){
+        if (!auth) {
             return;
         }
         const { token, userid } = auth;
@@ -149,7 +150,7 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
         let milisec = 0;
 
         for (const entry of result) {
-            if (!entry.startTime){
+            if (!entry.startTime) {
                 continue;
             }
             const start = new Date(entry.startTime);
@@ -165,19 +166,19 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
     }
 
     return (
-        <Card width={"22vw"} styleOverrides={{flexDirection: "column", padding: "1.5rem"}}>
+        <Card width={"22vw"} styleOverrides={{ flexDirection: "column", padding: "1.5rem", boxSizing: "border-box", alignSelf: "flex-start" }}>
             <div className={Styles["clock"]}><Image src={"/clock.svg"} width={40} height={40} alt={"Uhr"}></Image></div>
             <span className={`${Styles["timeStyle"]}`}>
-                        {time ? time.toLocaleTimeString("de-DE", {hour12: false}) : "--:--:--"}
-                    </span>
+                {time ? time.toLocaleTimeString("de-DE", { hour12: false }) : "--:--:--"}
+            </span>
             <span className={`${Styles["standardTextHeader"]}`}>
-                        {time ? time.toLocaleDateString("de-DE", {
-                            weekday: "long",
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric"
-                        }) : "..."}
-                    </span>
+                {time ? time.toLocaleDateString("de-DE", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric"
+                }) : "..."}
+            </span>
             <div className={`${Styles["statusDiv"]}`}>
                 <span className={`${Styles["standardTextHeader"]}`}>Status</span>
                 <span className={`${Styles["standardTextBody"]}`}>{clicked ? "Nicht im Dienst" : "Im Dienst"}</span>
@@ -186,22 +187,22 @@ export default function Timecard({openOverview, isOverviewOpenable = false, addE
                 <span className={`${Styles["workTimeTextHeader"]}`}>Heute gearbeitet</span>
                 <span className={`${Styles["workTimeTextBody"]}`}> {todaysWorkTime.hours}h {todaysWorkTime.minutes}m</span>
             </div>
-            <Button onClick={() => {
-                if(loading){
+            <Button className={`${Styles["buttonText"]}`} onClick={() => {
+                if (loading) {
                     return;
                 }
-                if(clicked){
+                if (clicked) {
                     setTimeEntry();
                 }
-                else{
+                else {
                     setEndTimeEntry();
                 }
             }}
-            label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked ? "success" : "error"} height={2.5} width={"100%"} loading={loading}>
+                label={clicked ? "Einstempeln" : "Ausstempeln"} type={clicked ? "success" : "error"} height={2.5} width={"100%"} loading={loading || isOverviewOpenable}>
             </Button>
             <hr className={Styles["gap"]}></hr>
             <Button label={"Stunden-Übersicht"} type={"primary"} height={2.5} width={"100%"}
-                    onClick={() => openOverview()} loading={isOverviewOpenable}></Button>
+                onClick={() => openOverview()} loading={isOverviewOpenable}></Button>
         </Card>
     );
 }

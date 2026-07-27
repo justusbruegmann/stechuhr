@@ -67,6 +67,7 @@
     text-align: center;
     margin-top: 15px;
     margin-bottom: 10px;
+    overflow: auto;
 }
 
 .gap{
@@ -76,4 +77,8 @@
 
 .clock{
     text-align: center;
+}
+
+.buttonText{
+    overflow: hidden;
 }
