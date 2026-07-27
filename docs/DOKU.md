@@ -447,11 +447,12 @@ rolesAboveAllowed sagt aus, ob eine Route, welche ein User zugreifen darf, auch 
 Backend Code ist im Ordner "backend" zu finden.  
 Dabei gibt es in /route,/service,/repository die Datein Auth.ts und der OTPchange liegt in Usermanagement.ts  
 Dazu sind in /utils hashing.ts und auth.ts  
-Ebenfalls gibt es in /middleware die authmiddleware().
+Ebenfalls gibt es in /middleware die authmiddleware(). \
 [Link zur Route](/backend/route/) \
 [Link zum Service](/backend/service/) \
 [Link zum Repository](/backend/repository/) \
-[Link zu Utils](/backend/utils/)
+[Link zu Utils](/backend/utils/)\
+[Link zu Utils](/backend/middleware/)
 
 Frontend code ist im Ordner "frontend" zu finden.  
 Für das Loginform sind in src/app/login die relevante css und page.tsx zu finden.  
