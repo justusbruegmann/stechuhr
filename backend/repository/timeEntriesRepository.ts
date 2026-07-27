@@ -4,7 +4,7 @@ import { eq, desc, gte, lte, and, lt, gt, ne, or, isNull } from "drizzle-orm";
 import { DateString } from '../types/misc';
 import { TimeEntry } from '../types/timeEntry';
 
-export async function createTimeEntry(userId: number, startTime: Date, type: (typeof time_entry_type.enumValues) [number], endTime?: Date) {
+export async function createTimeEntry(userId: number, startTime: Date, type: (typeof time_entry_type.enumValues)[number], endTime?: Date) {
     const result = await db.insert(timeEntries).values({
         "userId": userId,
         "startTime": startTime,
@@ -15,20 +15,20 @@ export async function createTimeEntry(userId: number, startTime: Date, type: (ty
 }
 
 export async function setEndTime(timeEntryId: number, endTime: Date) {
-    const result = await db.update(timeEntries).set({"endTime": endTime}).where(eq(timeEntries.id, timeEntryId)).returning();
+    const result = await db.update(timeEntries).set({ "endTime": endTime }).where(eq(timeEntries.id, timeEntryId)).returning();
     return result[0];
 }
 
-export async function getTimeEntries(userId: number, type?: (typeof time_entry_type.enumValues)[number], startDate?: DateString, endDate?: DateString) : Promise<TimeEntry[]> {
+export async function getTimeEntries(userId: number, type?: (typeof time_entry_type.enumValues)[number], startDate?: DateString, endDate?: string): Promise<TimeEntry[]> {
     const conditions = [eq(timeEntries.userId, userId)];
-    if(type){
+    if (type) {
         conditions.push(eq(timeEntries.type, type));
     }
-    if(startDate){
+    if (startDate) {
         conditions.push(gte(timeEntries.startTime, new Date(startDate)));
-    } 
-    if(endDate){
-        conditions.push(lte(timeEntries.endTime, new Date(endDate)));
+    }
+    if (endDate) {
+        conditions.push(lte(timeEntries.startTime, new Date(endDate)));
     }
     const result = await db.select().from(timeEntries).where(and(...conditions));
     return result;
@@ -39,12 +39,12 @@ export async function getSingleTimeEntry(timeEntryId: number) {
     return result;
 }
 
-export async function getLastTimeEntry(userId: number, type?: (typeof time_entry_type.enumValues)[number]){
+export async function getLastTimeEntry(userId: number, type?: (typeof time_entry_type.enumValues)[number]) {
     const conditions = [eq(timeEntries.userId, userId)];
-    if(type){
+    if (type) {
         conditions.push(eq(timeEntries.type, type));
     }
-    const result = await db.select().from(timeEntries).where(and (...conditions)).orderBy(desc(timeEntries.startTime)).limit(1);
+    const result = await db.select().from(timeEntries).where(and(...conditions)).orderBy(desc(timeEntries.startTime)).limit(1);
     return result;
 }
 
@@ -58,9 +58,9 @@ export async function getOverlappingTimeEntries(userId: number, startTime: Date,
     }
     const result = await db.select().from(timeEntries).where(and(...conditions));
     return result;
-} 
+}
 
-export async function deleteTimeEntry(timeEntryId: number){
+export async function deleteTimeEntry(timeEntryId: number) {
     const result = await db.delete(timeEntries).where(eq(timeEntries.id, timeEntryId)).returning();
     return result[0];
 }

@@ -158,12 +158,12 @@ Backend (Terminal 1):
 
 
 
-# Was macht die Anwendung
+# Was macht die Anwendung (Mika)
 Die Anwendung dient zur Erfassung von Arbeitszeiten von Nutzern. Zudem erhält man einen Überblick über seine Zeiteinträge und kann diese jederzeit einsehen. Es gibt drei verschiedene Rollen von Anwendern:
 
 ## Rollen
 ### User
-Als User ist es möglich sich über die Timecard ein- und auszustechen. Man erhält eine Überischt über die heute gearbeiteten Stunden, und über sein Saldo für den Tag, Woche und Monat. Im Kalender kann man außerdem auf einen Blick seine Zeitereignisse sehen. 
+Als User ist es möglich sich über die Timecard ein- und auszustechen. Man erhält eine Übersicht über die heute gearbeiteten Stunden, und über sein Saldo für den Tag, Woche und Monat. Im Kalender kann man außerdem auf einen Blick seine Zeitereignisse sehen. 
 Zudem ist es möglich Abwesenheitsanträge in Form von Urlaub oder Krankheit zu erstellen. Auch vergessene Ein- und Ausstechzeiten kann man nachtragen.
 
 ### Manager
@@ -175,14 +175,69 @@ Als Admin ist es nicht möglich sich einzustechen, bzw. Zeiteinträge, Abwesenhe
 ## Login
 | Bild | Beschreibung |
 |------|--------------|
-| <img src="images/login/LoginPage.png" width="1500"> | Die Login-Seite dient zur Anmeldung des Benutzers. Es gibt zwei Textfelder. In das obere Feld wird der Benutzername eingegeben, in das untere das Passwort. Nach erfolgreicher Eingabe gelangt der Benutzer über den Button "Login“ auf sein Dashboard. |
+| <img src="images/login/LoginPage.png" width="600"> | Die Login-Seite dient zur Anmeldung des Benutzers. Es gibt zwei Textfelder. In das obere Feld wird der Benutzername eingegeben, in das untere das Passwort. Durch einen Klick auf das Augensymbol kann man sein eingegebenes Passwort anzeigen lassen. Nach erfolgreicher Eingabe gelangt der Benutzer über den Button "Login“ auf sein Dashboard. |
+| <img src="images/login/otpForm.png" width="600"> | Falls man sein Passwort zurücksetzt bekommt man vom Admin ein Einmalpasswort mit welchem man nach Eingabe sein Passwort ändern kann. Hierzu gibt es ein Popup, in welchem man das neue Passwort zwei mal eingeben muss, um dann mit "Fertig" zu bestätigen. |
+
+## Logout Button
+| Bild | Beschreibung |
+|------|--------------|
+| <img src="images/login/LogoutButton.png" width="600"> | Per Klick auf den Logout Button wird der Benutzer ausgeloggt und man wird zurück zum [Login](#login) gebracht. |
 
 ## Timecard
 | Bild | Beschreibung |
 |------|--------------|
-| <img src="images/login/LoginPage.png" width="1500"> | Über die Timecard ist es möglich sich ein- und auszustechen. Dies erfolgt über den grünen/roten Button. Nachdem man auf einstempeln bzw. auf ausstempeln geklickt hat wird der Button für einen Moment deaktiviert und zeigt einen spinner an. Dies liegt daran das der Button seinen Zustand erst ändert, wenn die Änderungen bereits erfolgreich in die Datenbank übernommen wurden. Die Timecard zeigt zudem auch die aktuelle Uhrzeit, ob man bereits ein- oder ausgestemeplt ist und wie lange man an dem aktuellen Tag schon gearbeitet hat. Ganz unten gibt es einen Button "xy" welcher auf das xy verweißt. |
+| <img src="images/dashboard/Timecard.png" width="1000"> | Über die Timecard ist es möglich sich ein- und auszustechen. Dies erfolgt über den grünen/roten Button. Nachdem man auf einstempeln bzw. auf ausstempeln geklickt hat wird der Button für einen Moment deaktiviert und zeigt einen Spinner an. Dies liegt daran dass der Button seinen Zustand erst ändert, wenn die Änderungen bereits erfolgreich in die Datenbank übernommen wurden. Die Timecard zeigt zudem auch die aktuelle Uhrzeit, ob man bereits ein- oder ausgestempelt ist und wie lange man an dem aktuellen Tag schon gearbeitet hat. Ganz unten gibt es den Button "Stunden-Übersicht", mit welchem man die [Stunden-Übersicht](#stunden-übersicht) öffnen kann. |
 
-## xy
+## Stunden-Übersicht
+| Bild | Beschreibung |
+|------|--------------|
+| <img src="images/dashboard/TimeOverview.png" width="1500"> | Die Stunden-Übersicht hat die Hauptaufgabe dem Benutzer sein aktuelles Saldo anzuzeigen. Hierfür kann man über eine Auswahl oben sein Saldo für den heutigen Tag, für die Woche oder für den Monat anzeigen. Zudem sieht man neben dem Saldo auch die Soll Arbeitszeit und die Ist-Arbeitszeit. Im unteren Bereich sieht man dann noch die zugehörigen Zeiteinträge des Tages, der Woche oder des Monats, je nachdem was man ausgewählt hat. Beim Hovern über einen Zeiteintrag kann man diesen auch per Klick auf den Papierkorb löschen. |
+
+## Kalender
+| Bild | Beschreibung |
+|------|--------------|
+| <img src="images/dashboard/Calender.png" width="3000"> | Der Kalender dient zur Anzeige der bereits eingetragenen Zeiteinträge. Oben links sieht man das aktuelle Jahr und den gerade ausgewählten Monat. Auf der rechten Seite findet man den Button "Heute" und zwei Pfeile. Diese Komponenten dienen zum Navigieren im Kalender. Mit dem "Heute"-Button wird man immer zu dem Monat gebracht in dem sich das heutige Datum befindet. Über die Pfeile kann man einen Monat nach vorn oder nach hinten springen. Im Kalender werden die verschiedenen Einträge mit verschiedenen Farben markiert. Durch die Legende im unteren Teil des Kalenders wird die Bedeutung jeder Farbe deutlich. Zeiteinträge werden immer nur klein im Kalender angezeigt. Bei Krankheiten, Urlaub, Wochenenden und Feiertagen werden die Tage komplett eingefärbt. Per Klick auf die [Tagesanzeige](#tagesanzeige) öffnet sich die Tagesansicht. |
+
+## Tagesanzeige
+| Bild | Beschreibung |
+|------|--------------|
+| <img src="images/dashboard/ShowDay.png" width="600"> | Die Tagesanzeige öffnet sich, wenn man auf einen Tag des Kalenders klickt. Es öffnet sich ein Side Panel und dort werden alle Zeiteinträge dieses Tages angezeigt. Unten hat man über zwei Buttons noch die Option um [manuell nachzutragen](#manuell-nachtragen) und um einen [Antrag zu erstellen](#antrag-erstellen). |
+
+## Manuell-nachtragen
+| Bild | Beschreibung |
+|------|--------------|
+| <img src="images/dashboard/AddEntryManuel.png" width="600"> | Beim manuellen Nachtragen gibt man zuerst die Einstempelzeit an. Die Ausstempelzeit ist optional und kann per Checkbox mitgegeben oder weggelassen werden, wenn man sich zum Beispiel am Morgen vergessen hat einzustechen aber noch am Arbeiten ist. |
+| <img src="images/dashboard/AddEntryManuel2.png" width="600"> | Über den Button "Eintrag hinzufügen" kann man den Eintrag letztendlich hinzufügen. Dies geht ohne Genehmigung. Alternativ kann man über "Abbrechen" den Entwurf verwerfen. |
+
+## Antrag-erstellen
+| Bild | Beschreibung |
+|------|--------------|
+| <img src="images/dashboard/CreateEntry.png" width="850"> | Beim Erstellen eines Antrages kann man zunächst zwischen Krankheit und Urlaub auswählen. Als nächstes gibt man Start- und Enddatum an. Dies kann man entweder direkt selber eingeben, oder man geht über das Kalender Icon. Hier wird dann ein kleiner Kalender geöffnet bei dem man den richtigen Tag auswählen kann. Optional kann man noch eine Bemerkung mit Angeben. |
+| <img src="images/dashboard/CreateEntry2.png" width="850"> | Abschließend kann man mit dem "Antrag erstellen" Button den Antrag erstellen, welcher aber erst vom zugehörigen Manager angenommen werden muss, bevor er in den Kalender geschrieben wird. Alternativ kann man über den Button "Abbrechen" den Entwurf verwerfen. |
+
+## Notifications
+| Bild | Beschreibung |
+|------|--------------|
+| <img src="images/dashboard/NotificationIcon.png" width="600"> | Beim Klick auf die Glocke im oberen Bildrand auf dem Dashboard kann man sich seine aktuellen Benachrichtigungen/Notifications anzeigen lassen. |
+| <img src="images/dashboard/Notifications.png" width="600"> | Dafür öffnet sich eine Side Pane welche alle aktuellen Nachrichten anzeigt. Wenn man auf eine bestimmte Benachrichtigung geht, kann man per Klick auf "Ungelesen" die Nachricht auf "Gelesen" umstellen. Per Klick auf den Knopf "Löschen" kann man die einzelne Benachrichtigung löschen. |
+
+## Manager Ansicht
+| Bild | Beschreibung |
+|------|--------------|
+| <img src="images/managerView/ManagerViewButton.png" width="600"> | Diese Funktion ist nur bei Benutzern mit der [Rolle Manager](#rollen) verfügbar! Über den Button "Manager-Ansicht" oben links auf dem Dashboard, kommt man zur Manager Ansicht. |
+| <img src="images/managerView/managerView.png" width="600"> | Hier sieht man alle Nutzer für welche man zuständig ist. Man kann die Urlaubstage, Krankheitstage und die wöchentlich gearbeitete Stunden der Nutzer ansehen. |
+| <img src="images/managerView/noSubordinates.png" width="600"> | Falls man keine zugewiesenen Benutzer hat wird die Meldung "Sie haben keine Mitarbeiter zu verwalten" angezeigt. |
+| <img src="images/managerView/popupEdit.png" width="600"> | Über den Button "Bearbeiten" kann man die Urlaubstage und Arbeitstage eines Benutzers anpassen. |
+| <img src="images/managerView/popupRequests.png" width="600"> | Zudem kann man über den Button "Anträge" einsehen welche offenen Anträge ein Benutzer aktuell hat. Über die Buttons "Genehmigen" und "Ablehnen", kann man die Anträge bearbeiten. |
+
+## Admin Ansicht
+| Bild | Beschreibung |
+|------|--------------|
+| <img src="images/adminView/AdminViewButton.png" width="600"> | Diese Funktion ist nur bei Benutzern mit der [Rolle Admin](#rollen) verfügbar! Über den Button "Admin-Ansicht" oben links auf dem Dashboard, kommt man zur Admin Ansicht. |
+| <img src="images/adminView/AdminView.png" width="600"> | Hier sieht man alle Nutzer welche registriert sind. |
+| <img src="images/adminView/CreateNewUser.png" width="600"> | Über den Button "Nutzer anlegen" öffnet sich ein PopUp über welches man neue Benutzer anlegen kann. Hier benötigt man die Eingabe von dem Nutzernamen, der Rolle, dem Manager, die Arbeitsstunden pro Woche und die Urlaubstage pro Jahr. Über den Button "Anlegen" wird der Benutzer erstellt. |
+| <img src="images/adminView/UpdateUser.png" width="600"> | Zudem hat man bei jedem Benutzer noch die Möglichkeiten ihn zu löschen (roter Papierkorb), ihn zu bearbeiten (blauer Stift) und sein Passwort zurückzusetzen (gelber Reset). Beim Bearbeiten kann man dem Benutzer eine neue Rolle und/oder einen neuen Manager zuweisen. Mit "Bestätigen" oder "Abbrechen" beendet man seine Bearbeitung. |
+| <img src="images/adminView/OneTimePassword.png" width="600"> | Beim Passwort Reset wird auch ein Popup geöffnet, bei dem man ein Einmalpasswort angezeigt bekommt. Dieses gibt der Admin dann an den entsprechenden Benutzer weiter, damit dieser ein neues Passwort erstellen kann. ([siehe Login](#login)) |
 
 # Struktur des Repositories
 Das Repository ist als Monorepo in zwei Hauptteilen aufgebaut: Backend und Frontend. Zusätzlich liegt die Dokumentation des gesamten Monorepos im Ordner /docs.

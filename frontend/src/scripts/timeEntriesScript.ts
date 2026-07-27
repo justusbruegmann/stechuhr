@@ -13,8 +13,8 @@ export async function createTimeEntry(token: string, userid: number, startTime: 
         "userid": `${userid}`
     };
     const body = {
-        "starttime": startTime,
-        "endtime": endTime,
+        "starttime": startTime.toISOString(),
+        "endtime": endTime?.toISOString(),
         "type": type
     };
     const response = await fetch(url, { method: "POST", body: JSON.stringify(body), headers: headers });
