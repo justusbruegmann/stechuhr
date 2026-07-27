@@ -60,7 +60,7 @@ export async function setEndTimeService(timeEntryId: number, newEndTime: Date, u
         if (timeEntry.startTime != null && timeEntry.startTime > newEndTime) {
             return "end time is before start time";
         }
-        if (newEndTime > new Date()) {
+        if (newEndTime.getTime() > Date.now() + 15000) {
             return "end time can not be in the future";
         }
 
