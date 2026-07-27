@@ -72,7 +72,7 @@ Dann muss eine ".env.local" im frontend Ordner ein mit
 ``NEXT_PUBLIC_BACKEND_URL=<BACKENDURL EINSETZEN>
 `` vorhandensein.  
 Mögliche werte:
-- Lokales backend:   http://localhost:6000
+- Lokales backend:   http://localhost:3500
 - Hosted backend:   https://stechuhr-production-2a78.up.railway.app
 
 Zum Starten ``npm run dev``
@@ -116,7 +116,7 @@ Beim build muss eine ".env.local" im frontend Ordner ein mit
 ``NEXT_PUBLIC_BACKEND_URL=<BACKENDURL EINSETZEN>
 `` vorhandensein.  
 Mögliche werte:
-- Lokales backend:   http://localhost:6000
+- Lokales backend:   http://localhost:3500
 - Hosted backend:   https://stechuhr-production-2a78.up.railway.app
 
 
