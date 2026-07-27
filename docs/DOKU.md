@@ -452,7 +452,7 @@ Ebenfalls gibt es in /middleware die authmiddleware(). \
 [Link zum Service](/backend/service/) \
 [Link zum Repository](/backend/repository/) \
 [Link zu Utils](/backend/utils/)\
-[Link zu Utils](/backend/middleware/)
+[Link zur Middleware](/backend/middleware/)
 
 Frontend code ist im Ordner "frontend" zu finden.  
 Für das Loginform sind in src/app/login die relevante css und page.tsx zu finden.  
