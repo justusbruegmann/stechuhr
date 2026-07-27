@@ -25,7 +25,8 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
         if (endtime && endtime < starttime) {  //look if endtime is before starttime
             return "endtime is before starttime";
         }
-        if (type === "work" && starttime > new Date()) {
+        // added latency for network
+        if (type === "work" && starttime.getTime() > Date.now() + 15000) {
             console.log(new Date())
             return "start time for work entries cannot be in the future";
         }
