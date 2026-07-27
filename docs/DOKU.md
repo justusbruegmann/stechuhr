@@ -91,7 +91,7 @@ Dann muss eine ".env" im Backend Ordner ein mit
 ``DATABASE_URL=<DATENBANK_URL EINSETZEN>
 `` vorhandensein.
 
-Datenbank_URL wird noch bereit gestellt
+Datenbank_URL wird per Moodle bereitgestellt
 
 zum Starten ``npm run dev``
 nach jeder Änderung muss der command neu ausgeführt werden (kein HMR) und gewartet werden bis ``✓ Database connection successful
@@ -110,7 +110,7 @@ Zuerst das Projekt Klonen
 ``git clone https://github.com/justusbruegmann/stechuhr.git``
 
 ### Bauen
-Zum Bauen muss das ``build.ps1`` script ausgeführt werden oder eins der Scripte ausgeführt werden aus dem root directory:
+Zum Bauen muss das ``build.ps1`` script ausgeführt werden oder eins der Plattformspezifischen Scripte ausgeführt aus dem root directory:
 
 Beim build muss eine ".env.local" im frontend Ordner ein mit
 ``NEXT_PUBLIC_BACKEND_URL=<BACKENDURL EINSETZEN>
@@ -133,7 +133,7 @@ Zum Starten muss eine ".env" im Backend Ordner ein mit
 ``DATABASE_URL=<DATENBANK_URL EINSETZEN>
 `` vorhandensein.
 
-Datenbank_URL wird noch bereit gestellt
+Datenbank_URL wird per Moodle bereitgestellt
 
 ### Starten
 Backend und Frontend laufen als getrennte Prozesse und werden jeweils in einem eigenen Terminal gestartet:
@@ -141,15 +141,17 @@ Backend und Frontend laufen als getrennte Prozesse und werden jeweils in einem e
 Backend (Terminal 1):
 ```cmd
    cd backend
-   npm start
+   npm run start
    ```   
    
   Warten bis ✓ Database connection successful in der Console erscheint, dann ist das Backend bereit.
 
   Frontend (Terminal 2):
 
-      cd frontend
-      npm start
+```cmd
+   cd frontend
+   npm run start
+   ```  
 
   Die Anwendung ist danach unter http://localhost:3000 erreichbar.
 
@@ -446,12 +448,22 @@ Backend Code ist im Ordner "backend" zu finden.
 Dabei gibt es in /route,/service,/repository die Datein Auth.ts und der OTPchange liegt in Usermanagement.ts  
 Dazu sind in /utils hashing.ts und auth.ts  
 Ebenfalls gibt es in /middleware die authmiddleware().
+[Link zur Route](/backend/route/) \
+[Link zum Service](/backend/service/) \
+[Link zum Repository](/backend/repository/) \
+[Link zu Utils](/backend/utils/) \
 
 Frontend code ist im Ordner "frontend" zu finden.  
 Für das Loginform sind in src/app/login die relevante css und page.tsx zu finden.  
 Für die Passwortänderung das Popup ist in src/components/login die PasswordChangeModal.tsx zu finden
 
+[Link zur Login Page](/frontend/src/app/login/) \
+[Link zum Passwort Popup](/frontend/src/components/login/) \
+
+
 Alle drei fetch calls die für die Auth verantwortlich ist sind in src/scripts/auth.ts zu finden.
+[Link zu den Fetches](/frontend/src/scripts/auth.ts/) \
+
 
 Es gibt auch noch die authCheck() Methode das Prinzip von der wird öfters im Frontend von allen verwendet.  
 Diese hier ist spziell in src/app/dashboard/page.tsx zufinden
@@ -498,7 +510,7 @@ Die Auth hat 3 Routen
         - 404: wenn auth() return undefined  
         - 485: Custom code dafür wenn der User ein one-time-password gesetzt hat. damit das frontend nur eine zahl checken muss     
         - 500: Alg error  
-3. PATCH aufgrund von CORS aktuell PUT /users/otp/:id zum ändern des oneTimePassword das man vom Admin bekommt  
+3. PATCH /users/:id/otp zum ändern des oneTimePassword das man vom Admin bekommt  
     input body: {"currentpwd","newpwd"}  
     input params: id  
     output text: "changed succesfully"  
