@@ -5,16 +5,16 @@
 }
 
 .labels {
-    font-weight: 600;
-    font-size: 16px;
-    color: #2f2e2e;
+  font-weight: 600;
+  font-size: 16px;
+  color: #2f2e2e;
 }
 
 .date-input-container {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 450px;
+  width: 490px;
   margin: 5px 0;
 }
 
@@ -24,7 +24,7 @@
 
 .date-input {
   width: 100%;
-  padding: 12px;
+  padding: 16px;
   border: none;
   border-radius: 12px;
   background-color: #f2f2f2;

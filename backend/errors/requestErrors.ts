@@ -6,8 +6,8 @@ export class AppError extends Error {
         super(message);
         this.name = "AppError";
     }
-} 
-
+}
+ 
 export class InvalidDateRangeError extends AppError {
     constructor() {
         super(
@@ -21,7 +21,7 @@ export class RequestOverlapWithTimeEntryError extends AppError {
     constructor() {
         super(
             "REQUEST_OVERLAP_WITH_TIMEENTRY",
-            "Es ist bereits ein Zeiteintrag für den gewünschten Zeitraum vorhanden."
+            "Es ist bereits ein Zeiteintrag im gewünschten Zeitraum vorhanden."
         )
     }
 }
@@ -53,11 +53,29 @@ export class NotFoundError extends AppError {
     }
 }
 
-export class NotEnoughHolidaysLeft extends AppError {
+export class NotEnoughHolidaysLeftError extends AppError {
     constructor() {
         super(
             "NOT_ENOUGH_HOLIDAYS_LEFT",
             "Sie haben nicht genügend Urlaubstage zur Verfügung."
+        )
+    }
+}
+
+export class UserNotFoundError extends AppError {
+        constructor() {
+        super(
+            "USER_NOT_FOUND",
+            "Der Nutzer konnte nicht gefunden werden."
+        )
+    }
+}
+
+export class NoManagerAssignedError extends AppError {
+        constructor() {
+        super(
+            "NO_MANAGER_ASSIGNED",
+            "Es konnte kein Manager gefunden werden."
         )
     }
 }
