@@ -7,7 +7,7 @@ export class AppError extends Error {
         this.name = "AppError";
     }
 }
-
+ 
 export class InvalidDateRangeError extends AppError {
     constructor() {
         super(
