@@ -3,7 +3,7 @@
     - justusbruegmann: 4865545
     - SebastianAnhalt: 7020807
     - mika630: 1586623
-    - FHG : nummer Einfügen Bitte beachten Github Email und git Email unterschiedlich da Firmen Laptop
+    - FHG : 3320563 -> Bitte beachten: Github Email und git Email unterschiedlich da Firmen Laptop
     - brdly06: Nummer einfügen
 AI als Formulierungshilfe verwendet
 # Was macht die Anwendung? (Mika)
