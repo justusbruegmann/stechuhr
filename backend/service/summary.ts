@@ -7,9 +7,10 @@ import {TimeEntry} from "../types/timeEntry";
 
 export async function generateSummary(user: User, startDate: DateString, endDate: DateString): Promise<Summary> {
 
-    const timeEntriesWork: TimeEntry<"work">[] = await getTimeEntriesService(user.id, "work", startDate, endDate) as TimeEntry<"work">[];
-    const timeEntriesHoliday: TimeEntry<"holiday">[] = await getTimeEntriesService(user.id, "holiday", startDate, endDate) as TimeEntry<"holiday">[];
-    const timeEntriesSick: TimeEntry<"sick">[] = await getTimeEntriesService(user.id, "sick", startDate, endDate) as TimeEntry<"sick">[];
+    const timeEntries: TimeEntry[] = await getTimeEntriesService(user.id, undefined, startDate, endDate) as TimeEntry[];
+    const timeEntriesWork: TimeEntry<"work">[] = timeEntries.filter((entry) => entry.type === "work") as TimeEntry<"work">[];
+    const timeEntriesHoliday: TimeEntry<"holiday">[] = timeEntries.filter((entry) => entry.type === "holiday") as TimeEntry<"holiday">[];
+    const timeEntriesSick: TimeEntry<"sick">[] = timeEntries.filter((entry) => entry.type === "sick") as TimeEntry<"sick">[];
 
     const now = new Date();
     const timeWorkedInMinutes: number = timeEntriesWork.reduce((total: number, entry: TimeEntry): number => {
@@ -18,7 +19,7 @@ export async function generateSummary(user: User, startDate: DateString, endDate
         const durationInMinutes = Math.floor((end.getTime() - start.getTime()) / (1000 * 60));
         return total + durationInMinutes;
     }, 0);
-
+ 
     return {
         userId: user.id,
         startDate,

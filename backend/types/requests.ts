@@ -2,10 +2,10 @@ import { DateString } from "./misc";
 
 export default interface Request{
     userId: number,
-    managerId: number,
+    managerId: number | null,
     type: "holiday" | "sick",
     startDate: DateString,
     endDate: DateString,
-    remark?: string,
-    isApproved?: boolean
+    remark?: string | null,
+    isApproved?: boolean | null
 }

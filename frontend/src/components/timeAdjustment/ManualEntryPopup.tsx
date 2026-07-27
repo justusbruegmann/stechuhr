@@ -23,6 +23,8 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
 
   const [isChecked, setIsChecked] = useState(true);
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   function checkTimeFormat(time: string) {
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     return timeRegex.test(time);
@@ -30,13 +32,15 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
 
   async function saveButton(isToTimeRequired: boolean = true) {
 
+    setErrorMessage("");
+
     const [startHours, startMinutes] = startTime.split(":").map(Number);
     const token = localStorage.getItem("token");
 
     if (!token) {
       return null;
     }
-    console.log("Required: " + isToTimeRequired)
+
     if (isToTimeRequired) {
       const [endHours, endMinutes] = endTime.split(":").map(Number);
 
@@ -45,7 +49,11 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
         if (!userid) {
           return null;
         }
-        const createdTimeEntry: TimeEntry = await createTimeEntry(token, userid, new Date(date.setHours(startHours, startMinutes)), "work", new Date(date.setHours(endHours, endMinutes)));
+        const createdTimeEntry = await createTimeEntry(token, userid, new Date(date.setHours(startHours, startMinutes)), "work", new Date(date.setHours(endHours, endMinutes)));
+        if (createdTimeEntry.error) {
+          setErrorMessage("Der Zeiteintrag konnte nicht erstellt werden.");
+          return null;
+        }
         const entry: TimeEntry = {
           id: createdTimeEntry.id,
           userId: createdTimeEntry.userId,
@@ -54,6 +62,7 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
           type: createdTimeEntry.type
         };
         onCreate(entry);
+        close();
       } catch (error) {
         console.log(error)
         return null;
@@ -64,7 +73,11 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
         if (!userid) {
           return null;
         }
-        const createdTimeEntry: TimeEntry = await createTimeEntry(token, userid, new Date(date.setHours(startHours, startMinutes)), "work");
+        const createdTimeEntry = await createTimeEntry(token, userid, new Date(date.setHours(startHours, startMinutes)), "work");
+        if (createdTimeEntry.error) {
+          setErrorMessage("Der Zeiteintrag konnte nicht erstellt werden.");
+          return null;
+        }
         const entry: TimeEntry = {
           id: createdTimeEntry.id,
           userId: createdTimeEntry.userId,
@@ -72,7 +85,10 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
           type: createdTimeEntry.type
         };
         onCreate(entry);
+        close();
+        // window.location.reload();
       } catch (error) {
+        
         console.log(error)
         return null;
       }
@@ -116,6 +132,12 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
 
       <br />
 
+      {errorMessage && (
+        <div className={styles["errorMessage"]}>
+          {errorMessage}
+        </div >
+      )}
+
       <div className={styles["container-popup-buttons"]}>
         <Button
           label="Abbrechen"
@@ -137,19 +159,17 @@ export default function ManualEntryPopup({ date, onCreate }: Props) {
               if (checkTimeFormat(startTime) && checkTimeFormat(endTime)) {
                 if (startTime < endTime) {
                   await saveButton();
-                  close();
                 } else {
-                  alert("Die Einstempelzeit muss vor der Austempelzeit liegen.");
+                  setErrorMessage("Die Einstempelzeit muss vor der Austempelzeit liegen.");
                 }
               } else {
-                alert("Bitte beide Zeiten in korrektem Format eingeben.");
+                setErrorMessage("Bitte beide Zeiten in korrektem Format eingeben.");
               }
             } else {
               if (checkTimeFormat(startTime)) {
                 saveButton(false);
-                close();
               } else {
-                alert("Bitte die Einstempelzeit in korrektem Format eingeben.");
+                setErrorMessage("Bitte die Einstempelzeit in korrektem Format eingeben.");
               }
             }
           }
