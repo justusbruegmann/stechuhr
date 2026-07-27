@@ -451,18 +451,18 @@ Ebenfalls gibt es in /middleware die authmiddleware().
 [Link zur Route](/backend/route/) \
 [Link zum Service](/backend/service/) \
 [Link zum Repository](/backend/repository/) \
-[Link zu Utils](/backend/utils/) \
+[Link zu Utils](/backend/utils/)
 
 Frontend code ist im Ordner "frontend" zu finden.  
 Für das Loginform sind in src/app/login die relevante css und page.tsx zu finden.  
 Für die Passwortänderung das Popup ist in src/components/login die PasswordChangeModal.tsx zu finden
 
 [Link zur Login Page](/frontend/src/app/login/) \
-[Link zum Passwort Popup](/frontend/src/components/login/) \
+[Link zum Passwort Popup](/frontend/src/components/login/)
 
 
 Alle drei fetch calls die für die Auth verantwortlich ist sind in src/scripts/auth.ts zu finden.
-[Link zu den Fetches](/frontend/src/scripts/auth.ts/) \
+[Link zu den Fetches](/frontend/src/scripts/auth.ts/)
 
 
 Es gibt auch noch die authCheck() Methode das Prinzip von der wird öfters im Frontend von allen verwendet.  
