@@ -684,4 +684,79 @@ Trotzdem bin ich stolz auf das Endprodukt, in dem jedes einzelne Element von mir
 
 ## brdly06: Notifications
 
-## FHG: Requests
+## FHG: Requests erstellen
+
+### Funktion
+
+#### Wo können die Anträge erstellt werden?
+
+Im Frontend können Anträge erstellt werden, in dem man auf einen Tag im Kalender klickt.
+Anschließend öffnet sich eine Sidebar. Hier wird eine Liste an Zeiteinträgen für den ausgewählten Tag angezeigt. 
+Zudem gibt es zwei Buttons: 
+Der blaue Button links ist zum manuellen Nachtragen da. 
+Der weiße Button rechts ist zum Antrag erstellen da. 
+
+### Frontend
+
+Wird der Button "Antrag erstellen" gedrückt, öffnet sich ein Popup. 
+Dieses Popup beinhaltet ein Formular für einen Antrag. 
+In diesem Formular kann der Nutzer die Daten für den Antrag eingeben. Dies beinhaltet den Typ des Antrags, das Startdatum, das Enddatum sowei ein Textfeld um eine Bemerkung abzugeben. 
+
+![Antrag-Popup](images/dashboard/CreateEntry.png)
+
+Das Antrag-Popup ist in 3 Komponenten aufgebaut:
+
+1. Sidebar Tagesansicht [Link zum Code](/frontend/src/components/timeAdjustment/DailyDetailsPane.tsx)
+
+- Hier ist nur der Button "Antrag erstellen" relevant. 
+Dieser öffnet das Popup.
+
+2. Popup [Link zum Code](/frontend/src/components/timeAdjustment/RequestPopup.tsx)
+
+- Das Popup besteht aus dem Titel "Antrag erstellen", zwei Tabs, Errortext und zwei Buttons. 
+
+- Die Tabs rufen die dritte Komponente auf (siehe unten).
+
+- Der Errortext ist zu Beginn unsichtbar und wird nur angezeigt, wenn es beim Erstellen eines Antrags zu einem Fehler kommt.
+
+- Der Button "Abbrechen" schließt das Popup und der Button "Antrag erstellen" ruft den Endpunkt im Backend zum erstellen eines Antrags auf.
+
+- Das Popup ist eine Standart-Komponente in unserem Projekt, die Sebastian für alle erstellt hat.
+
+3. Abwesenheitsformular [Link zum Code](/frontend/src/components/timeAdjustment/AbsenceForm.tsx)
+
+- Das Abwesenheitsformular besteht aus drei Unterüberschriften, zwei Inputfelder und einem Textfeld.
+
+- Jede Unterüberschrift gibt an für was das folgende Inputfeld da ist. 
+
+- Mit den zwei "Datum-Inputfelder" kann ein Startdatum und ein Enddatum eingegeben werden. 
+
+- Dies geht sowhl durch das Klicken auf den Tag/Monat/Jahr sowie über das Kalender-Icon.
+
+- Das Textfeld ist für jegliche Bemerkungen da. Dieses Feld ist optional. Hier kann zum Beispiel ein Hinweis für den Manager eingetragen werden.
+
+Das Styling zu den jeweiligen Komponenten kann hier gefunden werden:
+
+- Sidebar Tagesansicht [Link zum Code](/frontend/src/components/timeAdjustment/DailyDetailsPane.module.css)
+
+- Popup [Link zum Code](/frontend/src/components/timeAdjustment/RequestPopup.module.css)
+
+- Abwesenheitsformular [Link zum Code](/frontend/src/components/timeAdjustment/AbsenceForm.module.css)
+
+### Backend
+
+Gemäß dem generellen Aufbau des Backends besteht jeder Endpunkt aus drei Schichten: 
+- **/route**: Hier wird die Route definiert, Middleware eingebunden und Authorization und Input-Validierung durchgeführt.
+- **/service**: Hier wird die eigentliche Domainlogik implementiert.
+- **/repository**: Hier werden die SQL-Abfragen an die Datenbank definiert.
+
+Im Backend wird beim Erstellen eines Antrages folgender Endpunkt aufgerufen:
+
+#### POST /requests
+
+[Link zum Code](/backend/route/requests.ts) 
+
+Die Authorisierung ist hier sehr einfach, da jede Rolle einen Antrag erstellen kann. Dies wird mithilfe der Auhorisierungsmiddleware gemacht.
+Die Parameter Typ, Startdatum, Enddatum und Bemerkung werden im Request Body mitgeschickt.
+Dieser wird im Backend in der Middleware mittels eines Zod-Schemas validiert.
+Sofern alles gültig ist, wird der Service aufgerufen.
