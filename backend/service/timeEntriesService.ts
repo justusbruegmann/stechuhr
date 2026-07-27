@@ -8,6 +8,8 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
     try {
         const holidays = new Holidays('DE', 'BW');
         const lastTimeEntry = (await getLastTimeEntry(userid))[0];
+        console.log(new Date())
+
         if (starttime.getDay() == 0 || starttime.getDay() == 6) { //no work on weekends
             return "not able to work on weekends";
         }
@@ -24,6 +26,7 @@ export async function createTimeEntryService(userid: number, starttime: Date, en
             return "endtime is before starttime";
         }
         if (type === "work" && starttime > new Date()) {
+            console.log(new Date())
             return "start time for work entries cannot be in the future";
         }
 
