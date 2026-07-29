@@ -166,7 +166,7 @@ export default function Timecard({ openOverview, isOverviewOpenable = false, add
     }
 
     return (
-        <Card width={"22vw"} styleOverrides={{ flexDirection: "column", padding: "1.5rem", boxSizing: "border-box", alignSelf: "flex-start" }}>
+        <Card width={"22vw"} styleOverrides={{ flexDirection: "column", padding: "1.5rem", boxSizing: "border-box", marginTop: "auto", marginBottom: "auto"}}>
             <div className={Styles["clock"]}><Image src={"/clock.svg"} width={40} height={40} alt={"Uhr"}></Image></div>
             <span className={`${Styles["timeStyle"]}`}>
                 {time ? time.toLocaleTimeString("de-DE", { hour12: false }) : "--:--:--"}
