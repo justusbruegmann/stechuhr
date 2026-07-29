@@ -688,9 +688,12 @@ Trotzdem bin ich stolz auf das Endprodukt, in dem jedes einzelne Element von mir
 
 ### Funktion
 
+Wichtig: Die Anträge sind erst seit Anfang des zweiten Semesters Teil der Website. 
+Sie erweitern den Funktionsumfang der Anwendung und erfüllen zugleich die Mindestanforderung an Anzahl der implementierten Endpunkte pro Person.
+
 #### Wo können die Anträge erstellt werden?
 
-Im Frontend können Anträge erstellt werden, in dem man auf einen Tag im Kalender klickt.
+Im Frontend können Anträge erstellt werden, indem man auf einen Tag im Kalender klickt.
 Anschließend öffnet sich eine Sidebar. Hier wird eine Liste an Zeiteinträgen für den ausgewählten Tag angezeigt. 
 Zudem gibt es zwei Buttons: 
 Der blaue Button links ist zum manuellen Nachtragen da. 
@@ -700,9 +703,9 @@ Der weiße Button rechts ist zum Antrag erstellen da.
 
 Wird der Button "Antrag erstellen" gedrückt, öffnet sich ein Popup. 
 Dieses Popup beinhaltet ein Formular für einen Antrag. 
-In diesem Formular kann der Nutzer die Daten für den Antrag eingeben. Dies beinhaltet den Typ des Antrags, das Startdatum, das Enddatum sowei ein Textfeld um eine Bemerkung abzugeben. 
+In diesem Formular kann der Nutzer die Daten für den Antrag eingeben. Dies beinhaltet den Typ des Antrags, das Startdatum, das Enddatum sowie ein Textfeld um eine Bemerkung abzugeben. 
 
-![Antrag-Popup](images/dashboard/CreateEntry.png)
+<img src="images/dashboard/CreateEntry.png" width="350">
 
 Das Antrag-Popup ist in 3 Komponenten aufgebaut:
 
@@ -719,21 +722,24 @@ Dieser öffnet das Popup.
 
 - Der Errortext ist zu Beginn unsichtbar und wird nur angezeigt, wenn es beim Erstellen eines Antrags zu einem Fehler kommt.
 
-- Der Button "Abbrechen" schließt das Popup und der Button "Antrag erstellen" ruft den Endpunkt im Backend zum erstellen eines Antrags auf.
+- Der Button "Abbrechen" schließt das Popup und der Button "Antrag erstellen" ruft den Endpunkt im Backend zum Erstellen eines Antrags auf.
 
-- Das Popup ist eine Standart-Komponente in unserem Projekt, die Sebastian für alle erstellt hat.
+- Das Popup ist eine Standard-Komponente in unserem Projekt, die *SebastianAnhalt* für alle erstellt hat.
 
 3. Abwesenheitsformular [Link zum Code](/frontend/src/components/timeAdjustment/AbsenceForm.tsx)
 
-- Das Abwesenheitsformular besteht aus drei Unterüberschriften, zwei Inputfelder und einem Textfeld.
+- Das Abwesenheitsformular besteht aus drei Unterüberschriften, zwei Eingabefelder und einem Textfeld.
 
 - Jede Unterüberschrift gibt an für was das folgende Inputfeld da ist. 
 
 - Mit den zwei "Datum-Inputfelder" kann ein Startdatum und ein Enddatum eingegeben werden. 
 
-- Dies geht sowhl durch das Klicken auf den Tag/Monat/Jahr sowie über das Kalender-Icon.
+- Dies geht sowohl durch das Klicken auf den Tag/Monat/Jahr sowie über das Kalender-Icon.
 
 - Das Textfeld ist für jegliche Bemerkungen da. Dieses Feld ist optional. Hier kann zum Beispiel ein Hinweis für den Manager eingetragen werden.
+
+Wurde ein Antrag erstellt, wird ein Script aufgerufen, das die Anfrage an den passenden Endpunkt im Backend stellt.
+[Link zum Code](/frontend/src/scripts/requests.ts)
 
 Das Styling zu den jeweiligen Komponenten kann hier gefunden werden:
 
@@ -756,7 +762,72 @@ Im Backend wird beim Erstellen eines Antrages folgender Endpunkt aufgerufen:
 
 [Link zum Code](/backend/route/requests.ts) 
 
-Die Authorisierung ist hier sehr einfach, da jede Rolle einen Antrag erstellen kann. Dies wird mithilfe der Auhorisierungsmiddleware gemacht.
+Die Autorisierung ist hier sehr einfach, da jede Art von Nutzern einen Antrag erstellen kann. Dies wird mithilfe der Autorisierungsmiddleware gemacht.
 Die Parameter Typ, Startdatum, Enddatum und Bemerkung werden im Request Body mitgeschickt.
 Dieser wird im Backend in der Middleware mittels eines Zod-Schemas validiert.
 Sofern alles gültig ist, wird der Service aufgerufen.
+Dieser ist hier zu finden: [Link zum Code](/backend/service/requests.ts)
+
+Im Service finden vor allem die ganze Validierung der Inputs statt.
+Hier muss validiert werden, ob im gewählten Zeitraum bereits ein Zeiteintrag oder Request eingetragen ist. Dazu werden die ServiceFunktionen getTimeEntriesService von *mika630* und getRequestsForUser von mir a.
+Außerdem muss bei einem Antrag auf Urlaub überprüft werden, ob der Nutzer noch genügend Urlaubstage zur Verfügung hat.
+Dazu müssen Feiertage und Wochenenden für die Berechnung der Urlaubstage abgezogen werden.
+Wenn die ganze Validierung zu Ende ist und soweit alles passt, wird das repository aufgerufen.
+Das repository ist hier zu finden: [Link zum Code](/backend/repository/requests.ts)
+
+Das repository erstellt dann den neuen Antrag in der Datenbank. 
+
+Das im Backend verwendete TypeScript-Interface für einen Antrag sieht folgendermaßen aus:
+
+```typescript
+/**
+ * Strings to represent a date in the format YYYY-MM-DD
+ */
+export type DateString = string;
+
+export default interface Request{
+    userId: number,
+    managerId: number | null,
+    type: "holiday" | "sick",
+    startDate: DateString,
+    endDate: DateString,
+    remark?: string | null,
+    isApproved?: boolean | null
+}
+```
+In der Datenbank hat jeder Antrag eine eindeutige Id. Außerdem sind remark und isApproved nicht optional sondern null.
+
+### Entscheidungen und Ideen
+
+Wichtig zu wissen sind folgende Punkte: 
+
+- ein Antrag von einem Nutzer kann nur von seinem Manager angenommen oder abgelehnt werden kann. 
+- Wird ein Antrag angenommen, wird für jeden Tag ein Zeiteintrag mit der Dauer des Tagessolls des Nutzers angelegt.
+- Wenn ein Antrag erstellt ist, erscheint dieser in der Manager-Ansicht des zugehörigen Managers.
+- Sollte ein Fehler auftreten werden selbst definierte Fehler geworfen (Details siehe unten). 
+
+Wir haben uns bewusst dazu entschieden, dass die ManagerId bei einem Antrag auch null sein kann für den Fall, dass ein Manager gelöscht wird.
+
+Die Property isApproved hat drei Zustände: True, False und null. Null steht für "(noch) nicht bearbeitet". Wird ein Antrag erstellt wird dementsprechend standardmäßig null in das Feld gesetzt. 
+
+Wir haben uns zudem gegen halbtägige Urlaubs- bzw Krankheitsanträge entschieden. Deshalb darf der Nutzer keine Zeiteinträge an den Tagen haben, für die der Antrag gestellt wird.
+### Errors
+
+Kommt es während der Verarbeitung des Requests zu einem Fehler, werden selbst definierte Fehler geworfen. 
+Diese werden geworfen, um dem Nutzer im Frontend Feedback zu geben, weshalb das Erstellen eines Antrags fehlgeschlagen ist. 
+Der Code dazu liegt [hier](/backend/errors/requestErrors.ts) .
+Hierzu können viele verschiedene Fehler geworfen werden.
+Die wichtigsten sind:
+#### InvalidDateRangeError
+Dieser Fehler wird geworfen, wenn das Startdatum des Antrags nachF dem Enddatum liegt. Diese Validierung findet jedoch auch im Frontend statt, um dem Nutzer schnelleres Feedback zu geben.
+
+#### RequestOverlapWithTimeEntryError
+Dieser Fehler wird geworfen, wenn im Zeitraum des Antrags bereits ein Zeiteintrag eingetragen ist. Dadurch wird verhindert, dass für denselben Tag sowohl ein bereits vorhandener Zeiteintrag als auch ein durch den Antrag erzeugten Ulraubszeiteintrag existiert. 
+
+#### RequestOverlapWithRequestError
+Passend zum vorherigen Fehler wird dieser Fehler geworfen, wenn bereits ein Antrag im gewählten Zeitraum vorhanden ist. So kann zum Beispiel kein doppelter Urlaub eingetragen werden. 
+
+#### NotEnoughHolidaysLeftError
+Wenn man nicht genügend Urlaubstage mehr zur Verfügung hat, wird dieser Fehler geworfen. 
+
+Für jeden der oben genannten Fehler wird ein Fehlertext im Frontend ausgegeben der den Nutzer auf den Fehler hinweist.
