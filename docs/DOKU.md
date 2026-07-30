@@ -703,11 +703,10 @@ Bei der Fehlerbehandlung habe ich mich für einfache Strings statt eigener Error
 Der Endpunkt getSingelTimeEntry hat sich am Ende als überflüssig heraus gestellt, ist aber trotzdem noch im Projekt verfügbar. Er wurde zuerst erstellt um die 5 Endpunkte zu füllen, jedoch hat sich getLastTimeEntry als besserer Endpunkt herausgestellt, da man mit diesem gut validieren kann.
 
 ### Backend
-Gemäß dem generellen Aufbau des Backends besteht jeder Endpunkt aus drei Schichten:
+Alle Endpunkte sind in 3 Schichten aufgebaut:
 
-/route: Hier wird die Route definiert, Middleware eingebunden und Authorization und Input-Validierung durchgeführt.
-/service: Hier wird die eigentliche Domainlogik implementiert.
-/repository: Hier werden die SQL-Abfragen an die Datenbank definiert.
+In der `/route/timeEntriesRoute.ts` wird die Middleware hinzugefügt, die generelle Route definiert und auch der User Input validiert.
+In `/service/timeEntriesService.ts` wird die generelle Logik implementiert, wie schon im Abschnitt [Regeln](#regeln) angedeutet. In `/repository/timeEntriesRepository.ts` werden letztendlich die eigentlich SQL-Abfragen an die Datenbank gebaut.
 
 Die Timecard benötigt 4 der 6 Endpunkte um alle Funktionen bereitzustellen:
 
