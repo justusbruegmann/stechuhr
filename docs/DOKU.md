@@ -385,14 +385,14 @@ Zusätzlich haben wir versucht, möglichst konsistentes Styling zu verwenden, au
 
 ## Benutzeroberfläche (UI)
 
-Um einen ruhigen Eindruck in der gesamten Anwendung zu erzeugen, haben wir uns hauptsächlich auf die drei Farben Grün, Rot und Blau fokussiert. Dadurch bleiben wichtige Elemente gut erkennbar und die Benutzeroberfläche wirkt nicht überladen (s. Abb. 1). Um einen persönlichen Bezug zum Projekt herzustellen, stammen die drei Hauptfarben jeweils aus den Akzentfarben der Firmen der Gruppenmitglieder. Dementsprechend ist das Grün aus dem Logo von Init, das Rot von SEW Eurodrive und das Blau von der SICK AG. Um Ereignisse und Einträge zu verdeutlichen, wurden beim Kalender zusätzlich weitere Farben benutzt. Zum Beispiel Gelb, wenn ein Mitarbeiter an einem Tag als Krank vermerkt wurde (s. Abb. 1).
-Die Schriftart ist in der gesamten Anwendung klar und schlicht gehalten, um eine einfache und verständliche Lesbarkeit zu ermöglichen (s. Abb. 1 & Abb. 2).
-Für einen intuitiven Bewegungsfluss sind alle Buttons mit ihren Funktionen beschriftet und, an geeigneten Stellen, bekannte Icons als Ersatz für Buttons gewählt worden (s. Abb. 1). Zudem besitzen Buttons einen Ladekreis, um dem Nutzer zu symbolisieren, dass etwas passiert, wenn er einen Button betätigt.
+Um einen ruhigen Eindruck in der gesamten Anwendung zu erzeugen, haben wir uns hauptsächlich auf die drei Farben Grün, Rot und Blau fokussiert. Dadurch bleiben wichtige Elemente gut erkennbar und die Benutzeroberfläche wirkt nicht überladen (s. [Abb. 1](#design-abb-1)). Um einen persönlichen Bezug zum Projekt herzustellen, stammen die drei Hauptfarben jeweils aus den Akzentfarben der Firmen der Gruppenmitglieder. Dementsprechend ist das Grün aus dem Logo von Init, das Rot von SEW Eurodrive und das Blau von der SICK AG. Um Ereignisse und Einträge zu verdeutlichen, wurden beim Kalender zusätzlich weitere Farben benutzt. Zum Beispiel Gelb, wenn ein Mitarbeiter an einem Tag als Krank vermerkt wurde (s. [Abb. 1](#design-abb-1)).
+Die Schriftart ist in der gesamten Anwendung klar und schlicht gehalten, um eine einfache und verständliche Lesbarkeit zu ermöglichen (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2)).
+Für einen intuitiven Bewegungsfluss sind alle Buttons mit ihren Funktionen beschriftet und, an geeigneten Stellen, bekannte Icons als Ersatz für Buttons gewählt worden (s. [Abb. 1](#design-abb-1)). Zudem besitzen Buttons einen Ladekreis, um dem Nutzer zu symbolisieren, dass etwas passiert, wenn er einen Button betätigt.
 Die Benutzeroberfläche wurde bewusst minimalistisch gestaltet. Es werden nur die Informationen angezeigt, die für den jeweiligen Benutzer relevant sind. Dadurch wirkt die Anwendung aufgeräumt und leicht verständlich.
 
 ## Benutzererfahrung (UX)
 
-Bei der Entwicklung wurde darauf geachtet, dass die wichtigsten Aufgaben und Daten, trotz minimalistischem Design, mit möglichst wenigen Klicks erledigt und eingesehen werden können (s. Abb. 1). Dadurch wird der Arbeitsablauf beschleunigt, obwohl viele Funktionen auf den ersten Blick auf der Startseite im Verborgenen bleiben.
+Bei der Entwicklung wurde darauf geachtet, dass die wichtigsten Aufgaben und Daten, trotz minimalistischem Design, mit möglichst wenigen Klicks erledigt und eingesehen werden können (s. [Abb. 1](#design-abb-1)). Dadurch wird der Arbeitsablauf beschleunigt, obwohl viele Funktionen auf den ersten Blick auf der Startseite im Verborgenen bleiben.
 
 Beispiele:
 
@@ -404,21 +404,21 @@ Sollte der Nutzer Fehlerhafte Eingaben tätigen oder sich nicht an die Arbeits- 
 
 ## Grunprinzipien aus den Vorlesungen
 
-- Styleguide -> Konsistenz (s. Abb. 1 & Abb. 2)
-- Farbe kann Aufmerksamkeit erregen -> wenig auffällige Farben, da Stechuhr-Funktionen am wichtigsten sind, auffällige Farben nur an wichtigen Stellen wie Ein- und Ausstempeln (s. Abb. 1)
-- Farben -> Können Informationen vermitteln z.B.: Rot -> Gefahr, Grün -> Positiv (s. Abb. 1)
-- Schriftart -> größtenteils einheitlich (s. Abb. 1 & Abb. 2)
-- Keine Angst vor Weißraum -> schlichtes Design (s. Abb. 1 & Abb. 2)
-- Feedback -> Rückmeldung von Button z.B.: hover effekt (s. Abb. 2)
-- Gesetz der Nähe -> Objekt, die nah beieinander liegen, werden als zusammengehörig wahrgenommen (s. Abb. 1: Zeitkarte links)
+- Styleguide -> Konsistenz (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2))
+- Farbe kann Aufmerksamkeit erregen -> wenig auffällige Farben, da Stechuhr-Funktionen am wichtigsten sind, auffällige Farben nur an wichtigen Stellen wie Ein- und Ausstempeln (s. [Abb. 1](#design-abb-1))
+- Farben -> Können Informationen vermitteln z.B.: Rot -> Gefahr, Grün -> Positiv (s. [Abb. 1](#design-abb-1))
+- Schriftart -> größtenteils einheitlich (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2))
+- Keine Angst vor Weißraum -> schlichtes Design (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2))
+- Feedback -> Rückmeldung von Button z.B.: hover effekt (s. [Abb. 2](#design-abb-2))
+- Gesetz der Nähe -> Objekt, die nah beieinander liegen, werden als zusammengehörig wahrgenommen (s. [Abb. 1](#design-abb-1): Zeitkarte links)
 
-<p align="center">
+<p align="center" id="design-abb-1">
 Abb. 1
 </p>
 <p align="center">
 <img src="images/webDesign/dashboardAnsicht.png" width="600">
 </p>
-<p align="center">
+<p align="center" id="design-abb-2">
 Abb. 2
 </p>
 <p align="center">
