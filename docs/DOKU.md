@@ -686,9 +686,9 @@ Dies war zudem hilfreich als es an die Idee von Urlaubs und Krankheitsanträgen 
 Folgende Regeln wurden beim Erstellen eines Zeiteintrages definiert:
 Betriebspezifische Arbeitszeitkriterien (diese wurden von uns selbst festgelegt und als sinnvoll betrachtet):
 - Keine Arbeit am Wochenende
-- Keine Arbeit an Feiertagen (da wir uns in Baden-Württemberg befinden werden immer diue offiziellen Feiertage in BW beachtet)
+- Keine Arbeit an Feiertagen (da wir uns in Baden-Württemberg befinden werden immer die offiziellen Feiertage in BW beachtet)
 - Nur Arbeiten zwischen 06:00 und 23:00
-- Admins dürfen sich nicht einstempeln (nur zum managen gedacht)
+- Admins dürfen sich nicht einstempeln (Admins sind nur zur Nutzerverwaltung gedacht)
 
 Logische Arbeitszeitkriterien:
 - Kein Einstechen, wenn bereits ein offener Zeiteintrag existiert (offen = startzeit aber keine endzeit).
