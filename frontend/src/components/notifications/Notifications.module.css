@@ -7,6 +7,8 @@
     margin-bottom: 1rem;
 }
 
+
+/* v Mit Hilfe von Extern v */
 .loading {
     opacity: 0.6;
     pointer-events: none;
@@ -37,6 +39,7 @@
         transform: rotate(360deg);
     }
 }
+/* ^ Mit Hilfe von Extern ^ */
 
 
 /* --- Notifications ges --- */
@@ -140,7 +143,7 @@
     border: 1.5px solid #de0000;
     color: #de0000;
     background-color: #fdeaea;
-    border-radius: 999px;
+    border-radius: 50px;
     padding: 0.3rem 0.9rem;
     font-size: 1.6vh;
     font-family: Arial, Helvetica, sans-serif;
