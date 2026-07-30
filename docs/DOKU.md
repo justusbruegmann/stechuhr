@@ -752,9 +752,9 @@ Das Styling zu den jeweiligen Komponenten kann hier gefunden werden:
 ### Backend
 
 Jeder Endpunkt im Backend ist folgendermaßen aufgebaut: 
-- **/route**: Hier wird die Route definiert, Middleware eingebunden und Autorisierung und Input-Validierung durchgeführt.
-- **/service**: Hier wird die eigentliche Logik implementiert.
-- **/repository**: Hier werden die SQL-Abfragen an die Datenbank erstellt und geschickt.
+An erster Stelle steht immer die Route-Schicht. In dieser Schicht wird die Route definiert, Middleware aufgerufen sowie Autorisierung und Input-Validierung durchgeführt.
+Die zweite Schicht ist die Service-Schicht. Hier wird die eigentliche Logik implementiert.
+Zum Schluss kommt dann die dritte und lezte Schicht, die Repository-Schicht. In dieser werden die SQL-Abfragen an die Datenbank erstellt und geschickt.
 
 Im Backend wird beim Erstellen eines Antrages folgender Endpunkt aufgerufen:
 
