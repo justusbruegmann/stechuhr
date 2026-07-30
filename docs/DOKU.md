@@ -671,4 +671,131 @@ Trotzdem bin ich stolz auf das Endprodukt, in dem jedes einzelne Element von mir
 
 ## brdly06: Notifications
 
+### Kontext
+Notifications (Abb. 2) informieren den angemeldeten Nutzer über bestimmte Ereignisse, die für ihn relevant sind, ohne dass er aktiv danach suchen muss. Es gibt aktuell zwei Arten von Benachrichtigungen:
+- **request**: Ein vom Nutzer gestellter Antrag (Urlaub/Krankheit) wurde von seinem Manager bearbeitet.
+- **worktime_exceeded**: Die tägliche Arbeits- oder Pausenzeit wurde nicht eingehalten.
+
+Erreichbar sind die Notifications über das Glocken-Icon oben im Header auf dem Dashboard. (Abb. 1)
+
+### Ideen
+Die Entscheidung für ein Sidepane mit Glocken-Icon anstelle einer eigenen Seite wurde bewusst getroffen: Benachrichtigungen sollen direkt vom Dashboard aus zugänglich sein, ohne dass ein Seitenwechsel nötig ist. Das Gefühl, Inhalte sofort angezeigt zu bekommen, wurde als wichtiger empfunden als eine separate Seite. Als Icon wurde eine Glocke gewählt, da sie im Kontext von Benachrichtigungen allgemein etabliert und wiedererkennbar ist.
+
+Der read/unread-Status (statt Benachrichtigungen nur löschen zu können) war ursprünglich nicht mit einer weiteren Idee verbunden, sondern wurde vor allem eingeführt, weil das Feature sonst zu wenig eigene Endpunkte gehabt hätte. Erst im Nachhinein kam die (nicht umgesetzte, rein konzeptionelle) Idee auf, gelesene Benachrichtigungen automatisch nach ca. 5 Werktagen zu entfernen, an denen tatsächlich gearbeitet wurde. Das würde eine separate Prüfung, ähnlich wie diese bei der Generierung von Benachrichtigungen erfolgt, erfordern. Diese Idee ist allerdings nicht implementiert.
+
+### Gesamtprojekt / Einbindung
+Auf dem Dashboard wird beim Laden der Seite `loadNotifications()` aufgerufen, welche die Benachrichtigungsliste des angemeldeten Nutzers lädt und im lokalen State der Dashboard-Komponente (`useState<Notification[]>`) hält.
+
+Klickt der Nutzer auf das Glocken-Icon im Header, öffnet sich über den `ModalContext` ein Sidepane mit der `Notifications`-Komponente, und die Liste wird zusätzlich erneut nachgeladen, damit auch neu hinzugekommene Benachrichtigungen sichtbar sind.
+
+Innerhalb des Sidepane werden zwei Callback-Funktionen an die Komponente durchgereicht:
+- `updateNotification(id, isRead)`: aktualisiert den read-Status einer einzelnen Benachrichtigung im lokalen State
+- `killNotification(id)`: entfernt eine gelöschte Benachrichtigung aus dem lokalen State
+
+Dadurch muss nach jeder Interaktion (Lesen/Löschen) nicht die komplette Liste neu vom Backend geladen werden.
+
+### Code
+**Backend** (Ordner `backend`):
+- `/repository/notification.ts` – Datenbankzugriff
+- `/route/notification.ts` – Routen-Definition
+- `/schemas/notifications.ts` – Zod-Schemas für Request-Bodies
+- `/service/notification.ts` – Domainlogik
+
+**Frontend** (Ordner `frontend`):
+- `/src/components/notifications/Notifications.tsx` + zugehöriges `.module.css` – Darstellung der Benachrichtigungsliste
+- `/src/scripts/notifications.ts` – fetch-Funktionen zur Kommunikation mit dem Backend
+- `/src/types/Notification.ts` – Typdefinition
+- Einbindung erfolgt in `/src/app/dashboard/page.tsx` (Glocken-Icon im Header, State-Verwaltung, Öffnen des Sidepane)
+
+### Backend
+Wie der Rest des Backends folgt auch Notifications dem Drei-Schichten-Modell (route → service → repository). Es gibt fünf Endpunkte:
+
+**GET /users/:id/notifications**
+Liefert alle Benachrichtigungen eines Nutzers.
+Input Params: `id` (userId) \
+Output: Liste von Notification-Objekten \
+Statuscodes: 200 OK, 403 wenn die angefragte `id` nicht mit dem angemeldeten Nutzer übereinstimmt, 500 bei internem Fehler
+
+**POST /notifications/**
+Erstellt eine neue Benachrichtigung.
+Input Body: `{ managerId: number | null, type: "request" | "worktime_exceeded", description: string }` \
+Output: `{ message: "created successfully" }` \
+Statuscodes: 201 Created, 500 bei internem Fehler \
+Der Body wird vorab über das Zod-Schema `notificationPostBodySchema` validiert.
+
+**GET /notifications/:id**
+Liefert eine einzelne Benachrichtigung.
+Statuscodes: 200 OK, 403 wenn die Benachrichtigung nicht dem angemeldeten Nutzer gehört, 404 wenn nicht gefunden, 500 bei internem Fehler
+
+**PATCH /notifications/:id**
+Ändert den read-Status einer Benachrichtigung.
+Input Body: `{ read: boolean }` \
+Statuscodes: 200 OK, 403 wenn nicht Eigentümer, 404 wenn nicht gefunden, 500 bei internem Fehler
+
+**DELETE /notifications/:id**
+Löscht eine Benachrichtigung.
+Statuscodes: 200 OK, 403 wenn nicht Eigentümer, 404 wenn nicht gefunden, 500 bei internem Fehler
+
+Eine Benachrichtigung enthält eine eindeutige ID, die zugehörige Nutzer-ID, optional die ID des Managers, den Typ der Benachrichtigung (request oder worktime_exceeded), eine Beschreibung, den Read-Status sowie den Zeitpunkt der Erstellung.
+
+Die Autorisierung erfolgt über `authMiddleware("user", true)`. Zusätzlich wird bei den Endpunkten mit `:id` im Route-Handler selbst geprüft, ob die angefragte Ressource wirklich dem angemeldeten Nutzer gehört (Vergleich von `userId` mit `res.locals.user.id`), bevor gelesen, geändert oder gelöscht werden darf.
+
+Beispielhaft der GET-Endpunkt für die Liste:
+```typescript
+router.get('/users/:id/notifications', validateUserID, authMiddleware("user", true), async (req, res) => {
+    try {
+        const userid = Number(req.params.id);
+
+        if (res.locals.user.id !== userid)
+            return res.status(403).send("forbidden");
+
+        const notificationList = await notificationListGet(userid);
+        return res.status(200).send(notificationList);
+    } catch (e) {
+        res.status(500).send("internal error");
+    }
+})
+```
+
+Im Service-Layer wird beim Laden der Liste automatisch geprüft, ob für den aktuellen Tag Benachrichtigungen zur Arbeitszeit generiert werden müssen, bevor die eigentliche Liste aus der Datenbank geladen wird:
+```typescript
+export async function notificationListGet(userId: number) {
+    try {
+        const today = new Date().toISOString().slice(0, 10);
+
+        await generateWorkTimeNotifications(userId, today);
+
+        const notificationList = await getNotificationList(userId);
+        return notificationList;
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
+}
+```
+
+Die restlichen Service-Funktionen (`notificationPost`, `notificationGet`, `notificationPatch`, `notificationDelete`) reichen Aufrufe im Wesentlichen direkt an das Repository weiter und behandeln dabei Fehler einheitlich per try/catch.
+
+
+### Frontend
+Die `Notifications`-Komponente erhält die Liste der Benachrichtigungen sowie die beiden Callback-Funktionen `updateNotification` und `killNotification` als Props und stellt jede Benachrichtigung in einer eigenen `Card`-Komponente dar.
+
+Pro Benachrichtigung gibt es:
+- eine Überschrift, abhängig vom `type` ("Zeitregelung missachtet" bei `worktime_exceeded`, "Anfrage bearbeitet" bei `request`)
+- den read/unread-Status mit einem kleinen Dropdown-Pfeil, über den zwischen "Gelesen" und "Ungelesen" gewechselt werden kann
+- den Beschreibungstext sowie das Erstellungsdatum (formatiert über `toLocaleString("de-DE", …)`)
+- einen "Löschen"-Button
+
+Während einer Anfrage an das Backend (Statusänderung oder Löschen) wird die betroffene Karte per lokalem Loading-State (`loadingReadId` / `loadingDeleteId`) optisch als ladend markiert und ein Spinner angezeigt, um doppelte Klicks zu verhindern. Ein `useEffect`-Hook mit `mousedown`-Listener sorgt dafür, dass ein geöffnetes Dropdown-Menü geschlossen wird, sobald außerhalb davon geklickt wird.
+
+#### Abb. 1
+<img src="images/dashboard/NotificationIcon.png" width="600" alt="Glocken-Icon im Header, über das das Notifications-Sidepane geöffnet wird">
+
+(Glocken-Icon im Header, über das das Notifications-Sidepane geöffnet wird)
+
+#### Abb. 2
+<img src="images/dashboard/Notifications.png" width="600" alt="Benachrichtigungen">
+
+(Sidepane mit der Liste der Benachrichtigungen: einmal im gelesen-Zustand, einmal mit geöffnetem Gelesen/Ungelesen-Menü und einmal im ungelesen-Zustand)
+
 ## FHG: Requests
