@@ -751,10 +751,10 @@ Das Styling zu den jeweiligen Komponenten kann hier gefunden werden:
 
 ### Backend
 
-Gemäß dem generellen Aufbau des Backends besteht jeder Endpunkt aus drei Schichten: 
-- **/route**: Hier wird die Route definiert, Middleware eingebunden und Authorization und Input-Validierung durchgeführt.
-- **/service**: Hier wird die eigentliche Domainlogik implementiert.
-- **/repository**: Hier werden die SQL-Abfragen an die Datenbank definiert.
+Jeder Endpunkt im Backend ist folgendermaßen aufgebaut: 
+- **/route**: Hier wird die Route definiert, Middleware eingebunden und Autorisierung und Input-Validierung durchgeführt.
+- **/service**: Hier wird die eigentliche Logik implementiert.
+- **/repository**: Hier werden die SQL-Abfragen an die Datenbank erstellt und geschickt.
 
 Im Backend wird beim Erstellen eines Antrages folgender Endpunkt aufgerufen:
 
@@ -801,7 +801,7 @@ In der Datenbank hat jeder Antrag eine eindeutige Id. Außerdem sind remark und 
 
 Wichtig zu wissen sind folgende Punkte: 
 
-- ein Antrag von einem Nutzer kann nur von seinem Manager angenommen oder abgelehnt werden kann. 
+- ein Antrag von einem Nutzer kann nur von seinem Manager angenommen oder abgelehnt werden. 
 - Wird ein Antrag angenommen, wird für jeden Tag ein Zeiteintrag mit der Dauer des Tagessolls des Nutzers angelegt.
 - Wenn ein Antrag erstellt ist, erscheint dieser in der Manager-Ansicht des zugehörigen Managers.
 - Sollte ein Fehler auftreten werden selbst definierte Fehler geworfen (Details siehe unten). 
