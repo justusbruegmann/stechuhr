@@ -4,7 +4,7 @@
     - SebastianAnhalt: 7020807
     - mika630: 1586623
     - FHG : nummer Einfügen Bitte beachten Github Email und git Email unterschiedlich da Firmen Laptop
-    - brdly06: Nummer einfügen
+    - brdly06: 9714570
 AI als Formulierungshilfe verwendet
 # Was macht die Anwendung? (Mika)
 # Struktur des Repo (Sebastian)
