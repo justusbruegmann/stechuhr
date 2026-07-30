@@ -156,10 +156,6 @@ Backend (Terminal 1):
   Die Anwendung ist danach unter http://localhost:3000 erreichbar.
 
 
-# Webdesign (Aaron & Felix)
-
-
-
 # Was macht die Anwendung (Mika)
 Die Anwendung dient zur Erfassung von Arbeitszeiten von Nutzern. Zudem erhält man einen Überblick über seine Zeiteinträge und kann diese jederzeit einsehen. Es gibt drei verschiedene Rollen von Anwendern:
 
@@ -386,7 +382,55 @@ Geteilte TypeScript types und interfaces sind hier abgelegt.
 Hier befinden sich geteilte Hilfsfunktionen, die an verschiedenen Stellen in der Anwendung Verwendung finden.
 Sie sind grob nach Anwendungsgebiet gruppiert.
 
+# Webdesign
 
+## Allgemein
+
+Allgemein haben wir uns bei der Stechuhr für ein sehr schlichtes und einfaches Design entschieden. Wichtig war uns, dass das Design der Stechuhr für jede Altersgruppe möglichst zugänglich und intuitiv ist. Wichtige Funktionen sollten einfach zugänglich sein. Uns war es wichtig, dass der Nutzer den Aufbau der Website schnell versteht und ohne Probleme erkennen kann, wo welche Funktion aufgerufen werden kann. Zudem wollten wir Funktionen, die thematisch zusammenhängen, auch auf der Website in gleich Bereichen setzen. So haben wir zum Beispiel die Funktion des manuellen Nachtragen mit in die Sidebar der Tagesansicht integriert, da man Zeiteinträge stets für einen bestimmten Tag anordnet. Funktionen, die allgemeiner sind, wie zum Beispiel die Übersichtsanzeige, haben wir auf das Dashboard gesetzt. Funktionen, die viel benutzt werden, wie zum Beispiel das Ein- und Ausstempeln, haben wir bewusst groß auf die Hauptseite plaziert.
+
+Zusätzlich haben wir versucht, möglichst konsistentes Styling zu verwenden, auch wenn das zu fünft gar nicht so einfach ist.
+
+## Benutzeroberfläche (UI)
+
+Um einen ruhigen Eindruck in der gesamten Anwendung zu erzeugen, haben wir uns hauptsächlich auf die drei Farben Grün, Rot und Blau fokussiert. Dadurch bleiben wichtige Elemente gut erkennbar und die Benutzeroberfläche wirkt nicht überladen (s. [Abb. 1](#design-abb-1)). Um einen persönlichen Bezug zum Projekt herzustellen, stammen die drei Hauptfarben jeweils aus den Akzentfarben der Firmen der Gruppenmitglieder. Dementsprechend ist das Grün aus dem Logo von Init, das Rot von SEW Eurodrive und das Blau von der SICK AG. Um Ereignisse und Einträge zu verdeutlichen, wurden beim Kalender zusätzlich weitere Farben benutzt. Zum Beispiel Gelb, wenn ein Mitarbeiter an einem Tag als Krank vermerkt wurde (s. [Abb. 1](#design-abb-1)).
+Die Schriftart ist in der gesamten Anwendung klar und schlicht gehalten, um eine einfache und verständliche Lesbarkeit zu ermöglichen (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2)).
+Für einen intuitiven Bewegungsfluss sind alle Buttons mit ihren Funktionen beschriftet und, an geeigneten Stellen, bekannte Icons als Ersatz für Buttons gewählt worden (s. [Abb. 1](#design-abb-1)). Zudem besitzen Buttons einen Ladekreis, um dem Nutzer zu symbolisieren, dass etwas passiert, wenn er einen Button betätigt.
+Die Benutzeroberfläche wurde bewusst minimalistisch gestaltet. Es werden nur die Informationen angezeigt, die für den jeweiligen Benutzer relevant sind. Dadurch wirkt die Anwendung aufgeräumt und leicht verständlich.
+
+## Benutzererfahrung (UX)
+
+Bei der Entwicklung wurde darauf geachtet, dass die wichtigsten Aufgaben und Daten, trotz minimalistischem Design, mit möglichst wenigen Klicks erledigt und eingesehen werden können (s. [Abb. 1](#design-abb-1)). Dadurch wird der Arbeitsablauf beschleunigt, obwohl viele Funktionen auf den ersten Blick auf der Startseite im Verborgenen bleiben.
+
+Beispiele:
+
+- Das Ein- und Ausstempeln erfolgt direkt über die Startseite
+- Das Nachtragen, Anträge erstellen, sowie die Einsicht der Benachrichtigungen ist jeweils nur einen Klick von der Startseite entfernt
+- Die Kalenderansicht ermöglicht eine schnelle Übersicht über bereits erfasste Arbeitstage
+
+Sollte der Nutzer Fehlerhafte Eingaben tätigen oder sich nicht an die Arbeits- oder Pausenzeitregelung seines Unternehmens halten, bekommt er dies durch verschiedene unterschiedliche Fehlermeldungen mitgeteilt 
+
+## Grunprinzipien aus den Vorlesungen
+
+- Styleguide -> Konsistenz (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2))
+- Farbe kann Aufmerksamkeit erregen -> wenig auffällige Farben, da Stechuhr-Funktionen am wichtigsten sind, auffällige Farben nur an wichtigen Stellen wie Ein- und Ausstempeln (s. [Abb. 1](#design-abb-1))
+- Farben -> Können Informationen vermitteln z.B.: Rot -> Gefahr, Grün -> Positiv (s. [Abb. 1](#design-abb-1))
+- Schriftart -> größtenteils einheitlich (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2))
+- Keine Angst vor Weißraum -> schlichtes Design (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2))
+- Feedback -> Rückmeldung von Button z.B.: hover effekt (s. [Abb. 2](#design-abb-2))
+- Gesetz der Nähe -> Objekt, die nah beieinander liegen, werden als zusammengehörig wahrgenommen (s. [Abb. 1](#design-abb-1): Zeitkarte links)
+
+<p align="center" id="design-abb-1">
+Abb. 1
+</p>
+<p align="center">
+<img src="images/webDesign/dashboardAnsicht.png" width="600">
+</p>
+<p align="center" id="design-abb-2">
+Abb. 2
+</p>
+<p align="center">
+<img src="images/webDesign/managerAnsicht.png" width="600">
+</p>
 
 # Eigenleistung
 
