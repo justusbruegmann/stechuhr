@@ -4,6 +4,8 @@ import { notificationPost } from "./notification";
 import { getNotificationList } from "../repository/notification";
 import Holidays from "date-holidays";
 
+
+/* v Mit Hilfe von KI v */
 function dateStringToUTCDate(dateString: string): Date {
     return new Date(`${dateString}T00:00:00.000Z`);
 }
@@ -18,6 +20,8 @@ function formatDateStringDE(dateString: string): string {
     const [year, month, day] = dateString.split("-");
     return `${day}.${month}.${year}`;
 }
+/* ^ Mit Hilfe von KI ^ */
+
 
 async function findLastWorkDay(userId: number, referenceDay: string) {
     const holidays = new Holidays("DE", "BW");
