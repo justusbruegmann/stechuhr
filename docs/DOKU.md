@@ -308,15 +308,19 @@ Enthält nur eine Komponente: Ein Popup zum Ändern des One-Time-Passwords, das 
 **ManagerView** `Sebastian Anhalt` \
 Enthält die Komponenten, die auf der /manager_view Seite verwendet werden: ein Popup zum Bearbeiten der vertraglichen Arbeitszeiten sowie Urlaubszeiten eines Benutzers, und die Tabellen zur Darstellung der Arbeitszeiten, Urlaubszeiten und Krankheitstage mehrerer User-Accounts.
 
+**Notifications** `brdly06*` \
+Hier liegt die Notifications-Komponente, die auf dem Dashboard eingebunden ist und die Benachrichtigungen anzeigt.
+
 **Overview** `Sebastian Anhalt` \
 Enthält die Komponenten, die auf dem Dashboard eine Zusammenfassung der geleisteten Arbeitszeit und des Tages-, Wochen- und Monatsfortschritts darstellen.
 
 **TimeAdjustment** `FHG` \
 Die DailyDetailsPane zeigt alle eingetragenen Arbeitszeiten eines Tages an und ist öffenbar, indem man auf einen Tag im Kalender klickt.
-Über den 'Manuell-Nachtragen'-Button öffnet sich ein Popup, in welchem die beiden anderen Komponenten dieses Ordners Verwendung finden.
+Über den 'Manuell-Nachtragen'-Button öffnet sich ein Popup, in welchem die beiden relevanten Komponenten dieses Ordners Verwendung finden.
+Zusätzlich gibt es in der Tagesübersicht auch einen Button zum Erstellen von Anträgen. Beim klicken öffnet sich die letzte Komponente in diesem Ordner, das RequestPopup, über das sowohl Urlaubs- als auch Krankheitstage beantragt werden können.
 
 **Timecard** `mika630` \
-Die Timecard-Komponente ist die Einstempelfunktion auf dem Dashboard. Sie zeigt u.a. die aktuelle Uhrzeit, die aktuelle Arbeitszeit und den aktuellen Status (gestempelt / nicht gestempelt) an.
+Die Timecard-Komponente beschreibt die Einstempelfunktion auf dem Dashboard. Sie zeigt u.a. die aktuelle Uhrzeit, die aktuelle Arbeitszeit und den aktuellen Status (gestempelt / nicht gestempelt) an.
 
 **Usermanagement** `justusbruegmann` \
 Enthält die Komponenten, die auf der /admin_view Seite zur Darstellung und Verwaltung aller User Accounts verwendet werden.
@@ -365,6 +369,9 @@ Die Project Root beinhaltet die üblichen Konfigurationsdateien wie *.env*, *.gi
 
 **/drizzle** \
 Der Drizzle-Ordner beinhaltet nur das ORM-Schema, auf dem die Datenbankverbindung der repository-Funktionen basiert.
+
+**/errors** \
+In diesem Ordner sind die benutzerdefinierten Fehlerklassen abgelegt. Da nur der Requests-Handler eigene Fehler nutzt, gibt es nur eine Datei requestErrors.ts.
 
 **/middleware** \
 In diesem Ordner sind die Middleware-Funktionen abgelegt, die von mehreren Routen verwendet werden.
@@ -570,7 +577,7 @@ Eine genaue Kennzeichnung ist hier schier unmöglich, da die KI einen bestehende
 Die Webseite nutzt kein SSR. Deshalb ist es kaum möglich, die Route /manager_view Nicht-Manager-Accounts unzugänglich zu machen.
 Der Zugriff darauf ist ausschließlich dadurch etwas erschwert, dass nur Manager den Button im Header angezeigt bekommen, der auf diese Seite führt.
 
-Die eigenltiche Sicherheit wird durch das Backend gewährleistet. Bei der Anfrage nach Benutzern, deren Manager der angemeldete Benutzer ist, wird dementsprechend unberechtigten Accounts eine leere Liste zurückgeliefert.
+Die eigentliche Sicherheit wird durch das Backend gewährleistet. Bei der Anfrage nach Benutzern, deren Manager der angemeldete Benutzer ist, wird dementsprechend unberechtigten Accounts eine leere Liste zurückgeliefert.
 Sie sehen dann grafisch dieselbe Fehlermeldung wie Manager-Accounts, die keine untergebenen Mitarbeiter haben:
 
 
@@ -626,7 +633,6 @@ Gemäß dem generellen Aufbau des Backends besteht jeder Endpunkt aus drei Schic
 - **/route**: Hier wird die Route definiert, Middleware eingebunden und Authorization und Input-Validierung durchgeführt.
 - **/service**: Hier wird die eigentliche Domainlogik implementiert.
 - **/repository**: Hier werden die SQL-Abfragen an die Datenbank definiert.
-
 
 Die Manager-Ansicht benötigt drei Endpunkte im Backend, um die benötigten Daten zu laden und zu bearbeiten:
 
