@@ -10,10 +10,6 @@
 
 AI als Formulierungshilfe verwendet
 
-# Was macht die Anwendung? (Mika)
-
-# Struktur des Repo (Sebastian)
-
 # Aufgabenverteilung
 
 Der überwältigende Teil der DevOps wurde von `justusbruegmann` erledigt. Das umfasst die Erstellung und Pflege des
@@ -62,116 +58,8 @@ Hier nur eine grobe Darstellung:
 - Kalender auf dem Dashboard mit visueller Aufbereitung von Arbeitszeiten, Wochenenden, Feiertagen und Urlaubszeiten
 - Benachrichtigungen
 
-# Setup der Dev Umgebung (Justus)
 
-> Wichtig:  
-> node und npm sind vorrausgesetzt sowie ein postgresSQL DBconnectionlink  
-> Es gibt das Ganze SQL DB Script als sql Datei im docs Verzeichnis
-
-
-Zuerst das Projekt Klonen
-
-``git clone https://github.com/justusbruegmann/stechuhr.git``
-
-## Frontend
-
-Für das Frontend
-
-````cmd
-    cd frontend
-    npm install
-````
-
-Dann muss eine ".env.local" im frontend Ordner ein mit
-``NEXT_PUBLIC_BACKEND_URL=<BACKENDURL EINSETZEN>
-`` vorhandensein.  
-Mögliche werte:
-
-- Lokales backend:   http://localhost:3500
-- Hosted backend:   https://stechuhr-production-2a78.up.railway.app
-
-Zum Starten ``npm run dev``
-
-### Backend
-
-Für das Backend
-
-````cmd
-    cd backend
-    npm install
-````
-
-Dann muss eine ".env" im Backend Ordner ein mit
-``DATABASE_URL=<DATENBANK_URL EINSETZEN>
-`` vorhandensein.
-
-Datenbank_URL wird per Moodle bereitgestellt
-
-zum Starten ``npm run dev``
-nach jeder Änderung muss der command neu ausgeführt werden (kein HMR) und gewartet werden bis ``✓ Database connection successful
-`` in der Console auftaucht dann ist das Backend bereit.
-
-# Starten der Anwendung (Justus)
-
-> Wichtig:  
-> node und npm sind vorrausgesetzt sowie ein postgresSQL DBconnectionlink  
-> Es gibt das Ganze SQL DB Script als sql Datei im docs Verzeichnis
-
-Zuerst das Projekt Klonen
-
-``git clone https://github.com/justusbruegmann/stechuhr.git``
-
-### Bauen
-
-Zum Bauen muss das ``build.ps1`` script ausgeführt werden oder eins der Plattformspezifischen Scripte ausgeführt aus dem
-root directory:
-
-Beim build muss eine ".env.local" im frontend Ordner ein mit
-``NEXT_PUBLIC_BACKEND_URL=<BACKENDURL EINSETZEN>
-`` vorhandensein.  
-Mögliche werte:
-
-- Lokales backend:   http://localhost:3500
-- Hosted backend:   https://stechuhr-production-2a78.up.railway.app
-
-Cross-Plattform pwsh:  
-``./build.ps1``
-
-Windows:  
-``.\build.bat``
-
-Linux:  
-``bash build.sh``
-
-Zum Starten muss eine ".env" im Backend Ordner ein mit
-``DATABASE_URL=<DATENBANK_URL EINSETZEN>
-`` vorhandensein.
-
-Datenbank_URL wird per Moodle bereitgestellt
-
-### Starten
-
-Backend und Frontend laufen als getrennte Prozesse und werden jeweils in einem eigenen Terminal gestartet:
-
-Backend (Terminal 1):
-
-```cmd
-   cd backend
-   npm run start
-   ```   
-
-Warten bis ✓ Database connection successful in der Console erscheint, dann ist das Backend bereit.
-
-Frontend (Terminal 2):
-
-```cmd
-   cd frontend
-   npm run start
-   ```  
-
-Die Anwendung ist danach unter http://localhost:3000 erreichbar.
-
-# Was macht die Anwendung (Mika)
+# Was macht die Anwendung
 
 Die Anwendung dient zur Erfassung von Arbeitszeiten von Nutzern. Zudem erhält man einen Überblick über seine
 Zeiteinträge und kann diese jederzeit einsehen. Es gibt drei verschiedene Rollen von Anwendern:
@@ -467,6 +355,117 @@ Input-Validierung ist durch **zod** implementiert. \
 Für die Authentifizierung und den Umgang mit Passwörtern wird **bcrypt** verwendet. \
 
 Auch im Backend ist es notwendig, mit Feiertagen umzugehen, deshalb ist auch hier **date-holidays** installiert.
+
+
+# Setup der Dev Umgebung
+
+> Wichtig:  
+> node und npm sind vorrausgesetzt sowie ein postgresSQL DBconnectionlink  
+> Es gibt das Ganze SQL DB Script als sql Datei im docs Verzeichnis
+
+
+Zuerst das Projekt Klonen
+
+``git clone https://github.com/justusbruegmann/stechuhr.git``
+
+## Frontend
+
+Für das Frontend
+
+````cmd
+    cd frontend
+    npm install
+````
+
+Dann muss eine ".env.local" im frontend Ordner ein mit
+``NEXT_PUBLIC_BACKEND_URL=<BACKENDURL EINSETZEN>
+`` vorhandensein.  
+Mögliche werte:
+
+- Lokales backend:   http://localhost:3500
+- Hosted backend:   https://stechuhr-production-2a78.up.railway.app
+
+Zum Starten ``npm run dev``
+
+### Backend
+
+Für das Backend
+
+````cmd
+    cd backend
+    npm install
+````
+
+Dann muss eine ".env" im Backend Ordner ein mit
+``DATABASE_URL=<DATENBANK_URL EINSETZEN>
+`` vorhandensein.
+
+Datenbank_URL wird per Moodle bereitgestellt
+
+zum Starten ``npm run dev``
+nach jeder Änderung muss der command neu ausgeführt werden (kein HMR) und gewartet werden bis ``✓ Database connection successful
+`` in der Console auftaucht dann ist das Backend bereit.
+
+# Starten der Anwendung
+
+> Wichtig:  
+> node und npm sind vorrausgesetzt sowie ein postgresSQL DBconnectionlink  
+> Es gibt das Ganze SQL DB Script als sql Datei im docs Verzeichnis
+
+Zuerst das Projekt Klonen
+
+``git clone https://github.com/justusbruegmann/stechuhr.git``
+
+### Bauen
+
+Zum Bauen muss das ``build.ps1`` script ausgeführt werden oder eins der Plattformspezifischen Scripte ausgeführt aus dem
+root directory:
+
+Beim build muss eine ".env.local" im frontend Ordner ein mit
+``NEXT_PUBLIC_BACKEND_URL=<BACKENDURL EINSETZEN>
+`` vorhandensein.  
+Mögliche werte:
+
+- Lokales backend:   http://localhost:3500
+- Hosted backend:   https://stechuhr-production-2a78.up.railway.app
+
+Cross-Plattform pwsh:  
+``./build.ps1``
+
+Windows:  
+``.\build.bat``
+
+Linux:  
+``bash build.sh``
+
+Zum Starten muss eine ".env" im Backend Ordner ein mit
+``DATABASE_URL=<DATENBANK_URL EINSETZEN>
+`` vorhandensein.
+
+Datenbank_URL wird per Moodle bereitgestellt
+
+### Starten
+
+Backend und Frontend laufen als getrennte Prozesse und werden jeweils in einem eigenen Terminal gestartet:
+
+Backend (Terminal 1):
+
+```cmd
+   cd backend
+   npm run start
+   ```   
+
+Warten bis ✓ Database connection successful in der Console erscheint, dann ist das Backend bereit.
+
+Frontend (Terminal 2):
+
+```cmd
+   cd frontend
+   npm run start
+   ```  
+
+Die Anwendung ist danach unter http://localhost:3000 erreichbar.
+
 
 # Webdesign
 
