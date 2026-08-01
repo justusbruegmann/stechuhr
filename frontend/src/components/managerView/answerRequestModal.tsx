@@ -2,13 +2,13 @@
 import * as React from 'react';
 import {capitalize} from "@/utils/StringUtils";
 import styles from './answerRequestModal.module.css';
-import {UserWithExtraFields} from "@/app/manager_view/page";
+import {ExtendedUser} from "@/app/manager_view/page";
 import RequestEntry from "@/components/managerView/requestEntry";
 import Request from "@/types/Request";
 import {updateRequest} from "@/scripts/requests";
 
 export type AnswerRequestModalProps = {
-    user: UserWithExtraFields;
+    user: ExtendedUser;
     updateLocalState: (userId: number, remainingRequests: Request[]) => void;
 };
 
