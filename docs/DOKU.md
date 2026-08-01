@@ -732,6 +732,96 @@ Trotzdem bin ich stolz auf das Endprodukt, in dem jedes einzelne Element von mir
 
 ## mika630: Timecard
 
+KI als Formulierungshilfe verwendet
+
+Meine Eigenleistung ist die Zeiterfassung. Diese bietet das Herzstück der Anwendung. Dazu gehört die Business Logik aller 6 Endpunkte im Backend sowie das Frontend-Feature zum Ein- und Ausstechen auf dem Dashboard (Timecard Component).
+
+### Ideen
+Die gesamte Logik des ein und ausstechens wurde sich im vorhinein überlegt, und anschließend im Backend Service Layer implementiert. Deshalb wird bei jedem Versuch einen Zeiteintrag zu erstellen die Funktion createTimeEntryService, bzw. setEndTimeService aufgerufen.
+
+Beim Anlegen eines Zeiteintrags wurde sich folgendes überlegt:
+
+Wenn man sich morgens einsticht, reicht es nur eine Startzeit anzugeben. Somit würde ein POST reichen welcher einen Eintrag nur mit der Starttime anlegt. Wenn man mit dem Arbeiten fertig ist, sticht man sich aus. Hier wird der offene Eintrag mit einem Patch aktualisiert und erhält eine Endzeit. 
+Da es aber auch möglich sein sollte eine vergessene Arbeitszeit einzutragen habe ich mich entschlossen den Parameter Endtime in den POST aufzunehmen (als optionaler Parameter) um dies direkt über einen Request machen zu können.
+Dies war zudem hilfreich als es an die Idee von Urlaubs und Krankheitsanträgen ging, da hier sinnvollerweiße auch direkt Endzeiten mitgegeben werden sollten. Hier wurde der TimeEntry Ressource dann zusätzlich die Variable Type hinzugefügt, da Arbeitseinträge sich in keiner technischen weiße von Urlaubs- oder Krankheitseinträgen unterscheiden.
+
+### Regeln
+Folgende Regeln wurden beim Erstellen eines Zeiteintrages definiert:
+Betriebspezifische Arbeitszeitkriterien (diese wurden von uns selbst festgelegt und als sinnvoll betrachtet):
+- Keine Arbeit am Wochenende
+- Keine Arbeit an Feiertagen (da wir uns in Baden-Württemberg befinden werden immer die offiziellen Feiertage in BW beachtet)
+- Nur Arbeiten zwischen 06:00 und 23:00
+- Admins dürfen sich nicht einstempeln (Admins sind nur zur Nutzerverwaltung gedacht)
+
+Logische Arbeitszeitkriterien:
+- Kein Einstechen, wenn bereits ein offener Zeiteintrag existiert (offen = startzeit aber keine endzeit).
+- Kein Einstechen, wenn die mitgegebene Endzeit vor der mitgegebenen Startzeit liegt
+- Kein Einstechen, wenn die Start oder Endzeit in der Zukunft liegt.
+- Ein neuer Arbeitszeiteintrag darf sich nicht mit einem bereits bestehenden Arbeitszeit Eintrag überschneiden.
+
+Bewusste Entscheidung: Die Überpfüfungsfunktion getOverlappingTimeEntries, welche benutzt wurde um zu überprüfen ob sich keine workeinträge überschneiden, verzichtet absichtlich auf die Überprüfung von Urlaubs/Krankheitstagen die sich überlappen könnten. Die Entscheidung beruht darauf, dass Anträge ohnehin erst genehmigt werden müssen, wobei dies ohnehin vom zuständigen Manager geprüft werden sollte.
+
+Bei der Fehlerbehandlung habe ich mich für einfache Strings statt eigener Error-Klassen entschieden: der Service gibt entweder den Erfolgswert oder einen beschreibenden String zurück. Die Route verarbeitet den String dann in den passenden HTTP-Statuscode. Das hält die Fehlerbehandlung simpel und für mich übersichtlich.
+
+Der Endpunkt getSingelTimeEntry hat sich am Ende als überflüssig heraus gestellt, ist aber trotzdem noch im Projekt verfügbar. Er wurde zuerst erstellt um die 5 Endpunkte zu füllen, jedoch hat sich getLastTimeEntry als besserer Endpunkt herausgestellt, da man mit diesem gut validieren kann.
+
+### Backend
+Alle Endpunkte sind in 3 Schichten aufgebaut:
+
+In der `/route/timeEntriesRoute.ts` wird die Middleware hinzugefügt, die generelle Route definiert und auch der User Input validiert.
+In `/service/timeEntriesService.ts` wird die generelle Logik implementiert, wie schon im Abschnitt [Regeln](#regeln) angedeutet. In `/repository/timeEntriesRepository.ts` werden letztendlich die eigentlich SQL-Abfragen an die Datenbank gebaut.
+
+Die Timecard benötigt 4 der 6 Endpunkte um alle Funktionen bereitzustellen:
+
+#### POST /timeentries/
+[Link zum Code](/backend/route/timeEntriesRoute.ts#L24) \
+Wird beim Einstempeln aufgerufen: legt einen neuen Eintrag vom Typ work mit der aktuellen Zeit als Startzeit an. Die Endzeit bleibt hier undefieniert.
+Jeder eingeloggte Nutzer darf einen Eintrag für sich selbst anlegen  was durch die (`authMiddleware("user", true)`) von *justusbruegmann* bereitgestellt wurde. Der eigentliche Aufwand steckt danach im Service, der alle Regeln überprüft die [oben](#regeln) bereits beschrieben wurden.
+
+#### GET /timeentries/last
+[Link zum Code](/backend/route/timeEntriesRoute.ts#L141) \
+Wird beim Laden der Timecard aufgerufen und liefert den zuletzt angelegten work-Eintrag des angemeldeten Nutzers. Ist dessen endTime null, wird `"im Dienst"` angezeigt und der Button wechselt entsprechend auf den `"Ausstempeln"` Modus.
+Da hier ausschließlich nach den eigenen Einträgen gefragt wird (die userId kommt aus dem Token, nicht aus der Anfrage), ist auch hier keine weitere Authorization nötig.
+
+#### PATCH /timeentries/:id
+[Link zum Code](/backend/route/timeEntriesRoute.ts#L70) \
+Wird beim Ausstempeln aufgerufen und aktualisiert den offenen Eintrag den man über `GET /timeentries/last` bekommt.
+Der Service prüft hier dann zuerst, ob der Eintrag existiert und ob er tatsächlich zum Nutzer gehört der sich ausstechen will, bevor die restlichen Logik Regeln wie Endzeit schon da geprüft werden.
+
+Zusetzlich wurde nach dem Deployment noch eine 15 sekündige Toleranz hinzugefügt, da in der deployten Version des Codes die Startzeit und/oder Endzeit teils leicht in der Zukunft lag, wodurch gültige Anfragen abgelehnt wurden. (auch in createTimeEntryService zu finden)
+
+```typescript
+export async function setEndTimeService(timeEntryId: number, newEndTime: Date, userid: number): Promise<TimeEntry | string> {
+    try {
+        ...
+        
+        if (newEndTime.getTime() > Date.now() + 15000) {
+            return "end time can not be in the future";
+        }
+
+        ...
+    }
+    catch (e) {
+        ...
+    }
+}
+```
+
+#### GET /users/:userId/timeentries
+[Link zum Code](/backend/route/timeEntriesRoute.ts#L108) \
+Dieser Endpunkt wird im Frontend alle 60s aufgerufen über ein `useEffect()`, da man die "Heute gearbeitet" anzeige ja jede Minute akutalisieren muss. Hierzu hole ich mir über die Parameter der Funktion dann nur die Einträge für den heutigen Tag und rechne diese zusammen. Die userId steckt hier im Pfad, deshalb wird geprüft, ob die angefragte userId mit der des eingeloggten Id des Nutzers übereinstimmt, sonst wird ein unauthorized geworfen. Ein Nutzer könnte sonst über die URL versuchen, fremde Zeiteinträge abzufragen was ja nicht möglich sein soll.
+
+
+### Frontend
+
+Die Frontend Dateien liegen im frontend\src\components\timecard.
+
+Die Timecard sieht so aus:
+
+![Timecard](images/dashboard/Timecard.png)
+
+Hier sieht man die wichtigsten Informationen auf einen Blick. Die Uhrzeit, ob man schon eingestochen ist oder nicht und wie lange man am heutigen Tag schon gearbeitet hat. Zudem in grün bzw. rot ist das Einstechen bzw. Ausstechen hervorgehoben, da dies die Hauptfunktion darstellt und direkt erkennbar sein muss. Der Button `Stundenübersicht` wurde von mir eingebaut die ausgeführte Funktion beim klicken gehört aber zu *SebastianAnhalt*.
+
 ## brdly06: Notifications
 
 ## FHG: Requests erstellen
