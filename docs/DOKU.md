@@ -10,7 +10,7 @@
 
 AI als Formulierungshilfe verwendet
 
-# Aufgabenverteilung
+# Aufgabenverteilung 
 
 Der überwältigende Teil der DevOps wurde von `justusbruegmann` erledigt. Das umfasst die Erstellung und Pflege des
 Git-Repositories (inkl. der Code-Reviews zu PRs), die Einrichtung der PostgreSQL-Datenbank auf Supabase, sowie die
