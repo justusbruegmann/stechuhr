@@ -1,8 +1,62 @@
 openapi: 3.0.3
 info:
   title: Stechuhr API
-  description: Backend API for Stechuhr - a time tracking application.
-  version: 0.0.1
+  description: |
+    This document was created using AI. It is not a required part of the documentation,
+    but you can reference it if you want to understand the API better. 
+    I do not guarantee perfect accuracy and correctness.
+    
+    
+    
+    Backend API for Stechuhr — a time tracking application.
+
+    This document describes the API **as implemented** in the Express routers
+    (`auth`, `userManagement`, `timeEntriesRoute`, `requests`, `notification`,
+    `summary`), the Zod request schemas, the TypeScript types and the database
+    schema. All routers are mounted at the server root by `app.ts`, in the
+    order: userManagement, auth, summary, timeEntries, notification, requests.
+
+    Persistence goes through Drizzle ORM (`drizzle-orm/postgres-js`); the
+    authoritative table definitions live in `drizzle/schema`. `dbSetup.sql`
+    is the original hand-written DDL and may have drifted from it.
+
+    ## Authentication
+
+    Protected endpoints expect two headers on every request:
+
+    * `authorization` — the session token returned by `POST /login/`
+    * `userid` — the numeric id of the logged-in user
+
+    Both are validated by `authMiddleware`, which also enforces a minimum role.
+    The role required per endpoint is stated in each operation description.
+
+    Sessions are valid for 24 hours from creation. The token handed to the
+    client is a 32-character random string; only its hash is persisted, and
+    validation compares the presented token against every unexpired session
+    row belonging to that user.
+
+    ## CORS
+
+    A handcrafted CORS layer runs before all routes. Implementing this was necessary because we were unable to
+    configure the `cors` package to work with PATCH requests while everything else worked flawlessly. 
+    Allowed origins are `http://localhost:3000`, `http://127.0.0.1:3000`,
+    `https://how2centeradiv.dev` and `https://staging.how2centeradiv.dev`;
+    allowed headers are `Content-Type`, `Authorization` and `userid`.
+    Preflight `OPTIONS` requests are answered with `204` on every path.
+
+    ## Error formats
+
+    The API is not consistent about error bodies. Three shapes exist:
+
+    * `text/plain` — auth, user management, summary and notification routes
+    * `{ "error": "..." }` — time entry routes and `POST /users/`
+    * `{ "code": "...", "message": "..." }` — request routes (messages are German)
+
+    ## Known deviations
+
+    Behaviour that looks unintended is documented in the affected operation so
+    that this file matches the running code rather than the intended design.
+  version: 1.0.0
 
 servers:
   - url: http://localhost:3500
@@ -12,51 +66,120 @@ servers:
 
 tags:
   - name: Auth
-    description: Authentication and session management
+    description: Login and session validation
   - name: Users
-    description: User management (admin only)
+    description: User management
   - name: Password
-    description: Password management
+    description: Password and one-time-password management
+  - name: Time Entries
+    description: Clocking in/out and time entry management
+  - name: Requests
+    description: Holiday and sick leave requests
+  - name: Notifications
+    description: User notifications
+  - name: Summary
+    description: Aggregated working time and absence figures
+
+security:
+  - SessionToken: []
+    UserIdHeader: []
 
 paths:
   /:
     get:
       summary: Health check
-      description: Returns a simple health check response.
+      description: |
+        Returns a fixed string. Defined directly on the app rather than in a
+        router. Express serves a bare `res.send(string)` as `text/html`.
+      security: []
       responses:
         "200":
           description: Server is running
           content:
-            text/plain:
+            text/html:
               schema:
                 type: string
                 example: hello world
 
+  ############################################################################
+  # Auth
+  ############################################################################
+
   /auth/:
+    get:
+      tags:
+        - Auth
+      summary: Validate an existing session
+      description: |
+        Validates the `authorization` / `userid` header pair and returns the
+        role of the session owner.
+
+        Note: if either header is missing the handler falls through without
+        sending a response — the request hangs until the client times out.
+      responses:
+        "200":
+          description: Session is valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionResponse"
+        "401":
+          description: |
+            Two distinct cases share this status:
+
+            * `not_authorized` — no unexpired session row matches the token
+            * `Not authorized IDK` — the `userid` header names a user that does
+              not exist (the auth service reports `User not found`, which the
+              handler does not map to `404`)
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                invalidToken:
+                  value: not_authorized
+                unknownUser:
+                  value: Not authorized IDK
+        "485":
+          description: |
+            The user still holds a one-time password and must change it via
+            `PATCH /users/{id}/otp` before the session can be used.
+
+            Note: on this route the auth service does not return a `userId`, so
+            the emitted body is `{"message": "Has onetime password"}` — the
+            `userId` field documented in the schema is absent here, unlike on
+            `POST /login/`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OtpResponse"
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
+
+  /login/:
     post:
       tags:
         - Auth
-      summary: Login or validate session
+      summary: Log in with username and password
       description: |
-        Supports two modes:
-        - **Login**: Send `username` and `password` in the request body to create a new session.
-        - **Session validation**: Send `authorization` and `userid` headers to validate an existing session.
-      parameters:
-        - $ref: "#/components/parameters/Authorization"
-        - $ref: "#/components/parameters/UserId"
+        Creates a session and returns the session token.
+
+        Note: if the body is present but `username`/`password` are missing or
+        are not strings, the handler falls through without sending a response.
+      security: []
       requestBody:
-        description: Login credentials (only required for login mode)
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/LoginRequest"
       responses:
-        "200":
-          description: Authenticated successfully
+        "201":
+          description: Session created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthResponse"
+                $ref: "#/components/schemas/LoginResponse"
         "400":
           description: Missing request body
           content:
@@ -65,47 +188,40 @@ paths:
                 type: string
                 example: Not Found Body
         "401":
-          description: Invalid credentials or token
+          description: |
+            The username does not exist. Note that this is the *username* case
+            only — a wrong password produces `404`, see below.
           content:
             text/plain:
               schema:
                 type: string
                 example: not_authorized
         "404":
-          description: User not found
+          description: |
+            The password did not verify, or the account has no password hash
+            stored. The auth service returns `undefined` on the failed-password
+            path, which the handler treats as "not found" — so clients cannot
+            distinguish a bad password from a missing account by status alone.
           content:
             text/plain:
               schema:
                 type: string
                 example: Not Found
         "485":
-          description: User has a one-time password that must be changed
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OtpResponse"
+          $ref: "#/components/responses/OtpRequired"
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
+
+  ############################################################################
+  # Users
+  ############################################################################
 
   /users/:
     get:
       tags:
         - Users
       summary: List users
-      description: Returns a paginated list of users. Requires admin role.
-      parameters:
-        - $ref: "#/components/parameters/Authorization"
-        - $ref: "#/components/parameters/UserId"
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            default: 25
-          description: Number of users to return
-        - name: offset
-          in: query
-          schema:
-            type: integer
-            default: 0
-          description: Pagination offset
+      description: Returns all users. Requires the `admin` role.
       responses:
         "200":
           description: List of users
@@ -114,22 +230,20 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserListItem"
+                  $ref: "#/components/schemas/User"
         "401":
-          $ref: "#/components/responses/Unauthorized"
+          $ref: "#/components/responses/UnauthorizedText"
         "500":
-          $ref: "#/components/responses/InternalError"
+          $ref: "#/components/responses/InternalErrorText"
 
     post:
       tags:
         - Users
       summary: Create user
       description: |
-        Creates a new user with a generated password. Requires admin role.
-        The generated password is returned as plain text in the response.
-      parameters:
-        - $ref: "#/components/parameters/Authorization"
-        - $ref: "#/components/parameters/UserId"
+        Creates a user with a generated password. Requires the `admin` role.
+        The request body is checked by the `validateBody` middleware before it
+        reaches the handler.
       requestBody:
         required: true
         content:
@@ -138,12 +252,13 @@ paths:
               $ref: "#/components/schemas/CreateUserRequest"
       responses:
         "201":
-          description: User created. Returns the generated password.
+          description: |
+            User created. The service returns the generated credentials, which
+            are forwarded to the client unchanged.
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                example: aB3$xY9!kL
+                $ref: "#/components/schemas/CreatedUser"
         "400":
           description: Validation error
           content:
@@ -161,20 +276,89 @@ paths:
                   value:
                     error: role does not exist
         "401":
-          $ref: "#/components/responses/Unauthorized"
+          $ref: "#/components/responses/UnauthorizedText"
         "500":
-          $ref: "#/components/responses/InternalError"
+          $ref: "#/components/responses/InternalErrorText"
+
+  /users/managers:
+    get:
+      tags:
+        - Users
+      summary: List managers
+      description: Returns all users with the `manager` role. Requires the `admin` role.
+      responses:
+        "200":
+          description: List of managers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
+
+  /users/managers/users:
+    get:
+      tags:
+        - Users
+      summary: List the users managed by the caller
+      description: |
+        Returns every user whose `managerid` is the caller's id.
+        Requires the `manager` role.
+
+        Note: the handler has no `try`/`catch`, so a service error surfaces as
+        an unhandled rejection rather than a 500 response.
+      responses:
+        "200":
+          description: Users managed by the caller
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
 
   /users/{id}:
+    parameters:
+      - $ref: "#/components/parameters/PathId"
+    get:
+      tags:
+        - Users
+      summary: Get a single user
+      description: |
+        Any authenticated user may call this, but the target must either be the
+        caller or a user the caller manages.
+      responses:
+        "200":
+          description: The user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/InvalidUserId"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "404":
+          description: User not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: user not found
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
+
     delete:
       tags:
         - Users
       summary: Delete user
-      description: Deletes a user by ID. Requires admin role.
-      parameters:
-        - $ref: "#/components/parameters/Authorization"
-        - $ref: "#/components/parameters/UserId"
-        - $ref: "#/components/parameters/PathId"
+      description: Deletes a user by id. Requires the `admin` role.
       responses:
         "200":
           description: User deleted
@@ -183,25 +367,30 @@ paths:
               schema:
                 type: string
                 example: deleted successfully
+        "400":
+          $ref: "#/components/responses/InvalidUserId"
         "401":
-          $ref: "#/components/responses/Unauthorized"
+          $ref: "#/components/responses/UnauthorizedText"
         "500":
-          $ref: "#/components/responses/InternalError"
+          $ref: "#/components/responses/InternalErrorText"
 
-  /users/otp/{id}:
-    put:
+  /users/{id}/otp:
+    parameters:
+      - $ref: "#/components/parameters/PathId"
+    patch:
       tags:
         - Password
-      summary: Change password (OTP)
+      summary: Change own password (one-time password flow)
       description: |
-        Changes a user's password. The new password must meet complexity requirements:
-        - Minimum 8 characters
-        - At least one uppercase letter
-        - At least one lowercase letter
-        - At least one digit
-        - At least one special character
-      parameters:
-        - $ref: "#/components/parameters/PathId"
+        Replaces a one-time password with a permanent one. The current password
+        is the only credential checked — this route deliberately runs without
+        `authMiddleware` so that a user holding an OTP can change it before a
+        session exists.
+
+        The new password must be at most 48 characters and must satisfy the
+        service-side complexity rules: at least 8 characters with upper case,
+        lower case, digit and special character.
+      security: []
       requestBody:
         required: true
         content:
@@ -212,17 +401,26 @@ paths:
         "200":
           description: Password changed
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                example: changed successfully
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: changed successfully
         "400":
-          description: Password does not meet requirements
+          description: |
+            Malformed body, `newpwd` longer than 48 characters, or the new
+            password fails the complexity rules.
           content:
             text/plain:
               schema:
                 type: string
-                example: "need 8 characters, upper/lowercase, numbers,special"
+              examples:
+                badRequest:
+                  value: bad request
+                complexity:
+                  value: "need 8 characters, upper/lowercase, numbers,special"
         "401":
           description: Current password is incorrect
           content:
@@ -231,39 +429,49 @@ paths:
                 type: string
                 example: Unauthorized
         "500":
-          $ref: "#/components/responses/InternalError"
+          $ref: "#/components/responses/InternalErrorText"
 
-  /users/managers:
-    get:
+  /users/{id}/password:
+    parameters:
+      - $ref: "#/components/parameters/PathId"
+    patch:
       tags:
-        - Users
-      summary: List managers
-      description: Returns all users with the manager role. Requires admin role.
-      parameters:
-        - $ref: "#/components/parameters/Authorization"
-        - $ref: "#/components/parameters/UserId"
+        - Password
+      summary: Reset a user's password
+      description: |
+        Generates a new one-time password for the given user and returns it in
+        plain text. Requires the `admin` role.
       responses:
         "200":
-          description: List of managers
+          description: New password generated
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ManagerListItem"
+                type: object
+                properties:
+                  password:
+                    type: string
+                    example: aB3$xY9!kL
+        "400":
+          description: User does not exist, or the path id is invalid
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: bad request
         "401":
-          $ref: "#/components/responses/Unauthorized"
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
 
-  /users/user/manager/{id}:
-    put:
+  /users/{id}/manager:
+    parameters:
+      - $ref: "#/components/parameters/PathId"
+    patch:
       tags:
         - Users
-      summary: Update user's manager
-      description: Assigns a manager to a user. Requires admin role.
-      parameters:
-        - $ref: "#/components/parameters/Authorization"
-        - $ref: "#/components/parameters/UserId"
-        - $ref: "#/components/parameters/PathId"
+      summary: Assign a manager to a user
+      description: Requires the `admin` role. The target must have the `manager` role.
       requestBody:
         required: true
         content:
@@ -274,29 +482,33 @@ paths:
         "204":
           description: Manager updated
         "400":
-          description: Invalid manager
+          description: Invalid id or invalid manager
           content:
             text/plain:
               schema:
                 type: string
               examples:
+                invalidUserId:
+                  value: invalid user id
+                invalidManagerId:
+                  value: invalid managerid
                 notFound:
                   value: manager does not exist
                 notManager:
                   value: is not a manager
         "401":
-          $ref: "#/components/responses/Unauthorized"
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
 
-  /users/user/role/{id}:
-    put:
+  /users/{id}/role:
+    parameters:
+      - $ref: "#/components/parameters/PathId"
+    patch:
       tags:
         - Users
-      summary: Update user's role
-      description: Changes a user's role. Requires admin role.
-      parameters:
-        - $ref: "#/components/parameters/Authorization"
-        - $ref: "#/components/parameters/UserId"
-        - $ref: "#/components/parameters/PathId"
+      summary: Change a user's role
+      description: Requires the `admin` role.
       requestBody:
         required: true
         content:
@@ -307,43 +519,1084 @@ paths:
         "204":
           description: Role updated
         "400":
-          description: Invalid role
+          description: Invalid id or invalid role
           content:
             text/plain:
               schema:
                 type: string
-                example: invalid role
+              examples:
+                invalidUserId:
+                  value: invalid user id
+                invalidRole:
+                  value: invalid role
         "401":
-          $ref: "#/components/responses/Unauthorized"
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
+
+  /users/{id}/employment:
+    parameters:
+      - $ref: "#/components/parameters/PathId"
+    patch:
+      tags:
+        - Users
+      summary: Update workload and holiday entitlement
+      description: |
+        Requires the `manager` role, and the target user must be managed by the
+        caller. Both fields are optional; an empty body is accepted and applies
+        no change.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmploymentRequest"
+      responses:
+        "204":
+          description: Employment details updated
+        "400":
+          description: |
+            Invalid path id, or body validation failed. On a schema failure the
+            serialised Zod error object is returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "404":
+          description: User not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: user not found
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
+
+  ############################################################################
+  # Time entries
+  ############################################################################
+
+  /timeentries/:
+    post:
+      tags:
+        - Time Entries
+      summary: Create a time entry
+      description: |
+        Creates a time entry for the caller. `endtime` is required for
+        `holiday` and `sick` entries and optional for `work` entries (an open
+        `work` entry represents being clocked in).
+
+        Admins are rejected — they may not clock in.
+
+        Note: the request body uses all-lowercase field names (`starttime`,
+        `endtime`) while the response uses camelCase (`startTime`, `endTime`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTimeEntryRequest"
+      responses:
+        "201":
+          description: Time entry created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeEntry"
+        "400":
+          description: |
+            Validation failed, or a business rule was violated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalidType:
+                  value:
+                    error: type is required and has to be work, holiday or sick
+                missingEndtime:
+                  value:
+                    error: endtime is required for holiday and sick entries
+                admin:
+                  value:
+                    error: Admins are not allowed to clock in.
+                missingStarttime:
+                  value:
+                    error: starttime is needed
+                invalidStarttime:
+                  value:
+                    error: starttime is not valid
+                invalidEndtime:
+                  value:
+                    error: endtime is not valid
+                weekend:
+                  value:
+                    error: not able to work on weekends
+                outOfWorkingTime:
+                  value:
+                    error: out of working time
+                openEntry:
+                  value:
+                    error: last time entry has no endtime
+                holiday:
+                  value:
+                    error: not able to work on holidays
+                endBeforeStart:
+                  value:
+                    error: endtime is before starttime
+                overlap:
+                  value:
+                    error: time entry overlaps with an other entry
+                futureStart:
+                  value:
+                    error: start time for work entries cannot be in the future
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorJson"
+
+  /timeentries/last:
+    get:
+      tags:
+        - Time Entries
+      summary: Get the caller's most recent time entry
+      description: |
+        Returns the latest time entry belonging to the caller, optionally
+        filtered by type. Used to determine whether the user is clocked in.
+      parameters:
+        - $ref: "#/components/parameters/TimeEntryTypeQuery"
+      responses:
+        "200":
+          description: The most recent time entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeEntry"
+        "400":
+          description: Invalid type filter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalidType:
+                  value:
+                    error: "type must be: work, holiday, sick"
+        "403":
+          description: Not authorized to view this entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: No time entry found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                notFound:
+                  value:
+                    error: no time entry found
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorJson"
+
+  /timeentries/{id}:
+    parameters:
+      - $ref: "#/components/parameters/PathId"
+    get:
+      tags:
+        - Time Entries
+      summary: Get a single time entry
+      description: The entry must belong to the caller.
+      responses:
+        "200":
+          description: The time entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeEntry"
+        "400":
+          description: Invalid id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalidId:
+                  value:
+                    error: invalid id
+        "403":
+          description: Not authorized to view this entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: No time entry found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorJson"
+
+    patch:
+      tags:
+        - Time Entries
+      summary: Set the end time of a time entry
+      description: |
+        Closes an open time entry (clock out). Only the end time can be
+        patched, and only by the owner of the entry.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetEndTimeRequest"
+      responses:
+        "200":
+          description: Time entry updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeEntry"
+        "400":
+          description: Validation failed, or a business rule was violated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalidId:
+                  value:
+                    error: invalid id
+                missingEndtime:
+                  value:
+                    error: endtime is needed
+                invalidEndtime:
+                  value:
+                    error: endtime is not valid
+                alreadySet:
+                  value:
+                    error: end time is already set
+                beforeStart:
+                  value:
+                    error: end time is before start time
+                future:
+                  value:
+                    error: end time can not be in the future
+                overlap:
+                  value:
+                    error: time entry overlaps with an other entry
+        "403":
+          description: Not authorized to modify this entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Time entry not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorJson"
+
+    delete:
+      tags:
+        - Time Entries
+      summary: Delete a time entry
+      description: |
+        Deletes an entry owned by the caller. Past `holiday` and `sick` entries
+        cannot be deleted.
+      responses:
+        "200":
+          description: Time entry deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeEntry"
+        "400":
+          description: Invalid id, or the entry may not be deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalidId:
+                  value:
+                    error: invalid id
+                oldAbsence:
+                  value:
+                    error: cannot delete old holidays or sick days
+        "403":
+          description: Not authorized to delete this entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Time entry not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorJson"
+
+  /users/{id}/timeentries:
+    parameters:
+      - $ref: "#/components/parameters/PathId"
+    get:
+      tags:
+        - Time Entries
+      summary: List a user's time entries
+      description: |
+        Returns the time entries of the given user, optionally filtered by type
+        and date range.
+
+        Note: despite the path shape, the id must equal the caller's own id —
+        managers cannot read their team members' entries through this route.
+      parameters:
+        - $ref: "#/components/parameters/TimeEntryTypeQuery"
+        - name: startDate
+          in: query
+          description: Any string parsable by `new Date()`
+          schema:
+            type: string
+            example: "2026-01-01"
+        - name: endDate
+          in: query
+          description: Any string parsable by `new Date()`
+          schema:
+            type: string
+            example: "2026-01-31"
+      responses:
+        "200":
+          description: List of time entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimeEntry"
+        "400":
+          description: Invalid id, type or date
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalidId:
+                  value:
+                    error: invalid id
+                invalidType:
+                  value:
+                    error: "type must be: work, holiday, sick"
+                invalidStartDate:
+                  value:
+                    error: startDate is not valid
+                invalidEndDate:
+                  value:
+                    error: endDate is not valid
+                range:
+                  value:
+                    error: end date is before start date
+        "403":
+          description: The id does not belong to the caller
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                notAllowed:
+                  value:
+                    error: not allowed
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorJson"
+
+  ############################################################################
+  # Requests
+  ############################################################################
+
+  /requests:
+    get:
+      tags:
+        - Requests
+      summary: List a user's requests
+      description: |
+        Returns the holiday and sick leave requests of the user given by the
+        `userId` query parameter. Allowed if the caller is that user, or the
+        manager of that user.
+
+        Note: when the caller is the manager, the `type` filter is dropped and
+        all request types are returned.
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: startDate
+          in: query
+          schema:
+            $ref: "#/components/schemas/DateString"
+        - name: endDate
+          in: query
+          schema:
+            $ref: "#/components/schemas/DateString"
+        - name: type
+          in: query
+          schema:
+            $ref: "#/components/schemas/RequestType"
+      responses:
+        "200":
+          description: List of requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Request"
+        "400":
+          description: |
+            Query parameter validation failed, or the date range is invalid.
+            A failure while resolving the target user is also reported as
+            `400 Bad Request` in plain text.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodedError"
+              examples:
+                invalidDateRange:
+                  $ref: "#/components/examples/InvalidDateRange"
+            text/plain:
+              schema:
+                type: string
+                example: Bad Request
+        "401":
+          description: The caller is neither the target user nor their manager
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodedError"
+              examples:
+                unauthorized:
+                  $ref: "#/components/examples/UnauthorizedInline"
+        "500":
+          $ref: "#/components/responses/InternalErrorCoded"
+
+    post:
+      tags:
+        - Requests
+      summary: Create a holiday or sick leave request
+      description: |
+        Creates a request for the caller. The manager is resolved server-side
+        from the caller's `managerid`; it is not part of the body.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRequestBody"
+      responses:
+        "201":
+          description: Request created. The response body is empty.
+        "400":
+          description: Body validation failed, or the date range is invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodedError"
+              examples:
+                invalidDateRange:
+                  $ref: "#/components/examples/InvalidDateRange"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodedError"
+              examples:
+                userNotFound:
+                  $ref: "#/components/examples/UserNotFound"
+        "409":
+          description: |
+            Conflict — the request overlaps an existing request or time entry,
+            or the user does not have enough holidays left.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodedError"
+              examples:
+                overlapTimeEntry:
+                  $ref: "#/components/examples/RequestOverlapWithTimeEntry"
+                overlapRequest:
+                  $ref: "#/components/examples/RequestOverlapWithRequest"
+                notEnoughHolidays:
+                  $ref: "#/components/examples/NotEnoughHolidaysLeft"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorCoded"
+
+  /requests/manager:
+    get:
+      tags:
+        - Requests
+      summary: List all requests the caller is responsible for
+      description: |
+        Returns every request whose `managerId` is the caller.
+        Requires the `manager` role.
+      responses:
+        "200":
+          description: List of requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Request"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorCoded"
+
+  /requests/{id}:
+    parameters:
+      - $ref: "#/components/parameters/PathId"
+    get:
+      tags:
+        - Requests
+      summary: Get a single request
+      description: |
+        Intended behaviour: readable by the requesting user and by their
+        manager.
+
+        Note: the implemented check is
+        `request.userId !== requesterId || request.managerId !== requesterId`,
+        which requires the caller to be *both* the owner and the manager, so
+        this endpoint currently returns `401` for every realistic caller.
+      responses:
+        "200":
+          description: The request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Request"
+        "400":
+          description: Invalid id, or an unexpected service error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Bad Request
+        "401":
+          description: Caller is not permitted to read this request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodedError"
+              examples:
+                unauthorized:
+                  $ref: "#/components/examples/UnauthorizedInline"
+        "404":
+          description: Request not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodedError"
+              examples:
+                notFound:
+                  $ref: "#/components/examples/NotFound"
+
+    patch:
+      tags:
+        - Requests
+      summary: Approve or deny a request
+      description: |
+        Requires the `manager` role; the caller must be the manager assigned to
+        the request. `approved` may be `null` to reset the request to pending.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRequestBody"
+      responses:
+        "200":
+          description: The updated request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Request"
+        "400":
+          description: Invalid id or body validation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodedError"
+        "401":
+          description: Caller is not the manager of this request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodedError"
+              examples:
+                unauthorized:
+                  $ref: "#/components/examples/Unauthorized"
+        "404":
+          description: Request not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodedError"
+              examples:
+                notFound:
+                  $ref: "#/components/examples/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalErrorCoded"
+
+    delete:
+      tags:
+        - Requests
+      summary: Delete a request
+      description: Deletes a request belonging to the caller.
+      responses:
+        "200":
+          description: The deleted request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Request"
+        "400":
+          $ref: "#/components/responses/InvalidUserId"
+        "401":
+          description: Caller is not permitted to delete this request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodedError"
+              examples:
+                unauthorized:
+                  $ref: "#/components/examples/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalErrorCoded"
+
+  ############################################################################
+  # Notifications
+  ############################################################################
+
+  /notifications/:
+    post:
+      tags:
+        - Notifications
+      summary: Create a notification
+      description: |
+        Creates a notification owned by the caller (`userId` is taken from the
+        session, not from the body).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateNotificationRequest"
+      responses:
+        "201":
+          description: Notification created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+        "400":
+          description: Body validation failed
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
+
+  /notifications/{id}:
+    parameters:
+      - $ref: "#/components/parameters/PathId"
+    get:
+      tags:
+        - Notifications
+      summary: Get a single notification
+      description: |
+        The notification must belong to the caller.
+
+        Note: the service returns query rows, and the handler forwards them
+        unchanged — the response is an array containing the single
+        notification, not a bare object.
+      responses:
+        "200":
+          description: The notification, wrapped in an array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+        "400":
+          $ref: "#/components/responses/InvalidUserId"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
+
+    patch:
+      tags:
+        - Notifications
+      summary: Mark a notification as read or unread
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateNotificationRequest"
+      responses:
+        "200":
+          description: The updated notification
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+        "400":
+          $ref: "#/components/responses/InvalidUserId"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
+
+    delete:
+      tags:
+        - Notifications
+      summary: Delete a notification
+      responses:
+        "200":
+          description: Notification deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: deleted successfully
+        "400":
+          $ref: "#/components/responses/InvalidUserId"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
+
+  /users/{id}/notifications:
+    parameters:
+      - $ref: "#/components/parameters/PathId"
+    get:
+      tags:
+        - Notifications
+      summary: List a user's notifications
+      description: |
+        The id must equal the caller's own id — managers cannot read their team
+        members' notifications through this route.
+      responses:
+        "200":
+          description: List of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+        "400":
+          $ref: "#/components/responses/InvalidUserId"
+        "403":
+          $ref: "#/components/responses/ForbiddenText"
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
+
+  ############################################################################
+  # Summary
+  ############################################################################
+
+  /summary:
+    get:
+      tags:
+        - Summary
+      summary: Get a working time and absence summary
+      description: |
+        Aggregates worked minutes, holidays taken and sick days for a user over
+        a date range. Allowed if the caller is the target user or their manager.
+
+        `endDate` defaults to today when omitted.
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: startDate
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/DateString"
+        - name: endDate
+          in: query
+          description: Defaults to the current date
+          schema:
+            $ref: "#/components/schemas/DateString"
+      responses:
+        "200":
+          description: The summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Summary"
+        "400":
+          description: Invalid user id or date range
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                invalidUserId:
+                  value: invalid user id
+                order:
+                  value: start date must be earlier than end date
+                timeframe:
+                  value: dates are not in the correct timeframe
+        "401":
+          $ref: "#/components/responses/UnauthorizedText"
+        "404":
+          description: User not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: user not found
+        "500":
+          $ref: "#/components/responses/InternalErrorText"
+
+############################################################################
+# Components
+############################################################################
 
 components:
-  parameters:
-    Authorization:
+  securitySchemes:
+    SessionToken:
+      type: apiKey
+      in: header
       name: authorization
+      description: |
+        Session token returned by `POST /login/`. A 32-character random string,
+        valid for 24 hours. Sent as the raw header value, without a `Bearer`
+        prefix.
+    UserIdHeader:
+      type: apiKey
       in: header
-      description: Session token
-      schema:
-        type: string
-    UserId:
       name: userid
-      in: header
-      description: Numeric user ID
-      schema:
-        type: string
+      description: Numeric id of the logged-in user
+
+  parameters:
     PathId:
       name: id
       in: path
       required: true
-      description: User ID
+      description: Resource id
       schema:
         type: integer
+        minimum: 1
+    TimeEntryTypeQuery:
+      name: type
+      in: query
+      description: Filter by time entry type
+      schema:
+        $ref: "#/components/schemas/TimeEntryType"
+
+  examples:
+    InvalidDateRange:
+      summary: INVALID_DATE_RANGE
+      value:
+        code: INVALID_DATE_RANGE
+        message: Das Startdatum muss vor dem Enddatum liegen.
+    RequestOverlapWithTimeEntry:
+      summary: REQUEST_OVERLAP_WITH_TIMEENTRY
+      value:
+        code: REQUEST_OVERLAP_WITH_TIMEENTRY
+        message: Es ist bereits ein Zeiteintrag im gewünschten Zeitraum vorhanden.
+    RequestOverlapWithRequest:
+      summary: REQUEST_OVERLAP_WITH_REQUEST
+      value:
+        code: REQUEST_OVERLAP_WITH_REQUEST
+        message: Es ist bereits ein Antrag im gewünschten Zeitraum vorhanden.
+    NotEnoughHolidaysLeft:
+      summary: NOT_ENOUGH_HOLIDAYS_LEFT
+      value:
+        code: NOT_ENOUGH_HOLIDAYS_LEFT
+        message: Sie haben nicht genügend Urlaubstage zur Verfügung.
+    NotFound:
+      summary: NOT_FOUND
+      value:
+        code: NOT_FOUND
+        message: Kein Eintrag gefunden.
+    UserNotFound:
+      summary: USER_NOT_FOUND
+      value:
+        code: USER_NOT_FOUND
+        message: Der Nutzer konnte nicht gefunden werden.
+    Unauthorized:
+      summary: UNAUTHORIZED (thrown by the service layer)
+      value:
+        code: UNAUTHORIZED
+        message: Sie haben nicht die nötige Berechtigung.
+    UnauthorizedInline:
+      summary: UNAUTHORIZED (built inline in the router)
+      description: |
+        The router composes this body by hand instead of reusing
+        `UnauthorizedError`, so the message has no trailing period.
+      value:
+        code: UNAUTHORIZED
+        message: Sie haben nicht die nötige Berechtigung
+    InternalServerError:
+      summary: INTERNAL_SERVER_ERROR
+      value:
+        code: INTERNAL_SERVER_ERROR
+        message: Etwas ist schiefgelaufen
+
+  responses:
+    UnauthorizedText:
+      description: Missing, invalid or insufficiently privileged session
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: unauthorized
+    ForbiddenText:
+      description: The resource does not belong to the caller
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: forbidden
+    NotFoundText:
+      description: Resource not found
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: not found
+    InvalidUserId:
+      description: The path id is not a valid positive integer
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: invalid user id
+    InternalErrorText:
+      description: Internal server error
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: internal error
+    InternalErrorJson:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            internal:
+              value:
+                error: internal error
+    InternalErrorCoded:
+      description: |
+        Internal server error. Also returned for any `AppError` the handler
+        does not explicitly catch — notably `NO_MANAGER_ASSIGNED`, which no
+        route maps to a status of its own and which therefore reaches the
+        client as a generic 500.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CodedError"
+          examples:
+            internal:
+              $ref: "#/components/examples/InternalServerError"
+    OtpRequired:
+      description: |
+        Non-standard status code used to signal that the user still holds a
+        one-time password and must change it via `PATCH /users/{id}/otp`
+        before a session can be used.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OtpResponse"
 
   schemas:
+    DateString:
+      type: string
+      pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+      description: Calendar date in `YYYY-MM-DD` format
+      example: "2026-03-14"
+
+    UserRole:
+      type: string
+      enum: [admin, manager, user]
+
+    TimeEntryType:
+      type: string
+      enum: [work, holiday, sick]
+
+    RequestType:
+      type: string
+      enum: [holiday, sick]
+
+    NotificationType:
+      type: string
+      enum: [request, worktime_exceeded]
+      description: |
+        The values accepted by `schemas/notifications.ts`. Note that
+        `dbSetup.sql` declares `notification_type` as
+        `('request', 'worktimeExceeded', 'worktimeTooLow')`, which does not
+        line up with these — worth checking against `drizzle/schema`, which is
+        what the running code actually uses.
+
+    # ---------------------------------------------------------------- auth
+
     LoginRequest:
       type: object
-      required:
-        - username
-        - password
+      required: [username, password]
       properties:
         username:
           type: string
@@ -351,25 +1604,30 @@ components:
           example: johndoe
         password:
           type: string
-          description: User password
+          format: password
           example: myP@ssw0rd!
 
-    AuthResponse:
+    LoginResponse:
       type: object
       properties:
         id:
           type: integer
-          description: User ID
           example: 1
         session:
           type: string
-          description: Session token (only present on login)
+          description: Session token
           example: dGhpcyBpcyBhIHRva2Vu
         role:
-          type: string
-          enum: [admin, manager, user]
-          description: User role
-          example: admin
+          $ref: "#/components/schemas/UserRole"
+
+    SessionResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        role:
+          $ref: "#/components/schemas/UserRole"
 
     OtpResponse:
       type: object
@@ -381,113 +1639,376 @@ components:
           type: integer
           example: 1
 
-    UserListItem:
+    # ---------------------------------------------------------------- users
+
+    User:
       type: object
+      description: |
+        Mirrors `types/users.ts`. The `pw` and `isotp` columns are not exposed.
+        Note the lower-case `managerid`, which follows the database column name.
       properties:
         id:
           type: integer
           example: 1
         username:
           type: string
+          nullable: true
           example: johndoe
         role:
           type: string
-          enum: [admin, manager, user]
+          nullable: true
           example: user
         managerid:
           type: integer
           nullable: true
           example: 2
+        workload:
+          type: integer
+          description: Contracted weekly working hours (database default 40)
+          example: 40
+        holidays:
+          type: integer
+          description: Annual holiday entitlement in days (database default 30)
+          example: 30
 
-    ManagerListItem:
+    CreatedUser:
       type: object
+      description: |
+        Returned by `POST /users/`. The generated password is only ever
+        returned here.
       properties:
         id:
           type: integer
-          example: 2
+          example: 7
         username:
           type: string
-          example: janemanager
-        role:
+          example: newuser
+        password:
           type: string
-          example: manager
+          description: Generated one-time password
+          example: aB3$xY9!kL
 
     CreateUserRequest:
       type: object
-      required:
-        - username
-        - role
-        - managerId
+      required: [username, role, managerId]
       properties:
         username:
           type: string
           maxLength: 64
-          description: Username (will be stored as lowercase)
           example: newuser
         role:
-          type: string
-          enum: [admin, manager, user]
-          description: Role to assign
-          example: user
+          $ref: "#/components/schemas/UserRole"
         managerId:
           type: integer
-          description: ID of the user's manager
           example: 2
+        workload:
+          type: integer
+          description: Defaults to 40 in the database when omitted
+          example: 40
+        holidays:
+          type: integer
+          description: Defaults to 30 in the database when omitted
+          example: 30
+
+    EmploymentRequest:
+      type: object
+      description: Mirrors `schemas/employment.ts`. Both fields are optional.
+      properties:
+        workload:
+          type: number
+          minimum: 0
+          maximum: 168
+          description: Weekly working hours
+          example: 40
+        holidays:
+          type: number
+          minimum: 0
+          maximum: 366
+          description: Annual holiday entitlement in days
+          example: 30
 
     ChangePasswordRequest:
       type: object
-      required:
-        - currentpwd
-        - newpwd
+      required: [currentpwd, newpwd]
       properties:
         currentpwd:
           type: string
-          description: Current password
+          format: password
         newpwd:
           type: string
-          description: New password (min 8 chars, upper/lowercase, digit, special char)
-          minLength: 8
+          format: password
+          maxLength: 48
+          description: |
+            Minimum 8 characters, with at least one upper case letter, one
+            lower case letter, one digit and one special character.
 
     UpdateManagerRequest:
       type: object
-      required:
-        - managerid
+      required: [managerid]
       properties:
         managerid:
           type: integer
-          description: ID of the new manager
+          minimum: 1
           example: 3
 
     UpdateRoleRequest:
       type: object
-      required:
-        - role
+      required: [role]
       properties:
         role:
+          $ref: "#/components/schemas/UserRole"
+
+    # ---------------------------------------------------------- time entries
+
+    TimeEntry:
+      type: object
+      description: Mirrors `types/timeEntry.ts` and the `timeEntries` table.
+      properties:
+        id:
+          type: integer
+          example: 42
+        userId:
+          type: integer
+          nullable: true
+          example: 1
+        startTime:
           type: string
-          enum: [admin, manager, user]
-          description: New role
-          example: manager
+          format: date-time
+          example: "2026-03-14T08:00:00.000Z"
+        endTime:
+          type: string
+          format: date-time
+          nullable: true
+          description: "`null` while the entry is still running"
+          example: "2026-03-14T16:30:00.000Z"
+        type:
+          $ref: "#/components/schemas/TimeEntryType"
+
+    CreateTimeEntryRequest:
+      type: object
+      required: [type, starttime]
+      properties:
+        type:
+          $ref: "#/components/schemas/TimeEntryType"
+        starttime:
+          type: string
+          description: Any string parsable by `new Date()`
+          example: "2026-03-14T08:00:00.000Z"
+        endtime:
+          type: string
+          description: Required for `holiday` and `sick` entries
+          example: "2026-03-14T16:30:00.000Z"
+
+    SetEndTimeRequest:
+      type: object
+      required: [endtime]
+      properties:
+        endtime:
+          type: string
+          description: Any string parsable by `new Date()`
+          example: "2026-03-14T16:30:00.000Z"
+
+    # ------------------------------------------------------------- requests
+
+    Request:
+      type: object
+      description: |
+        Mirrors `types/requests.ts`. Note that the type carries `startDate` /
+        `endDate` and a `remark`, while the `requests` table declares
+        `startTime` / `endTime` and has no `remark` column — the persisted
+        shape and the transport shape are not yet aligned.
+      properties:
+        id:
+          type: integer
+          example: 12
+        userId:
+          type: integer
+          example: 1
+        managerId:
+          type: integer
+          nullable: true
+          example: 2
+        type:
+          $ref: "#/components/schemas/RequestType"
+        startDate:
+          $ref: "#/components/schemas/DateString"
+        endDate:
+          $ref: "#/components/schemas/DateString"
+        remark:
+          type: string
+          nullable: true
+          maxLength: 512
+          example: Sommerurlaub
+        isApproved:
+          type: boolean
+          nullable: true
+          description: "`null` while pending, `true` approved, `false` denied"
+
+    CreateRequestBody:
+      type: object
+      required: [type, startDate, endDate]
+      properties:
+        type:
+          $ref: "#/components/schemas/RequestType"
+        startDate:
+          $ref: "#/components/schemas/DateString"
+        endDate:
+          $ref: "#/components/schemas/DateString"
+        remark:
+          type: string
+          maxLength: 512
+          nullable: true
+          example: Sommerurlaub
+
+    UpdateRequestBody:
+      type: object
+      description: |
+        `approved` is optional; sending `null` returns the request to the
+        pending state.
+      properties:
+        approved:
+          type: boolean
+          nullable: true
+          example: true
+
+    # --------------------------------------------------------- notifications
+
+    Notification:
+      type: object
+      description: Mirrors the `notifications` table.
+      properties:
+        id:
+          type: integer
+          example: 5
+        userId:
+          type: integer
+          example: 1
+        managerId:
+          type: integer
+          nullable: true
+          example: 2
+        time:
+          type: string
+          format: date-time
+          example: "2026-03-14T09:12:00.000Z"
+        type:
+          $ref: "#/components/schemas/NotificationType"
+        description:
+          type: string
+          example: Ihr Urlaubsantrag wurde genehmigt
+        isRead:
+          type: boolean
+          example: false
+
+    CreateNotificationRequest:
+      type: object
+      required: [managerId, type, description]
+      properties:
+        managerId:
+          type: integer
+          nullable: true
+          example: 2
+        type:
+          $ref: "#/components/schemas/NotificationType"
+        description:
+          type: string
+          minLength: 1
+          example: Ihr Urlaubsantrag wurde genehmigt
+
+    UpdateNotificationRequest:
+      type: object
+      required: [read]
+      properties:
+        read:
+          type: boolean
+          example: true
+
+    # ------------------------------------------------------------- summary
+
+    Summary:
+      type: object
+      description: Mirrors `types/summary.ts`.
+      properties:
+        userId:
+          type: integer
+          example: 1
+        startDate:
+          $ref: "#/components/schemas/DateString"
+        endDate:
+          $ref: "#/components/schemas/DateString"
+        vacationDaysTaken:
+          type: number
+          example: 5
+        sickDaysTaken:
+          type: number
+          example: 2
+        timeWorkedInMinutes:
+          type: number
+          example: 9600
+
+    # -------------------------------------------------------------- errors
 
     ErrorResponse:
       type: object
       properties:
         error:
           type: string
-          example: username exists
+          example: internal error
 
-  responses:
-    Unauthorized:
-      description: Unauthorized - invalid or missing credentials
-      content:
-        text/plain:
-          schema:
-            type: string
-            example: unauthorized
-    InternalError:
-      description: Internal server error
-      content:
-        text/plain:
-          schema:
-            type: string
-            example: internal error
+    CodedError:
+      type: object
+      description: |
+        Error shape used by the request routes. Codes come from the `AppError`
+        subclasses in `errors/requestErrors.ts`; messages are German and are
+        safe to surface to end users.
+
+        | code | thrown when |
+        |---|---|
+        | `INVALID_DATE_RANGE` | start date is not before end date |
+        | `REQUEST_OVERLAP_WITH_TIMEENTRY` | a time entry already covers the period |
+        | `REQUEST_OVERLAP_WITH_REQUEST` | another request already covers the period |
+        | `NOT_ENOUGH_HOLIDAYS_LEFT` | the remaining entitlement is too small |
+        | `NOT_FOUND` | the request does not exist |
+        | `USER_NOT_FOUND` | the target user does not exist |
+        | `NO_MANAGER_ASSIGNED` | the user has no manager to route the request to |
+        | `UNAUTHORIZED` | caller is neither the owner nor the assigned manager |
+        | `INTERNAL_SERVER_ERROR` | composed inline by the routers, not an `AppError` |
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          enum:
+            - INVALID_DATE_RANGE
+            - REQUEST_OVERLAP_WITH_TIMEENTRY
+            - REQUEST_OVERLAP_WITH_REQUEST
+            - NOT_ENOUGH_HOLIDAYS_LEFT
+            - NOT_FOUND
+            - USER_NOT_FOUND
+            - NO_MANAGER_ASSIGNED
+            - UNAUTHORIZED
+            - INTERNAL_SERVER_ERROR
+          example: UNAUTHORIZED
+        message:
+          type: string
+          example: Sie haben nicht die nötige Berechtigung.
+
+    ZodError:
+      type: object
+      description: Serialised Zod error, returned verbatim by `PATCH /users/{id}/employment`.
+      properties:
+        issues:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                example: too_big
+              path:
+                type: array
+                items:
+                  type: string
+                example: [workload]
+              message:
+                type: string
+                example: "Too big: expected number to be <=168"
