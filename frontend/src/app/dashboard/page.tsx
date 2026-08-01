@@ -199,10 +199,7 @@ export default function Dashboard() {
         if (!token || !userid) {
             return
         }
-        // ! NOCH NICHT FERTIG & NOCH NICHT GETESTET
-        //await postNotification(Number(userid), todayDateString());
-        // ! NOCH NICHT FERTIG & NOCH NICHT GETESTET
-
+        
         try {
             const notificationList = await getNotificationList(Number(userid));
             setNotifications(notificationList);
