@@ -280,7 +280,7 @@ vorgeschriebene Arbeitszeiten und Urlaubstage anzupassen.
 Das Repository ist als Monorepo in zwei Hauptteilen aufgebaut: Backend und Frontend. Zusätzlich liegt die Dokumentation
 des gesamten Monorepos im Ordner /docs.
 
-Frontend und Backend sind eigenständige und voneinander losgelöste npm packages.
+Frontend und Backend sind eigenständige und voneinander losgelöste NodeJS-Anwendungen.
 
 ## Frontend
 
@@ -401,6 +401,12 @@ Typ-Definitionen, die im Frontend zur starken Typisierung des Codes verwendet we
 Hilfsfunktionen, die an mehreren Stellen im Frontend verwendet werden, oder die zu umfangreich für die einzelnen
 page.tsx sind und daher ausgelagert wurden.
 
+### Fremdbibliotheken
+Durch die Vorgaben bestimmt sind **React** und **Next.js** eingebunden. \
+Um Umgebungsvariablen einzulesen wird **dotenv** verwendet. \
+
+Zusätzlich dazu wird das Paket **date-holidays** verwendet, um Feiertage für die Kalenderansicht und die Arbeitszeitberechnung nutzen zu können, ohne manuell Termine pflegen zu müssen.
+
 ## Backend
 
 Das Backend ist als Express-Server in TypeScript realisiert.
@@ -453,6 +459,14 @@ Geteilte TypeScript types und interfaces sind hier abgelegt.
 **/utils** \
 Hier befinden sich geteilte Hilfsfunktionen, die an verschiedenen Stellen in der Anwendung Verwendung finden. Sie sind
 grob nach Anwendungsgebiet gruppiert.
+
+### Fremdbibliotheken
+Durch die Anforderungen bestimmt sind **Express** und **Drizzle-ORM** eingebunden sowie die technisch notwendigen Pakete **cors** und **dotenv**. \
+Die Datenbank wird durch **postgres** angesprochen. \
+Input-Validierung ist durch **zod** implementiert. \
+Für die Authentifizierung und den Umgang mit Passwörtern wird **bcrypt** verwendet. \
+
+Auch im Backend ist es notwendig, mit Feiertagen umzugehen, deshalb ist auch hier **date-holidays** installiert.
 
 # Webdesign
 
