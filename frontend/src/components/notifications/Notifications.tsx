@@ -13,7 +13,6 @@ type Props = {
     killNotification: (id: number) => void
 }
 
-
 export default function Notifications({ notifications, updateNotification, killNotification }: Props) {
     const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
     const [loadingDeleteId, setLoadingDeleteId] = useState<number | null>(null);
@@ -32,13 +31,13 @@ export default function Notifications({ notifications, updateNotification, killN
 
     const handleReadStatusChange = async (id: number, isRead: boolean) => {
         setOpenDropdownId(null);
-        
+
         const token = localStorage.getItem("token");
         const userId = localStorage.getItem("userid");
         if (!token || !userId) {
             return;
         }
-        
+
         setLoadingReadId(id);
 
         try {
@@ -49,6 +48,8 @@ export default function Notifications({ notifications, updateNotification, killN
             }
 
             updateNotification(id, isRead);
+        } catch (error) {
+            console.error(error);
         } finally {
             setLoadingReadId(null);
         }
@@ -59,7 +60,7 @@ export default function Notifications({ notifications, updateNotification, killN
         if (!token || !userId) {
             return;
         }
-        
+
         setLoadingDeleteId(id);
 
         try {
@@ -131,7 +132,6 @@ export default function Notifications({ notifications, updateNotification, killN
                                                 );
                                             }}
                                         >
-
                                             ▾
                                         </span>
 

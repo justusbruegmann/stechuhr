@@ -7,10 +7,7 @@ export async function notificationListGet(userId: number) {
     try {
         const today = new Date().toISOString().slice(0, 10);
 
-        await generateWorkTimeNotifications(
-            userId,
-            today
-        );
+        await generateWorkTimeNotifications(userId, today);
 
         const notificationList = await getNotificationList(userId);
         return notificationList;

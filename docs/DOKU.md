@@ -1,52 +1,66 @@
 # How2CenterADiv Stechuhr
+
 ## Matrikelnummern:
+
     - justusbruegmann: 4865545
     - SebastianAnhalt: 7020807
     - mika630: 1586623
     - FHG : 3320563 -> Bitte beachten: Github Email und git Email unterschiedlich da Firmen Laptop
-    - brdly06: Nummer einfügen
-AI als Formulierungshilfe verwendet
-# Was macht die Anwendung? (Mika)
-# Struktur des Repo (Sebastian)
+    - brdly06: 9714570
 
+AI als Formulierungshilfe verwendet
+
+# Was macht die Anwendung? (Mika)
+
+# Struktur des Repo (Sebastian)
 
 # Aufgabenverteilung
 
-Der überwältigende Teil der DevOps wurde von `justusbruegmann` erledigt. Das umfasst die Erstellung und Pflege des Git-Repositories (inkl. der Code-Reviews zu PRs), die Einrichtung der PostgreSQL-Datenbank auf Supabase, sowie die Deployment-Prozesse auf zuerst Vercel und später Railway.
+Der überwältigende Teil der DevOps wurde von `justusbruegmann` erledigt. Das umfasst die Erstellung und Pflege des
+Git-Repositories (inkl. der Code-Reviews zu PRs), die Einrichtung der PostgreSQL-Datenbank auf Supabase, sowie die
+Deployment-Prozesse auf zuerst Vercel und später Railway.
 
 Die Datenbank-Schemata wurden von `justusbruegmann` und `Sebastian Anhalt` erstellt und gepflegt.
 
-Die Zusammenführung und Integration der Frontend-Komponenten auf der /dashboard Seite sowie die Pflege der Kompatibilität zwischen den einzelnen Komponenten wurde maßgeblich von `Sebastian Anhalt` erledigt.
+Die Zusammenführung und Integration der Frontend-Komponenten auf der /dashboard Seite sowie die Pflege der
+Kompatibilität zwischen den einzelnen Komponenten wurde maßgeblich von `Sebastian Anhalt` erledigt.
 
-Zur Schaffung einer grundlegend einheitlichen Ästhetik in der Anwendunge wurden von `Sebastian Anhalt` und `justusbruegmann` zu Beginn der Entwicklung Layout-Komponenten erstellt, 
-die im [Layout-Ordner](#srccomponents) zu finden sind und in vielen der Komponenten verwendet werden.
+Zur Schaffung einer grundlegend einheitlichen Ästhetik in der Anwendunge wurden von `Sebastian Anhalt` und
+`justusbruegmann` zu Beginn der Entwicklung Layout-Komponenten erstellt, die im [Layout-Ordner](#srccomponents) zu
+finden sind und in vielen der Komponenten verwendet werden.
 
-Die Aufteilung der Domain-Logik und der Funktionen der Anwendung können im Detail den Kapiteln [Was macht die Anwendung?](#was-macht-die-anwendung-mika) und [Eigenleistung](#eigenleistung) entnommen werden. Hier nur eine grobe Darstellung:
+Die Aufteilung der Domain-Logik und der Funktionen der Anwendung können im Detail den
+Kapiteln [Was macht die Anwendung?](#was-macht-die-anwendung-mika) und [Eigenleistung](#eigenleistung) entnommen werden.
+Hier nur eine grobe Darstellung:
 
 **justusbruegmann**
+
 - Authentication & Authorization
 - Login
 - Benutzerverwaltung
 
 **Sebastian Anhalt**
+
 - Übersicht Tag/Woche/Monat der geleisteten Arbeitszeiten
-- Manager-Ansicht zur Bearbeitung von Arbeitszeiten, Urlaubszeiten und Krankheitstagen der untergebenen Mitarbeiter (inkl. einiger weniger Benutzerverwaltung-Endpunkten im Backend)
+- Manager-Ansicht zur Bearbeitung von Arbeitszeiten, Urlaubszeiten und Krankheitstagen der untergebenen Mitarbeiter
+  (inkl. einiger weniger Benutzerverwaltung-Endpunkten im Backend)
 
 **mika630**
+
 - Ein-/Ausstempelfunktion auf dem Dashboard
 - Darstellung der aktuellen Arbeitszeit und des aktuellen Status (gestempelt / nicht gestempelt)
 - Bereitstellung der */timeEntry/* Endpunkte im Backend, also der zentralen Ressource für die Zeiterfassung
 
 **FHG**
+
 - Übersicht über alle Arbeitszeiten eines Tages
 - Manuelles Nachtragen von Arbeitszeiten
 - Funktion zum Stellen von Anträgen wegen Urlaubs oder Krankheit
 
 **brdly06**
+
 - Kalender auf dem Dashboard mit visueller Aufbereitung von Arbeitszeiten, Wochenenden, Feiertagen und Urlaubszeiten
-- Benachrichtigungen 
-
-
+- Benachrichtigungen
 
 # Setup der Dev Umgebung (Justus)
 
@@ -72,11 +86,11 @@ Dann muss eine ".env.local" im frontend Ordner ein mit
 ``NEXT_PUBLIC_BACKEND_URL=<BACKENDURL EINSETZEN>
 `` vorhandensein.  
 Mögliche werte:
+
 - Lokales backend:   http://localhost:3500
 - Hosted backend:   https://stechuhr-production-2a78.up.railway.app
 
 Zum Starten ``npm run dev``
-
 
 ### Backend
 
@@ -95,9 +109,7 @@ Datenbank_URL wird per Moodle bereitgestellt
 
 zum Starten ``npm run dev``
 nach jeder Änderung muss der command neu ausgeführt werden (kein HMR) und gewartet werden bis ``✓ Database connection successful
-`` in der Console auftaucht dann ist das Backend bereit. 
-
-
+`` in der Console auftaucht dann ist das Backend bereit.
 
 # Starten der Anwendung (Justus)
 
@@ -110,15 +122,17 @@ Zuerst das Projekt Klonen
 ``git clone https://github.com/justusbruegmann/stechuhr.git``
 
 ### Bauen
-Zum Bauen muss das ``build.ps1`` script ausgeführt werden oder eins der Plattformspezifischen Scripte ausgeführt aus dem root directory:
+
+Zum Bauen muss das ``build.ps1`` script ausgeführt werden oder eins der Plattformspezifischen Scripte ausgeführt aus dem
+root directory:
 
 Beim build muss eine ".env.local" im frontend Ordner ein mit
 ``NEXT_PUBLIC_BACKEND_URL=<BACKENDURL EINSETZEN>
 `` vorhandensein.  
 Mögliche werte:
+
 - Lokales backend:   http://localhost:3500
 - Hosted backend:   https://stechuhr-production-2a78.up.railway.app
-
 
 Cross-Plattform pwsh:  
 ``./build.ps1``
@@ -136,238 +150,296 @@ Zum Starten muss eine ".env" im Backend Ordner ein mit
 Datenbank_URL wird per Moodle bereitgestellt
 
 ### Starten
+
 Backend und Frontend laufen als getrennte Prozesse und werden jeweils in einem eigenen Terminal gestartet:
 
 Backend (Terminal 1):
+
 ```cmd
    cd backend
    npm run start
    ```   
-   
-  Warten bis ✓ Database connection successful in der Console erscheint, dann ist das Backend bereit.
 
-  Frontend (Terminal 2):
+Warten bis ✓ Database connection successful in der Console erscheint, dann ist das Backend bereit.
+
+Frontend (Terminal 2):
 
 ```cmd
    cd frontend
    npm run start
    ```  
 
-  Die Anwendung ist danach unter http://localhost:3000 erreichbar.
-
+Die Anwendung ist danach unter http://localhost:3000 erreichbar.
 
 # Was macht die Anwendung (Mika)
-Die Anwendung dient zur Erfassung von Arbeitszeiten von Nutzern. Zudem erhält man einen Überblick über seine Zeiteinträge und kann diese jederzeit einsehen. Es gibt drei verschiedene Rollen von Anwendern:
+
+Die Anwendung dient zur Erfassung von Arbeitszeiten von Nutzern. Zudem erhält man einen Überblick über seine
+Zeiteinträge und kann diese jederzeit einsehen. Es gibt drei verschiedene Rollen von Anwendern:
 
 ## Rollen
+
 ### User
-Als User ist es möglich sich über die Timecard ein- und auszustechen. Man erhält eine Übersicht über die heute gearbeiteten Stunden, und über sein Saldo für den Tag, Woche und Monat. Im Kalender kann man außerdem auf einen Blick seine Zeitereignisse sehen. 
-Zudem ist es möglich Abwesenheitsanträge in Form von Urlaub oder Krankheit zu erstellen. Auch vergessene Ein- und Ausstechzeiten kann man nachtragen.
+
+Als User ist es möglich sich über die Timecard ein- und auszustechen. Man erhält eine Übersicht über die heute
+gearbeiteten Stunden, und über sein Saldo für den Tag, Woche und Monat. Im Kalender kann man außerdem auf einen Blick
+seine Zeitereignisse sehen. Zudem ist es möglich Abwesenheitsanträge in Form von Urlaub oder Krankheit zu erstellen.
+Auch vergessene Ein- und Ausstechzeiten kann man nachtragen.
 
 ### Manager
-Als Manager hat man die selben Funktionen wie ein normaler User. Jedoch verfügt der Manager noch über die Manager-Ansicht über die er einen Überblick über seine zuständigen Mitarbeiter bekommt. Hier kann er deren Anträge genehmigen und wenn nötig auch Urlaubstage, Krankheitstage und Zeitereignisse anpassen.
+
+Als Manager hat man die selben Funktionen wie ein normaler User. Jedoch verfügt der Manager noch über die
+Manager-Ansicht über die er einen Überblick über seine zuständigen Mitarbeiter bekommt. Hier kann er deren Anträge
+genehmigen und wenn nötig auch Urlaubstage, Krankheitstage und Zeitereignisse anpassen.
 
 ### Admin
-Als Admin ist es nicht möglich sich einzustechen, bzw. Zeiteinträge, Abwesenheitsanträge etc. zu erstellen. Die Admin Rolle dient nur zur Verwaltung der Benutzer der Anwendung. Es ist möglich neue Nutzer anzulegen, zu löschen und auch vorgeschriebene Arbeitszeiten und Urlaubstage anzupassen.
+
+Als Admin ist es nicht möglich sich einzustechen, bzw. Zeiteinträge, Abwesenheitsanträge etc. zu erstellen. Die Admin
+Rolle dient nur zur Verwaltung der Benutzer der Anwendung. Es ist möglich neue Nutzer anzulegen, zu löschen und auch
+vorgeschriebene Arbeitszeiten und Urlaubstage anzupassen.
 
 ## Login
-| Bild | Beschreibung |
-|------|--------------|
+
+| Bild                                               | Beschreibung                                                                                                                                                                                                                                                                                                                                       |
+|----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | <img src="images/login/LoginPage.png" width="600"> | Die Login-Seite dient zur Anmeldung des Benutzers. Es gibt zwei Textfelder. In das obere Feld wird der Benutzername eingegeben, in das untere das Passwort. Durch einen Klick auf das Augensymbol kann man sein eingegebenes Passwort anzeigen lassen. Nach erfolgreicher Eingabe gelangt der Benutzer über den Button "Login“ auf sein Dashboard. |
-| <img src="images/login/otpForm.png" width="600"> | Falls man sein Passwort zurücksetzt bekommt man vom Admin ein Einmalpasswort mit welchem man nach Eingabe sein Passwort ändern kann. Hierzu gibt es ein Popup, in welchem man das neue Passwort zwei mal eingeben muss, um dann mit "Fertig" zu bestätigen. |
+| <img src="images/login/otpForm.png" width="600">   | Falls man sein Passwort zurücksetzt bekommt man vom Admin ein Einmalpasswort mit welchem man nach Eingabe sein Passwort ändern kann. Hierzu gibt es ein Popup, in welchem man das neue Passwort zwei mal eingeben muss, um dann mit "Fertig" zu bestätigen.                                                                                        |
 
 ## Logout Button
-| Bild | Beschreibung |
-|------|--------------|
+
+| Bild                                                  | Beschreibung                                                                                                   |
+|-------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
 | <img src="images/login/LogoutButton.png" width="600"> | Per Klick auf den Logout Button wird der Benutzer ausgeloggt und man wird zurück zum [Login](#login) gebracht. |
 
 ## Timecard
-| Bild | Beschreibung |
-|------|--------------|
+
+| Bild                                                   | Beschreibung                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+|--------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | <img src="images/dashboard/Timecard.png" width="1000"> | Über die Timecard ist es möglich sich ein- und auszustechen. Dies erfolgt über den grünen/roten Button. Nachdem man auf einstempeln bzw. auf ausstempeln geklickt hat wird der Button für einen Moment deaktiviert und zeigt einen Spinner an. Dies liegt daran dass der Button seinen Zustand erst ändert, wenn die Änderungen bereits erfolgreich in die Datenbank übernommen wurden. Die Timecard zeigt zudem auch die aktuelle Uhrzeit, ob man bereits ein- oder ausgestempelt ist und wie lange man an dem aktuellen Tag schon gearbeitet hat. Ganz unten gibt es den Button "Stunden-Übersicht", mit welchem man die [Stunden-Übersicht](#stunden-übersicht) öffnen kann. |
 
 ## Stunden-Übersicht
-| Bild | Beschreibung |
-|------|--------------|
+
+| Bild                                                       | Beschreibung                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+|------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | <img src="images/dashboard/TimeOverview.png" width="1500"> | Die Stunden-Übersicht hat die Hauptaufgabe dem Benutzer sein aktuelles Saldo anzuzeigen. Hierfür kann man über eine Auswahl oben sein Saldo für den heutigen Tag, für die Woche oder für den Monat anzeigen. Zudem sieht man neben dem Saldo auch die Soll Arbeitszeit und die Ist-Arbeitszeit. Im unteren Bereich sieht man dann noch die zugehörigen Zeiteinträge des Tages, der Woche oder des Monats, je nachdem was man ausgewählt hat. Beim Hovern über einen Zeiteintrag kann man diesen auch per Klick auf den Papierkorb löschen. |
 
 ## Kalender
-| Bild | Beschreibung |
-|------|--------------|
+
+| Bild                                                   | Beschreibung                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | <img src="images/dashboard/Calender.png" width="3000"> | Der Kalender dient zur Anzeige der bereits eingetragenen Zeiteinträge. Oben links sieht man das aktuelle Jahr und den gerade ausgewählten Monat. Auf der rechten Seite findet man den Button "Heute" und zwei Pfeile. Diese Komponenten dienen zum Navigieren im Kalender. Mit dem "Heute"-Button wird man immer zu dem Monat gebracht in dem sich das heutige Datum befindet. Über die Pfeile kann man einen Monat nach vorn oder nach hinten springen. Im Kalender werden die verschiedenen Einträge mit verschiedenen Farben markiert. Durch die Legende im unteren Teil des Kalenders wird die Bedeutung jeder Farbe deutlich. Zeiteinträge werden immer nur klein im Kalender angezeigt. Bei Krankheiten, Urlaub, Wochenenden und Feiertagen werden die Tage komplett eingefärbt. Per Klick auf die [Tagesanzeige](#tagesanzeige) öffnet sich die Tagesansicht. |
 
 ## Tagesanzeige
-| Bild | Beschreibung |
-|------|--------------|
+
+| Bild                                                 | Beschreibung                                                                                                                                                                                                                                                                                                             |
+|------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | <img src="images/dashboard/ShowDay.png" width="600"> | Die Tagesanzeige öffnet sich, wenn man auf einen Tag des Kalenders klickt. Es öffnet sich ein Side Panel und dort werden alle Zeiteinträge dieses Tages angezeigt. Unten hat man über zwei Buttons noch die Option um [manuell nachzutragen](#manuell-nachtragen) und um einen [Antrag zu erstellen](#antrag-erstellen). |
 
 ## Manuell-nachtragen
-| Bild | Beschreibung |
-|------|--------------|
-| <img src="images/dashboard/AddEntryManuel.png" width="600"> | Beim manuellen Nachtragen gibt man zuerst die Einstempelzeit an. Die Ausstempelzeit ist optional und kann per Checkbox mitgegeben oder weggelassen werden, wenn man sich zum Beispiel am Morgen vergessen hat einzustechen aber noch am Arbeiten ist. |
-| <img src="images/dashboard/AddEntryManuel2.png" width="600"> | Über den Button "Eintrag hinzufügen" kann man den Eintrag letztendlich hinzufügen. Dies geht ohne Genehmigung. Alternativ kann man über "Abbrechen" den Entwurf verwerfen. |
+
+| Bild                                                         | Beschreibung                                                                                                                                                                                                                                          |
+|--------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <img src="images/dashboard/AddEntryManuel.png" width="600">  | Beim manuellen Nachtragen gibt man zuerst die Einstempelzeit an. Die Ausstempelzeit ist optional und kann per Checkbox mitgegeben oder weggelassen werden, wenn man sich zum Beispiel am Morgen vergessen hat einzustechen aber noch am Arbeiten ist. |
+| <img src="images/dashboard/AddEntryManuel2.png" width="600"> | Über den Button "Eintrag hinzufügen" kann man den Eintrag letztendlich hinzufügen. Dies geht ohne Genehmigung. Alternativ kann man über "Abbrechen" den Entwurf verwerfen.                                                                            |
 
 ## Antrag-erstellen
-| Bild | Beschreibung |
-|------|--------------|
-| <img src="images/dashboard/CreateEntry.png" width="850"> | Beim Erstellen eines Antrages kann man zunächst zwischen Krankheit und Urlaub auswählen. Als nächstes gibt man Start- und Enddatum an. Dies kann man entweder direkt selber eingeben, oder man geht über das Kalender Icon. Hier wird dann ein kleiner Kalender geöffnet bei dem man den richtigen Tag auswählen kann. Optional kann man noch eine Bemerkung mit Angeben. |
-| <img src="images/dashboard/CreateEntry2.png" width="850"> | Abschließend kann man mit dem "Antrag erstellen" Button den Antrag erstellen, welcher aber erst vom zugehörigen Manager angenommen werden muss, bevor er in den Kalender geschrieben wird. Alternativ kann man über den Button "Abbrechen" den Entwurf verwerfen. |
+
+| Bild                                                      | Beschreibung                                                                                                                                                                                                                                                                                                                                                              |
+|-----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <img src="images/dashboard/CreateEntry.png" width="850">  | Beim Erstellen eines Antrages kann man zunächst zwischen Krankheit und Urlaub auswählen. Als nächstes gibt man Start- und Enddatum an. Dies kann man entweder direkt selber eingeben, oder man geht über das Kalender Icon. Hier wird dann ein kleiner Kalender geöffnet bei dem man den richtigen Tag auswählen kann. Optional kann man noch eine Bemerkung mit Angeben. |
+| <img src="images/dashboard/CreateEntry2.png" width="850"> | Abschließend kann man mit dem "Antrag erstellen" Button den Antrag erstellen, welcher aber erst vom zugehörigen Manager angenommen werden muss, bevor er in den Kalender geschrieben wird. Alternativ kann man über den Button "Abbrechen" den Entwurf verwerfen.                                                                                                         |
 
 ## Notifications
-| Bild | Beschreibung |
-|------|--------------|
-| <img src="images/dashboard/NotificationIcon.png" width="600"> | Beim Klick auf die Glocke im oberen Bildrand auf dem Dashboard kann man sich seine aktuellen Benachrichtigungen/Notifications anzeigen lassen. |
-| <img src="images/dashboard/Notifications.png" width="600"> | Dafür öffnet sich eine Side Pane welche alle aktuellen Nachrichten anzeigt. Wenn man auf eine bestimmte Benachrichtigung geht, kann man per Klick auf "Ungelesen" die Nachricht auf "Gelesen" umstellen. Per Klick auf den Knopf "Löschen" kann man die einzelne Benachrichtigung löschen. |
+
+| Bild                                                          | Beschreibung                                                                                                                                                                                                                                                                               |
+|---------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <img src="images/dashboard/NotificationIcon.png" width="600"> | Beim Klick auf die Glocke im oberen Bildrand auf dem Dashboard kann man sich seine aktuellen Benachrichtigungen/Notifications anzeigen lassen.                                                                                                                                             |
+| <img src="images/dashboard/Notifications.png" width="600">    | Dafür öffnet sich eine Side Pane welche alle aktuellen Nachrichten anzeigt. Wenn man auf eine bestimmte Benachrichtigung geht, kann man per Klick auf "Ungelesen" die Nachricht auf "Gelesen" umstellen. Per Klick auf den Knopf "Löschen" kann man die einzelne Benachrichtigung löschen. |
 
 ## Manager Ansicht
-| Bild | Beschreibung |
-|------|--------------|
-| <img src="images/managerView/ManagerViewButton.png" width="600"> | Diese Funktion ist nur bei Benutzern mit der [Rolle Manager](#rollen) verfügbar! Über den Button "Manager-Ansicht" oben links auf dem Dashboard, kommt man zur Manager Ansicht. |
-| <img src="images/managerView/managerView.png" width="600"> | Hier sieht man alle Nutzer für welche man zuständig ist. Man kann die Urlaubstage, Krankheitstage und die wöchentlich gearbeitete Stunden der Nutzer ansehen. |
-| <img src="images/managerView/noSubordinates.png" width="600"> | Falls man keine zugewiesenen Benutzer hat wird die Meldung "Sie haben keine Mitarbeiter zu verwalten" angezeigt. |
-| <img src="images/managerView/popupEdit.png" width="600"> | Über den Button "Bearbeiten" kann man die Urlaubstage und Arbeitstage eines Benutzers anpassen. |
-| <img src="images/managerView/popupRequests.png" width="600"> | Zudem kann man über den Button "Anträge" einsehen welche offenen Anträge ein Benutzer aktuell hat. Über die Buttons "Genehmigen" und "Ablehnen", kann man die Anträge bearbeiten. |
+
+| Bild                                                             | Beschreibung                                                                                                                                                                      |
+|------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <img src="images/managerView/ManagerViewButton.png" width="600"> | Diese Funktion ist nur bei Benutzern mit der [Rolle Manager](#rollen) verfügbar! Über den Button "Manager-Ansicht" oben links auf dem Dashboard, kommt man zur Manager Ansicht.   |
+| <img src="images/managerView/managerView.png" width="600">       | Hier sieht man alle Nutzer für welche man zuständig ist. Man kann die Urlaubstage, Krankheitstage und die wöchentlich gearbeitete Stunden der Nutzer ansehen.                     |
+| <img src="images/managerView/noSubordinates.png" width="600">    | Falls man keine zugewiesenen Benutzer hat wird die Meldung "Sie haben keine Mitarbeiter zu verwalten" angezeigt.                                                                  |
+| <img src="images/managerView/popupEdit.png" width="600">         | Über den Button "Bearbeiten" kann man die Urlaubstage und Arbeitstage eines Benutzers anpassen.                                                                                   |
+| <img src="images/managerView/popupRequests.png" width="600">     | Zudem kann man über den Button "Anträge" einsehen welche offenen Anträge ein Benutzer aktuell hat. Über die Buttons "Genehmigen" und "Ablehnen", kann man die Anträge bearbeiten. |
 
 ## Admin Ansicht
-| Bild | Beschreibung |
-|------|--------------|
-| <img src="images/adminView/AdminViewButton.png" width="600"> | Diese Funktion ist nur bei Benutzern mit der [Rolle Admin](#rollen) verfügbar! Über den Button "Admin-Ansicht" oben links auf dem Dashboard, kommt man zur Admin Ansicht. |
-| <img src="images/adminView/AdminView.png" width="600"> | Hier sieht man alle Nutzer welche registriert sind. |
-| <img src="images/adminView/CreateNewUser.png" width="600"> | Über den Button "Nutzer anlegen" öffnet sich ein PopUp über welches man neue Benutzer anlegen kann. Hier benötigt man die Eingabe von dem Nutzernamen, der Rolle, dem Manager, die Arbeitsstunden pro Woche und die Urlaubstage pro Jahr. Über den Button "Anlegen" wird der Benutzer erstellt. |
-| <img src="images/adminView/UpdateUser.png" width="600"> | Zudem hat man bei jedem Benutzer noch die Möglichkeiten ihn zu löschen (roter Papierkorb), ihn zu bearbeiten (blauer Stift) und sein Passwort zurückzusetzen (gelber Reset). Beim Bearbeiten kann man dem Benutzer eine neue Rolle und/oder einen neuen Manager zuweisen. Mit "Bestätigen" oder "Abbrechen" beendet man seine Bearbeitung. |
-| <img src="images/adminView/OneTimePassword.png" width="600"> | Beim Passwort Reset wird auch ein Popup geöffnet, bei dem man ein Einmalpasswort angezeigt bekommt. Dieses gibt der Admin dann an den entsprechenden Benutzer weiter, damit dieser ein neues Passwort erstellen kann. ([siehe Login](#login)) |
+
+| Bild                                                         | Beschreibung                                                                                                                                                                                                                                                                                                                               |
+|--------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <img src="images/adminView/AdminViewButton.png" width="600"> | Diese Funktion ist nur bei Benutzern mit der [Rolle Admin](#rollen) verfügbar! Über den Button "Admin-Ansicht" oben links auf dem Dashboard, kommt man zur Admin Ansicht.                                                                                                                                                                  |
+| <img src="images/adminView/AdminView.png" width="600">       | Hier sieht man alle Nutzer welche registriert sind.                                                                                                                                                                                                                                                                                        |
+| <img src="images/adminView/CreateNewUser.png" width="600">   | Über den Button "Nutzer anlegen" öffnet sich ein PopUp über welches man neue Benutzer anlegen kann. Hier benötigt man die Eingabe von dem Nutzernamen, der Rolle, dem Manager, die Arbeitsstunden pro Woche und die Urlaubstage pro Jahr. Über den Button "Anlegen" wird der Benutzer erstellt.                                            |
+| <img src="images/adminView/UpdateUser.png" width="600">      | Zudem hat man bei jedem Benutzer noch die Möglichkeiten ihn zu löschen (roter Papierkorb), ihn zu bearbeiten (blauer Stift) und sein Passwort zurückzusetzen (gelber Reset). Beim Bearbeiten kann man dem Benutzer eine neue Rolle und/oder einen neuen Manager zuweisen. Mit "Bestätigen" oder "Abbrechen" beendet man seine Bearbeitung. |
+| <img src="images/adminView/OneTimePassword.png" width="600"> | Beim Passwort Reset wird auch ein Popup geöffnet, bei dem man ein Einmalpasswort angezeigt bekommt. Dieses gibt der Admin dann an den entsprechenden Benutzer weiter, damit dieser ein neues Passwort erstellen kann. ([siehe Login](#login))                                                                                              |
 
 # Struktur des Repositories
-Das Repository ist als Monorepo in zwei Hauptteilen aufgebaut: Backend und Frontend. Zusätzlich liegt die Dokumentation des gesamten Monorepos im Ordner /docs.
+
+Das Repository ist als Monorepo in zwei Hauptteilen aufgebaut: Backend und Frontend. Zusätzlich liegt die Dokumentation
+des gesamten Monorepos im Ordner /docs.
 
 Frontend und Backend sind eigenständige und voneinander losgelöste npm packages.
 
 ## Frontend
+
 Das Frontend ist ein Next.js-Projekt, das auf der Vorlesungsvorlage mit React und TypeScript basiert.
 
-Dementsprechend beinhaltet der Root Ordner 
+Dementsprechend beinhaltet der Root Ordner
+
 - Konfigurationsdateien wie *.env*, *.gitignore*, *package.json*, etc.
 - Build-Skripte für die Erstellung der Produktionsversion der Anwendung: *build.bat*, *build.ps1*, *build.sh*
-- Assets in **/public** 
+- Assets in **/public**
 - den Quellcode-Ordner **/src**
 
 Der Quellcode der Anwendung ist in folgenden Ordnern strukturiert:
 
 ### /src/app
-Die Web-Anwendung verwendet den AppRouter, deshalb entspricht die Ordnerstruktur in /src/app den URL-Pfaden der Webseite.
+
+Die Web-Anwendung verwendet den AppRouter, deshalb entspricht die Ordnerstruktur in /src/app den URL-Pfaden der
+Webseite.
 
 Im Allgemeinen hat jede Route zwingend eine page.tsx-Datei, deren Inhalt unter dieser URL gerendert und angezeigt wird.
-Außerdem können hier weitere Dateien wie z.B. CSS-Stylesheets (seitenname.module.css) oder lokal verwendete Components abgelegt sein.
+Außerdem können hier weitere Dateien wie z.B. CSS-Stylesheets (seitenname.module.css) oder lokal verwendete Components
+abgelegt sein.
 
 #### Routen
+
 **/** \
-Enthält eine page.tsx, die nur eine Umleitung auf **/dashboard** auslöst.
-Zusätzlich dazu liegen hier auch allgemeine Konfigurationen der Webseite:
+Enthält eine page.tsx, die nur eine Umleitung auf **/dashboard** auslöst. Zusätzlich dazu liegen hier auch allgemeine
+Konfigurationen der Webseite:
+
 - Das Favicon
 - Ein Stylesheet, das globale Variablen definiert
-- layout.tsx, welches den äußeren HTML-Rahmen der Seite definiert und benötigte Kontexte (hier nur ModalProvider) einbindet
+- layout.tsx, welches den äußeren HTML-Rahmen der Seite definiert und benötigte Kontexte (hier nur ModalProvider)
+  einbindet
 - Eine not-found Seite, die als catch-all auf alle nicht definierten Routen reagiert
 
 **/dashboard** `(hauptsächlich) Sebastian Anhalt` \
-Das Dashboard ist die Hauptseite der Anwendung.
-Sie enthält die Einstempelfunktion und einen Kalender.
+Das Dashboard ist die Hauptseite der Anwendung. Sie enthält die Einstempelfunktion und einen Kalender.
 
 **/login** `justusbruegmann` \
 Die Login-Seite.
 
 **/admin_view** `justusbruegmann` \
-Eine Seite zur Benutzerverwaltung, auf die nur Admin-Accounts Zugriff haben.
-Hier können neue Benutzer angelegt, bestehende Benutzer gelöscht, und ihre Rollen und die Zuordnung zu Vorgesetzten (Managern) verändert werden.
+Eine Seite zur Benutzerverwaltung, auf die nur Admin-Accounts Zugriff haben. Hier können neue Benutzer angelegt,
+bestehende Benutzer gelöscht, und ihre Rollen und die Zuordnung zu Vorgesetzten (Managern) verändert werden.
 
 **/manager_view** `Sebastian Anhalt` \
-Diese Seite wird nur für Manager-Accounts mit Inhalt befüllt, alle anderen sehen eine Fehlermeldung.
-Hierauf können Manager die Arbeitszeiten, Urlaubstage ihrer Mitarbeiter einsehen und bearbeiten, sowie eine Zusammenfassung der geleisteten Wochenarbeitszeit, genehmigter Urlaubstage und eingetragener Krankheitstage sehen.
-Außerdem können offene Anträge hier anzeigen lassen und akzeptieren / ablehnen.
-
+Diese Seite wird nur für Manager-Accounts mit Inhalt befüllt, alle anderen sehen eine Fehlermeldung. Hierauf können
+Manager die Arbeitszeiten, Urlaubstage ihrer Mitarbeiter einsehen und bearbeiten, sowie eine Zusammenfassung der
+geleisteten Wochenarbeitszeit, genehmigter Urlaubstage und eingetragener Krankheitstage sehen. Außerdem können offene
+Anträge hier anzeigen lassen und akzeptieren / ablehnen.
 
 ### /src/components
-Hier befinden sich die React-Components, die von den page.tsx in /src/app eingebunden werden, geordnet nach Anwendungsgebiet.
+
+Hier befinden sich die React-Components, die von den page.tsx in /src/app eingebunden werden, geordnet nach
+Anwendungsgebiet.
 
 **Layout** \
-Diese Komponenten sind als Erstes und in absichtlicher Allgemeinheit entstanden und mussten sich im Lauf der Entwicklung der Restlichen Anwendung verschiedenen Anforderungen anpassen. 
-Sie sind unser Ersatz für ein UI-Framework, da wir keines verwenden durften, und erinnern daher durchaus bekannten Strukturen (z.B. Card).
-Popup, Loader und Sidepane sind die drei Ausprägungen von Modals, die wir in der Anwendung verwenden. Sie basieren auf dem ModalContext (src/context/ModalContext). \
+Diese Komponenten sind als Erstes und in absichtlicher Allgemeinheit entstanden und mussten sich im Lauf der Entwicklung
+der Restlichen Anwendung verschiedenen Anforderungen anpassen. Sie sind unser Ersatz für ein UI-Framework, da wir keines
+verwenden durften, und erinnern daher durchaus bekannten Strukturen (z.B. Card). Popup, Loader und Sidepane sind die
+drei Ausprägungen von Modals, die wir in der Anwendung verwenden. Sie basieren auf dem ModalContext
+(src/context/ModalContext). \
 *Button + Header:* `justusbruegmann` \
 *Card, Loader, Popup, Sidepane, SpinningLoader, Tabs:* `Sebastian Anhalt`
 
 **Calendar** `brdly06` \
-Diese Component erstellt den Kalender auf der /dashboard Seite. 
+Diese Component erstellt den Kalender auf der /dashboard Seite.
 
 **Login** `justusbruegmann` \
-Enthält nur eine Komponente: Ein Popup zum Ändern des One-Time-Passwords, das der Admin bei der Erstellung eines neuen Accounts vergibt.
+Enthält nur eine Komponente: Ein Popup zum Ändern des One-Time-Passwords, das der Admin bei der Erstellung eines neuen
+Accounts vergibt.
 
 **ManagerView** `Sebastian Anhalt` \
-Enthält die Komponenten, die auf der /manager_view Seite verwendet werden: ein Popup zum Bearbeiten der vertraglichen Arbeitszeiten sowie Urlaubszeiten eines Benutzers, und die Tabellen zur Darstellung der Arbeitszeiten, Urlaubszeiten und Krankheitstage mehrerer User-Accounts.
+Enthält die Komponenten, die auf der /manager_view Seite verwendet werden: ein Popup zum Bearbeiten der vertraglichen
+Arbeitszeiten sowie Urlaubszeiten eines Benutzers, und die Tabellen zur Darstellung der Arbeitszeiten, Urlaubszeiten und
+Krankheitstage mehrerer User-Accounts.
 
 **Notifications** `brdly06*` \
 Hier liegt die Notifications-Komponente, die auf dem Dashboard eingebunden ist und die Benachrichtigungen anzeigt.
 
 **Overview** `Sebastian Anhalt` \
-Enthält die Komponenten, die auf dem Dashboard eine Zusammenfassung der geleisteten Arbeitszeit und des Tages-, Wochen- und Monatsfortschritts darstellen.
+Enthält die Komponenten, die auf dem Dashboard eine Zusammenfassung der geleisteten Arbeitszeit und des Tages-, Wochen-
+und Monatsfortschritts darstellen.
 
 **TimeAdjustment** `FHG` \
-Die DailyDetailsPane zeigt alle eingetragenen Arbeitszeiten eines Tages an und ist öffenbar, indem man auf einen Tag im Kalender klickt.
-Über den 'Manuell-Nachtragen'-Button öffnet sich ein Popup, in welchem die beiden relevanten Komponenten dieses Ordners Verwendung finden.
-Zusätzlich gibt es in der Tagesübersicht auch einen Button zum Erstellen von Anträgen. Beim klicken öffnet sich die letzte Komponente in diesem Ordner, das RequestPopup, über das sowohl Urlaubs- als auch Krankheitstage beantragt werden können.
+Die DailyDetailsPane zeigt alle eingetragenen Arbeitszeiten eines Tages an und ist öffenbar, indem man auf einen Tag im
+Kalender klickt. Über den 'Manuell-Nachtragen'-Button öffnet sich ein Popup, in welchem die beiden relevanten
+Komponenten dieses Ordners Verwendung finden. Zusätzlich gibt es in der Tagesübersicht auch einen Button zum Erstellen
+von Anträgen. Beim klicken öffnet sich die letzte Komponente in diesem Ordner, das RequestPopup, über das sowohl
+Urlaubs- als auch Krankheitstage beantragt werden können.
 
 **Timecard** `mika630` \
-Die Timecard-Komponente beschreibt die Einstempelfunktion auf dem Dashboard. Sie zeigt u.a. die aktuelle Uhrzeit, die aktuelle Arbeitszeit und den aktuellen Status (gestempelt / nicht gestempelt) an.
+Die Timecard-Komponente beschreibt die Einstempelfunktion auf dem Dashboard. Sie zeigt u.a. die aktuelle Uhrzeit, die
+aktuelle Arbeitszeit und den aktuellen Status (gestempelt / nicht gestempelt) an.
 
 **Usermanagement** `justusbruegmann` \
-Enthält die Komponenten, die auf der /admin_view Seite zur Darstellung und Verwaltung aller User Accounts verwendet werden.
-
+Enthält die Komponenten, die auf der /admin_view Seite zur Darstellung und Verwaltung aller User Accounts verwendet
+werden.
 
 ### /src/context
-Die Anwendung verwendet nur einen einzelnen Provider, den ModalContext, zur Bereitstellung der Funktion, von jeder Komponente aus ein möglicherweise geschachteltes Modal öffnen zu können.
-Seit der Erweiterung, mehrere Modals gleichzeitig öffnen zu können und den Inhalt bereits geöffneter Modals neu zu rendern ist dieser Context unter starker Zuhilfenahme von KI entstanden.
+
+Die Anwendung verwendet nur einen einzelnen Provider, den ModalContext, zur Bereitstellung der Funktion, von jeder
+Komponente aus ein möglicherweise geschachteltes Modal öffnen zu können. Seit der Erweiterung, mehrere Modals
+gleichzeitig öffnen zu können und den Inhalt bereits geöffneter Modals neu zu rendern ist dieser Context unter starker
+Zuhilfenahme von KI entstanden.
 
 ### /src/scripts
-Die Scripts in diesem Ordner umfassen die fetch-Funktionen, die von den React-Components aufgerufen werden, um mit dem Backend zu kommunizieren; gruppiert nach dem Endpunkt, den sie aufrufen.
+
+Die Scripts in diesem Ordner umfassen die fetch-Funktionen, die von den React-Components aufgerufen werden, um mit dem
+Backend zu kommunizieren; gruppiert nach dem Endpunkt, den sie aufrufen.
 
 ### /src/types
+
 Typ-Definitionen, die im Frontend zur starken Typisierung des Codes verwendet werden.
 
 ### /src/utils
-Hilfsfunktionen, die an mehreren Stellen im Frontend verwendet werden, oder die zu umfangreich für die einzelnen page.tsx sind und daher ausgelagert wurden.
 
+Hilfsfunktionen, die an mehreren Stellen im Frontend verwendet werden, oder die zu umfangreich für die einzelnen
+page.tsx sind und daher ausgelagert wurden.
 
 ## Backend
+
 Das Backend ist als Express-Server in TypeScript realisiert.
 
-Die Design-Philosophie des Backends ist ein Drei-Schichten-Modell, bestehend aus 
+Die Design-Philosophie des Backends ist ein Drei-Schichten-Modell, bestehend aus
+
 1. HTTP-Layer in **./route**
 2. Domainlogik-Layer in **./service**
 3. Datenbank-Layer in **./repository**
 
 ### HTTP Layer
-Hier werden die router-Objekte mitsamt Routen und Handler-Funktionen definiert.
-Authentifizierung wird hauptsächlich durch eingebundene Middleware aus dem Ordner **/middleware** umgesetzt.
-Autorisierung und Input-Validierung werden in den Handler-Funktionen geprüft.
-Nach erfolgreicher Prüfung wird die Domain-Logik aufgerufen.
+
+Hier werden die router-Objekte mitsamt Routen und Handler-Funktionen definiert. Authentifizierung wird hauptsächlich
+durch eingebundene Middleware aus dem Ordner **/middleware** umgesetzt. Autorisierung und Input-Validierung werden in
+den Handler-Funktionen geprüft. Nach erfolgreicher Prüfung wird die Domain-Logik aufgerufen.
 
 ### Domainlogik-Layer
-Die Logik und eigentliche Backend-Funktionalität der Anwendung wird in den Services (**/service**) implementiert.
-Diese rufen die Repository-Funktionen auf, um mit der PostgreSQL-Datenbank auf Supabase zu kommunizieren.
+
+Die Logik und eigentliche Backend-Funktionalität der Anwendung wird in den Services (**/service**) implementiert. Diese
+rufen die Repository-Funktionen auf, um mit der PostgreSQL-Datenbank auf Supabase zu kommunizieren.
 
 ### Datenbank-Layer
-Die Datenbank-Konnektoren in /repository sind dünne Wrapper-Funktionen, die je eine einzelne SQL-Anfrage an die Datenbank beinhalten.
-Sie kennen keine Logik oder Validierung und sind ausschließlich für die strukturierte und einfach wartbare Kommunikation mit der Datenbank zuständig.
+
+Die Datenbank-Konnektoren in /repository sind dünne Wrapper-Funktionen, die je eine einzelne SQL-Anfrage an die
+Datenbank beinhalten. Sie kennen keine Logik oder Validierung und sind ausschließlich für die strukturierte und einfach
+wartbare Kommunikation mit der Datenbank zuständig.
 
 ### Sonstiges
 
 **/** \
-Die Project Root beinhaltet die üblichen Konfigurationsdateien wie *.env*, *.gitignore*, *Dockerfile*, *package.json*, etc., sowie den Einstiegspunkt *app.ts* der Anwendung.
+Die Project Root beinhaltet die üblichen Konfigurationsdateien wie *.env*, *.gitignore*, *Dockerfile*, *package.json*,
+etc., sowie den Einstiegspunkt *app.ts* der Anwendung.
 
 **/drizzle** \
 Der Drizzle-Ordner beinhaltet nur das ORM-Schema, auf dem die Datenbankverbindung der repository-Funktionen basiert.
 
 **/errors** \
-In diesem Ordner sind die benutzerdefinierten Fehlerklassen abgelegt. Da nur der Requests-Handler eigene Fehler nutzt, gibt es nur eine Datei requestErrors.ts.
+In diesem Ordner sind die benutzerdefinierten Fehlerklassen abgelegt. Da nur der Requests-Handler eigene Fehler nutzt,
+gibt es nur eine Datei requestErrors.ts.
 
 **/middleware** \
 In diesem Ordner sind die Middleware-Funktionen abgelegt, die von mehreren Routen verwendet werden.
@@ -379,45 +451,68 @@ Hier sind Zod-Schemas zur Input-Validierung definiert.
 Geteilte TypeScript types und interfaces sind hier abgelegt.
 
 **/utils** \
-Hier befinden sich geteilte Hilfsfunktionen, die an verschiedenen Stellen in der Anwendung Verwendung finden.
-Sie sind grob nach Anwendungsgebiet gruppiert.
+Hier befinden sich geteilte Hilfsfunktionen, die an verschiedenen Stellen in der Anwendung Verwendung finden. Sie sind
+grob nach Anwendungsgebiet gruppiert.
 
 # Webdesign
 
 ## Allgemein
 
-Allgemein haben wir uns bei der Stechuhr für ein sehr schlichtes und einfaches Design entschieden. Wichtig war uns, dass das Design der Stechuhr für jede Altersgruppe möglichst zugänglich und intuitiv ist. Wichtige Funktionen sollten einfach zugänglich sein. Uns war es wichtig, dass der Nutzer den Aufbau der Website schnell versteht und ohne Probleme erkennen kann, wo welche Funktion aufgerufen werden kann. Zudem wollten wir Funktionen, die thematisch zusammenhängen, auch auf der Website in gleich Bereichen setzen. So haben wir zum Beispiel die Funktion des manuellen Nachtragen mit in die Sidebar der Tagesansicht integriert, da man Zeiteinträge stets für einen bestimmten Tag anordnet. Funktionen, die allgemeiner sind, wie zum Beispiel die Übersichtsanzeige, haben wir auf das Dashboard gesetzt. Funktionen, die viel benutzt werden, wie zum Beispiel das Ein- und Ausstempeln, haben wir bewusst groß auf die Hauptseite plaziert.
+Allgemein haben wir uns bei der Stechuhr für ein sehr schlichtes und einfaches Design entschieden. Wichtig war uns, dass
+das Design der Stechuhr für jede Altersgruppe möglichst zugänglich und intuitiv ist. Wichtige Funktionen sollten einfach
+zugänglich sein. Uns war es wichtig, dass der Nutzer den Aufbau der Website schnell versteht und ohne Probleme erkennen
+kann, wo welche Funktion aufgerufen werden kann. Zudem wollten wir Funktionen, die thematisch zusammenhängen, auch auf
+der Website in gleich Bereichen setzen. So haben wir zum Beispiel die Funktion des manuellen Nachtragen mit in die
+Sidebar der Tagesansicht integriert, da man Zeiteinträge stets für einen bestimmten Tag anordnet. Funktionen, die
+allgemeiner sind, wie zum Beispiel die Übersichtsanzeige, haben wir auf das Dashboard gesetzt. Funktionen, die viel
+benutzt werden, wie zum Beispiel das Ein- und Ausstempeln, haben wir bewusst groß auf die Hauptseite plaziert.
 
-Zusätzlich haben wir versucht, möglichst konsistentes Styling zu verwenden, auch wenn das zu fünft gar nicht so einfach ist.
+Zusätzlich haben wir versucht, möglichst konsistentes Styling zu verwenden, auch wenn das zu fünft gar nicht so einfach
+ist.
 
 ## Benutzeroberfläche (UI)
 
-Um einen ruhigen Eindruck in der gesamten Anwendung zu erzeugen, haben wir uns hauptsächlich auf die drei Farben Grün, Rot und Blau fokussiert. Dadurch bleiben wichtige Elemente gut erkennbar und die Benutzeroberfläche wirkt nicht überladen (s. [Abb. 1](#design-abb-1)). Um einen persönlichen Bezug zum Projekt herzustellen, stammen die drei Hauptfarben jeweils aus den Akzentfarben der Firmen der Gruppenmitglieder. Dementsprechend ist das Grün aus dem Logo von Init, das Rot von SEW Eurodrive und das Blau von der SICK AG. Um Ereignisse und Einträge zu verdeutlichen, wurden beim Kalender zusätzlich weitere Farben benutzt. Zum Beispiel Gelb, wenn ein Mitarbeiter an einem Tag als Krank vermerkt wurde (s. [Abb. 1](#design-abb-1)).
-Die Schriftart ist in der gesamten Anwendung klar und schlicht gehalten, um eine einfache und verständliche Lesbarkeit zu ermöglichen (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2)).
-Für einen intuitiven Bewegungsfluss sind alle Buttons mit ihren Funktionen beschriftet und, an geeigneten Stellen, bekannte Icons als Ersatz für Buttons gewählt worden (s. [Abb. 1](#design-abb-1)). Zudem besitzen Buttons einen Ladekreis, um dem Nutzer zu symbolisieren, dass etwas passiert, wenn er einen Button betätigt.
-Die Benutzeroberfläche wurde bewusst minimalistisch gestaltet. Es werden nur die Informationen angezeigt, die für den jeweiligen Benutzer relevant sind. Dadurch wirkt die Anwendung aufgeräumt und leicht verständlich.
+Um einen ruhigen Eindruck in der gesamten Anwendung zu erzeugen, haben wir uns hauptsächlich auf die drei Farben Grün,
+Rot und Blau fokussiert. Dadurch bleiben wichtige Elemente gut erkennbar und die Benutzeroberfläche wirkt nicht
+überladen (s. [Abb. 1](#design-abb-1)). Um einen persönlichen Bezug zum Projekt herzustellen, stammen die drei
+Hauptfarben jeweils aus den Akzentfarben der Firmen der Gruppenmitglieder. Dementsprechend ist das Grün aus dem Logo von
+Init, das Rot von SEW Eurodrive und das Blau von der SICK AG. Um Ereignisse und Einträge zu verdeutlichen, wurden beim
+Kalender zusätzlich weitere Farben benutzt. Zum Beispiel Gelb, wenn ein Mitarbeiter an einem Tag als Krank vermerkt
+wurde (s. [Abb. 1](#design-abb-1)). Die Schriftart ist in der gesamten Anwendung klar und schlicht gehalten, um eine
+einfache und verständliche Lesbarkeit zu ermöglichen (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2)). Für einen
+intuitiven Bewegungsfluss sind alle Buttons mit ihren Funktionen beschriftet und, an geeigneten Stellen, bekannte Icons
+als Ersatz für Buttons gewählt worden (s. [Abb. 1](#design-abb-1)). Zudem besitzen Buttons einen Ladekreis, um dem
+Nutzer zu symbolisieren, dass etwas passiert, wenn er einen Button betätigt. Die Benutzeroberfläche wurde bewusst
+minimalistisch gestaltet. Es werden nur die Informationen angezeigt, die für den jeweiligen Benutzer relevant sind.
+Dadurch wirkt die Anwendung aufgeräumt und leicht verständlich.
 
 ## Benutzererfahrung (UX)
 
-Bei der Entwicklung wurde darauf geachtet, dass die wichtigsten Aufgaben und Daten, trotz minimalistischem Design, mit möglichst wenigen Klicks erledigt und eingesehen werden können (s. [Abb. 1](#design-abb-1)). Dadurch wird der Arbeitsablauf beschleunigt, obwohl viele Funktionen auf den ersten Blick auf der Startseite im Verborgenen bleiben.
+Bei der Entwicklung wurde darauf geachtet, dass die wichtigsten Aufgaben und Daten, trotz minimalistischem Design, mit
+möglichst wenigen Klicks erledigt und eingesehen werden können (s. [Abb. 1](#design-abb-1)). Dadurch wird der
+Arbeitsablauf beschleunigt, obwohl viele Funktionen auf den ersten Blick auf der Startseite im Verborgenen bleiben.
 
 Beispiele:
 
 - Das Ein- und Ausstempeln erfolgt direkt über die Startseite
-- Das Nachtragen, Anträge erstellen, sowie die Einsicht der Benachrichtigungen ist jeweils nur einen Klick von der Startseite entfernt
+- Das Nachtragen, Anträge erstellen, sowie die Einsicht der Benachrichtigungen ist jeweils nur einen Klick von der
+  Startseite entfernt
 - Die Kalenderansicht ermöglicht eine schnelle Übersicht über bereits erfasste Arbeitstage
 
-Sollte der Nutzer Fehlerhafte Eingaben tätigen oder sich nicht an die Arbeits- oder Pausenzeitregelung seines Unternehmens halten, bekommt er dies durch verschiedene unterschiedliche Fehlermeldungen mitgeteilt 
+Sollte der Nutzer Fehlerhafte Eingaben tätigen oder sich nicht an die Arbeits- oder Pausenzeitregelung seines
+Unternehmens halten, bekommt er dies durch verschiedene unterschiedliche Fehlermeldungen mitgeteilt
 
 ## Grunprinzipien aus den Vorlesungen
 
 - Styleguide -> Konsistenz (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2))
-- Farbe kann Aufmerksamkeit erregen -> wenig auffällige Farben, da Stechuhr-Funktionen am wichtigsten sind, auffällige Farben nur an wichtigen Stellen wie Ein- und Ausstempeln (s. [Abb. 1](#design-abb-1))
+- Farbe kann Aufmerksamkeit erregen -> wenig auffällige Farben, da Stechuhr-Funktionen am wichtigsten sind, auffällige
+  Farben nur an wichtigen Stellen wie Ein- und Ausstempeln (s. [Abb. 1](#design-abb-1))
 - Farben -> Können Informationen vermitteln z.B.: Rot -> Gefahr, Grün -> Positiv (s. [Abb. 1](#design-abb-1))
 - Schriftart -> größtenteils einheitlich (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2))
 - Keine Angst vor Weißraum -> schlichtes Design (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2))
 - Feedback -> Rückmeldung von Button z.B.: hover effekt (s. [Abb. 2](#design-abb-2))
-- Gesetz der Nähe -> Objekt, die nah beieinander liegen, werden als zusammengehörig wahrgenommen (s. [Abb. 1](#design-abb-1): Zeitkarte links)
+- Gesetz der Nähe -> Objekt, die nah beieinander liegen, werden als zusammengehörig wahrgenommen
+  (s. [Abb. 1](#design-abb-1): Zeitkarte links)
 
 <p align="center" id="design-abb-1">
 Abb. 1
@@ -434,34 +529,45 @@ Abb. 2
 
 # Eigenleistung
 
-In diesem Kapitel werden diejenigen Ende-zu-Ende-Features der Anwendung beschrieben, die für das jeweilige Gruppenmitglied bewertet werden sollen.
+In diesem Kapitel werden diejenigen Ende-zu-Ende-Features der Anwendung beschrieben, die für das jeweilige
+Gruppenmitglied bewertet werden sollen.
 
 ## justusbruegmann: Auth
-KI als Formulierungshilfe verwendet
-### Ideen
-Aufgrund von Kommunikation aus dem ersten Semester, dass nur das absolute Minimum an Fremdpakete verwendet werden soll, wurde angenommen das auch Login usw selbst gebaut werden müssen.
-Deshalb wurde bereits vor der Kommunikation, dass solche Pakete erlaubt sind, das Feature schon fertiggestellt.
 
-Es wurde sich aktiv gegen JWTs entschieden, da dort der Zugang nicht schnell entfernt werden kann.
-Ebenfalls soll ein Admin als Verwalter Accounts erstellen da kein Mitarbeiter sein Account selbst anlegen soll.
-Im Fall einer Kündigung oder ähnliches kann der Admin sehr schnell Zugang zur Zeiterfassung entfernen, damit kein Unsinn getrieben wird.
+KI als Formulierungshilfe verwendet
+
+### Ideen
+
+Aufgrund von Kommunikation aus dem ersten Semester, dass nur das absolute Minimum an Fremdpakete verwendet werden soll,
+wurde angenommen das auch Login usw selbst gebaut werden müssen. Deshalb wurde bereits vor der Kommunikation, dass
+solche Pakete erlaubt sind, das Feature schon fertiggestellt.
+
+Es wurde sich aktiv gegen JWTs entschieden, da dort der Zugang nicht schnell entfernt werden kann. Ebenfalls soll ein
+Admin als Verwalter Accounts erstellen da kein Mitarbeiter sein Account selbst anlegen soll. Im Fall einer Kündigung
+oder ähnliches kann der Admin sehr schnell Zugang zur Zeiterfassung entfernen, damit kein Unsinn getrieben wird.
 
 Es gibt 3 Rollen in der Anwendung:
+
 - User: Ein ganz normaler Mitarbeiter
-- Manager: Ein Vorgesetzter von einem Nutzer welcher Urlaubsanträge oder ähnliches bearbeiten kann sowie Arbeitszeiten seiner Untergebenen sehen kann. User + Zusatzrechte
+- Manager: Ein Vorgesetzter von einem Nutzer welcher Urlaubsanträge oder ähnliches bearbeiten kann sowie Arbeitszeiten
+  seiner Untergebenen sehen kann. User + Zusatzrechte
 - Admin: Reiner Verwaltungsaccount, kann keine timeEntries erstellen.
 
 ### Gesamtprojekt
+
 Als Erstes landet der Nutzer auf der Login-Page und muss sich dort einloggen.  
-Wenn er ein One-Time-Password hat dann muss dieses geändert werden.
-Wenn kein One-Time-Password gesetzt ist und die Login-Daten valide sind, wird dieser zum Dashboard weitergeleitet
-  
-Die Auth läuft im Hintergrund beim Öffnen einer Page um zu überprüfen ob der Token noch valide ist oder überhaupt einer existiert.
-  
-Ebenfalls wird für die anderen Routen eine Middleware bereitgestellt, ob die mitgegebenen Authorization und Userid Header zu einem User gehören.
-Dies ist dabei für fast jede Route relevant, da nur Nutzer welche zur Anwendung gehören diese Aktionen ausführen sollen.
+Wenn er ein One-Time-Password hat dann muss dieses geändert werden. Wenn kein One-Time-Password gesetzt ist und die
+Login-Daten valide sind, wird dieser zum Dashboard weitergeleitet
+
+Die Auth läuft im Hintergrund beim Öffnen einer Page um zu überprüfen ob der Token noch valide ist oder überhaupt einer
+existiert.
+
+Ebenfalls wird für die anderen Routen eine Middleware bereitgestellt, ob die mitgegebenen Authorization und Userid
+Header zu einem User gehören. Dies ist dabei für fast jede Route relevant, da nur Nutzer welche zur Anwendung gehören
+diese Aktionen ausführen sollen.
+
 ```typescript
-const ROLESPERMS: Record<UserRole,number> = {user: 1, manager: 2 , admin:3};
+const ROLESPERMS: Record<UserRole, number> = {user: 1, manager: 2, admin: 3};
 
 export function authMiddleware(requiredRole: UserRole, rolesAboveAllowed: boolean = false) {
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -490,15 +596,15 @@ export function authMiddleware(requiredRole: UserRole, rolesAboveAllowed: boolea
     }
 }
 ```
-rolesAboveAllowed sagt aus, ob eine Route, welche ein User zugreifen darf, auch ein Manager oder Admin zugreifen darf.
 
+rolesAboveAllowed sagt aus, ob eine Route, welche ein User zugreifen darf, auch ein Manager oder Admin zugreifen darf.
 
 ### Code
 
 Backend Code ist im Ordner "backend" zu finden.  
 Dabei gibt es in /route,/service,/repository die Datein Auth.ts und der OTPchange liegt in Usermanagement.ts  
 Dazu sind in /utils hashing.ts und auth.ts  
-Ebenfalls gibt es in /middleware die authmiddleware(). \
+Ebenfalls gibt es in /middleware die authmiddleware (). \
 [Link zur Route](/backend/route/) \
 [Link zum Service](/backend/service/) \
 [Link zum Repository](/backend/repository/) \
@@ -512,13 +618,12 @@ Für die Passwortänderung das Popup ist in src/components/login die PasswordCha
 [Link zur Login Page](/frontend/src/app/login/) \
 [Link zum Passwort Popup](/frontend/src/components/login/)
 
-
 Alle drei fetch calls die für die Auth verantwortlich ist sind in src/scripts/auth.ts zu finden.
 [Link zu den Fetches](/frontend/src/scripts/auth.ts/)
 
-
-Es gibt auch noch die authCheck() Methode das Prinzip von der wird öfters im Frontend von allen verwendet.  
+Es gibt auch noch die authCheck () Methode das Prinzip von der wird öfters im Frontend von allen verwendet.  
 Diese hier ist spziell in src/app/dashboard/page.tsx zufinden
+
 ````typescript
 async function authCheck() {
     const token = localStorage.getItem("token")
@@ -539,38 +644,40 @@ async function authCheck() {
     localStorage.setItem("role", login.role);
 }
 ````
+
 ### Backend
-Die Auth hat 3 Routen 
+
+Die Auth hat 3 Routen
+
 1. GET /auth/ nimmt den session token und checkt ob dieser valid ist für den User  
-    input Header: authorization, userid
-    output json:{"role","id"}   
-    Statuscodes:  
-        - 200: Token ist valid  
-        - 401: unauthorized wenn token ungültig  
-        - 404: wenn auth() return undefined  
-        - 485: Custom code dafür wenn der User ein one-time-password gesetzt hat. damit das frontend nur eine zahl checken muss     
-        - 500: Alg error  
-    id ist die user ID, session ist der Session token, role ist die Rolle welche der Nutzer 
-    in der Anwendung hat
+   input Header: authorization, userid output json:{"role","id"}   
+   Statuscodes:  
+   - 200: Token ist valid  
+   - 401: unauthorized wenn token ungültig  
+   - 404: wenn auth () return undefined  
+   - 485: Custom code dafür wenn der User ein one-time-password gesetzt hat. damit das frontend nur eine zahl checken
+   muss     
+   - 500: Alg error  
+   id ist die user ID, session ist der Session token, role ist die Rolle welche der Nutzer in der Anwendung hat
 2. POST /login/ nimmt im Body den Username und das Passwort wenn diese Valide sind wird   
-    input body: {"username","password"}  
-    output json: {"id","session","role"}  
-    Statuscodes:  
-        - 201: username password sind valid  
-        - 400: no body  
-        - 401: unauthorized wenn username and password ungültig  
-        - 404: wenn auth() return undefined  
-        - 485: Custom code dafür wenn der User ein one-time-password gesetzt hat. damit das frontend nur eine zahl checken muss     
-        - 500: Alg error  
+   input body: {"username","password"}  
+   output json: {"id","session","role"}  
+   Statuscodes:  
+   - 201: username password sind valid  
+   - 400: no body  
+   - 401: unauthorized wenn username and password ungültig  
+   - 404: wenn auth () return undefined  
+   - 485: Custom code dafür wenn der User ein one-time-password gesetzt hat. damit das frontend nur eine zahl checken
+   muss     
+   - 500: Alg error
 3. PATCH /users/:id/otp zum ändern des oneTimePassword das man vom Admin bekommt  
-    input body: {"currentpwd","newpwd"}  
-    input params: id  
-    output text: "changed succesfully"  
-    Statuscodes:  
-        - 400: no body or types wrong, or password incorect scheme  
-        - 401: currentpwd is wrong  
-        - 200: Password changed succesfully need to login with new password
-        - 500: internal server error
+   input body: {"currentpwd","newpwd"}  
+   input params: id  
+   output text: "changed succesfully"  
+   Statuscodes:  
+   - 400: no body or types wrong, or password incorect scheme  
+   - 401: currentpwd is wrong  
+   - 200: Password changed succesfully need to login with new password - 500: internal server error
 
 ### Frontend
 
@@ -579,33 +686,36 @@ wenn der Nutzer sich einloggt erscheint ein spinner auf dem Login Button.
 bei erfolgreichem Login wird der Nutzer zum dashboard weitergeleitet.  
 ![Loginform](images/login/loginForm.png)
 
-  
-
 Bei one Time Password wird ein Popup angezeigt.  
 dabei muss der Nutzer sich ein neues Password vergeben welches nur er kennt.  
 Wenn das Passwort verändert wurde kann der Nutzer sich normal anmelden.  
 ![otpForm](images/login/otpForm.png)
 
-
-
 ## Sebastian Anhalt: Manager-Ansicht
 
 ### Kontext
-Es gibt drei Arten von Rollen in der Anwendung: User, Manager und Admin.
-- User: Ein ganz normaler Mitarbeiter, einem Manager untergeordnet
-- Manager: Ein Vorgesetzter, der die Arbeitszeiten, Urlaubszeiten und Krankheitstage seiner untergebenen Mitarbeiter einsehen und bearbeiten kann. Hat potenziell auch einen übergeordneten Manager.
-- Admin: Ein reiner Verwaltungsaccount, der keine Arbeitszeiten eintragen kann, aber Benutzerkonten erstellen und löschen kann.
 
-Die Manager-Ansicht ist daher der Teil der Anwendung, der für Manager-Accounts sichtbar ist und ihnen die Verwaltung ihrer untergebenen Mitarbeiter ermöglicht.
+Es gibt drei Arten von Rollen in der Anwendung: User, Manager und Admin.
+
+- User: Ein ganz normaler Mitarbeiter, einem Manager untergeordnet
+- Manager: Ein Vorgesetzter, der die Arbeitszeiten, Urlaubszeiten und Krankheitstage seiner untergebenen Mitarbeiter
+  einsehen und bearbeiten kann. Hat potenziell auch einen übergeordneten Manager.
+- Admin: Ein reiner Verwaltungsaccount, der keine Arbeitszeiten eintragen kann, aber Benutzerkonten erstellen und
+  löschen kann.
+
+Die Manager-Ansicht ist daher der Teil der Anwendung, der für Manager-Accounts sichtbar ist und ihnen die Verwaltung
+ihrer untergebenen Mitarbeiter ermöglicht.
 
 ### Frontend
 
 #### Funktion
 
-Die Manager-Ansicht ist in der Anwendung unter der Route /manager_view erreichbar.
-Sie besteht aus einer einzigen großen Tabelle, die für jeden dem angemeldeten Manager untergebenen Mitarbeiter seine vertraglich vereinbarten und bereits genommenen Urlaubstage, seine festgeschriebenen Krankheitstage und eine Zusammenfassung über die geschuldete und bereits geleistete Wochenarbeitszeit anzeigt.
-Außerdem können über den Button "Bearbeiten" in einem Popup die Wochenarbeitszeit und die Urlaubstage angepasst werden.
-Zuletzt kann der Manager hier über den Button "Anträge" in einem Popup offene Anträge seiner untergebenen Mitarbeiter einsehen und akzeptieren oder ablehnen.
+Die Manager-Ansicht ist in der Anwendung unter der Route /manager_view erreichbar. Sie besteht aus einer einzigen großen
+Tabelle, die für jeden dem angemeldeten Manager untergebenen Mitarbeiter seine vertraglich vereinbarten und bereits
+genommenen Urlaubstage, seine festgeschriebenen Krankheitstage und eine Zusammenfassung über die geschuldete und bereits
+geleistete Wochenarbeitszeit anzeigt. Außerdem können über den Button "Bearbeiten" in einem Popup die Wochenarbeitszeit
+und die Urlaubstage angepasst werden. Zuletzt kann der Manager hier über den Button "Anträge" in einem Popup offene
+Anträge seiner untergebenen Mitarbeiter einsehen und akzeptieren oder ablehnen.
 
 ![Manager-Ansicht](images/managerView/managerView.png)
 
@@ -613,38 +723,46 @@ Zuletzt kann der Manager hier über den Button "Anträge" in einem Popup offene 
 
 ![Anträge-Popup](images/managerView/popupRequests.png)
 
-Zum Styling des Frontends ([Manager View](/frontend/src/app/manager_view/manager_view.module.css), [User Table](/frontend/src/components/managerView/userTable.module.css), [EditUserModal](/frontend/src/components/managerView/editUserModal.module.css)) wurde in Teilen KI verwendet.
-Eine genaue Kennzeichnung ist hier schier unmöglich, da die KI einen bestehenden Grundstock an CSS erweitert hat, der dann manuell noch an vielen Stellen nachgebessert wurde.
-
+Zum Styling des Frontends
+([Manager View](/frontend/src/app/manager_view/manager_view.module.css), [User Table](/frontend/src/components/managerView/userTable.module.css), [EditUserModal](/frontend/src/components/managerView/editUserModal.module.css))
+wurde in Teilen KI verwendet. Eine genaue Kennzeichnung ist hier schier unmöglich, da die KI einen bestehenden
+Grundstock an CSS erweitert hat, der dann manuell noch an vielen Stellen nachgebessert wurde.
 
 #### Sicherheit
-Die Webseite nutzt kein SSR. Deshalb ist es kaum möglich, die Route /manager_view Nicht-Manager-Accounts unzugänglich zu machen.
-Der Zugriff darauf ist ausschließlich dadurch etwas erschwert, dass nur Manager den Button im Header angezeigt bekommen, der auf diese Seite führt.
 
-Die eigentliche Sicherheit wird durch das Backend gewährleistet. Bei der Anfrage nach Benutzern, deren Manager der angemeldete Benutzer ist, wird dementsprechend unberechtigten Accounts eine leere Liste zurückgeliefert.
-Sie sehen dann grafisch dieselbe Fehlermeldung wie Manager-Accounts, die keine untergebenen Mitarbeiter haben:
+Die Webseite nutzt kein SSR. Deshalb ist es kaum möglich, die Route /manager_view Nicht-Manager-Accounts unzugänglich zu
+machen. Der Zugriff darauf ist ausschließlich dadurch etwas erschwert, dass nur Manager den Button im Header angezeigt
+bekommen, der auf diese Seite führt.
 
+Die eigentliche Sicherheit wird durch das Backend gewährleistet. Bei der Anfrage nach Benutzern, deren Manager der
+angemeldete Benutzer ist, wird dementsprechend unberechtigten Accounts eine leere Liste zurückgeliefert. Sie sehen dann
+grafisch dieselbe Fehlermeldung wie Manager-Accounts, die keine untergebenen Mitarbeiter haben:
 
 ![Fehlermeldung](images/managerView/noSubordinates.png)
 
-
 #### Implementierung
-Beim Laden der Seite ruft das Frontend die Liste der untergebenen Mitarbeiter des angemeldeten Managers ab.
-Außerdem lädt es für jeden dieser Mitarbeiter je zwei Zusammenfassungen: eine über die aktuelle Woche und eine über den aktuellen Monat.
-Zusätzlich wird zu jedem Mitarbeiter die Liste der offenen Anträge geladen.
 
-Solange auf die Antworten des Backends gewartet wird, zeigt das Frontend einen Ladebildschirm an.
-Dies kann durch die Menge an gleichzeitigen Anfragen trotz der eingebauten Parallelisierung eine ganze Weile dauern. Für eine produktionsreife Anwendung könnte man hier über Optimierungen nachdenken, z.B.:
-- spezifischere Endpunkte im Backend gestalten, die die Wochenarbeitszeit und Monatlichen Urlaubstage in einem einzigen Request zurückliefern
+Beim Laden der Seite ruft das Frontend die Liste der untergebenen Mitarbeiter des angemeldeten Managers ab. Außerdem
+lädt es für jeden dieser Mitarbeiter je zwei Zusammenfassungen: eine über die aktuelle Woche und eine über den aktuellen
+Monat. Zusätzlich wird zu jedem Mitarbeiter die Liste der offenen Anträge geladen.
+
+Solange auf die Antworten des Backends gewartet wird, zeigt das Frontend einen Ladebildschirm an. Dies kann durch die
+Menge an gleichzeitigen Anfragen trotz der eingebauten Parallelisierung eine ganze Weile dauern. Für eine
+produktionsreife Anwendung könnte man hier über Optimierungen nachdenken, z.B.:
+
+- spezifischere Endpunkte im Backend gestalten, die die Wochenarbeitszeit und Monatlichen Urlaubstage in einem einzigen
+  Request zurückliefern
 - durch Caching wenigstens beim wiederholten Besuch der Manager-Ansicht die Anfragen an das Backend reduzieren
 - Teile der Seite schon rendern (Tabelle), während noch z.B. Zusammenfassungen geladen werden
 - präventiv die Daten der Manager-Ansicht preloaden, während der Benutzer noch auf dem Dashboard ist
 
+> Aus Designgründen gefällt mir der API-Endpunkt für dieses Projekt in seiner derzeitigen Form besser, als eine durch
+> Domain-Logik spezialisierte Form. Der Rest der Ideen sprengt den Rahmen dessen, was ich an Zeit und Aufwand bereit bin,
+> noch in das Projekt zu investieren. Bitte habt ein paar Sekunden Geduld beim Laden der Seite.
 
-> Aus Designgründen gefällt mir der API-Endpunkt für dieses Projekt in seiner derzeitigen Form besser, als eine durch Domain-Logik spezialisierte Form.
-Der Rest der Ideen sprengt den Rahmen dessen, was ich an Zeit und Aufwand bereit bin, noch in das Projekt zu investieren. Bitte habt ein paar Sekunden Geduld beim Laden der Seite.
+Aus den Antworten wird ein erweitertes User-Objekt zusammengesetzt, in dem die relevanten Daten für jeden Mitarbeiter
+zusammengefasst sind:
 
-Aus den Antworten wird ein erweitertes User-Objekt zusammengesetzt, in dem die relevanten Daten für jeden Mitarbeiter zusammengefasst sind:
 ```typescript
 type UserWithSummaryEntries = User & {
     summaryEntries: {
@@ -654,56 +772,76 @@ type UserWithSummaryEntries = User & {
     };
 };
 ```
-Es folgen Definitionen für die handler-Funktionen zum Bearbeiten von Mitarbeiterdaten und zum Akzeptieren/Ablehnen von Anträgen.
 
-Schließlich werden die Daten als fertige React.ReactNode-Elemente an die UserTable-Komponente übergeben, die sie in einer Tabelle darstellt.
+Es folgen Definitionen für die handler-Funktionen zum Bearbeiten von Mitarbeiterdaten und zum Akzeptieren/Ablehnen von
+Anträgen.
 
-Die Bearbeitungsfunktionen öffnen jeweils ein Popup: das EditUserModal zum Bearbeiten von Arbeitszeiten und Urlaubstagen, und das RequestsModal zum Anzeigen und Bearbeiten von Anträgen.
-Die Definitionen dieser Modals sind in /src/components/managerView zu finden.
+Schließlich werden die Daten als fertige React.ReactNode-Elemente an die UserTable-Komponente übergeben, die sie in
+einer Tabelle darstellt.
 
-Beide funktionieren ähnlich: sie erhalten den initialen Stand der Daten, die sie darstellen sollen und eine Callback-Funktion, die den lokalen Zustand aktuell halten, ohne nach jeder Änderung eine erneute Server-Anfrage triggern zu müssen.
-Trotzdem haben beide jeweils eine Besonderheit:
+Die Bearbeitungsfunktionen öffnen jeweils ein Popup: das EditUserModal zum Bearbeiten von Arbeitszeiten und
+Urlaubstagen, und das RequestsModal zum Anzeigen und Bearbeiten von Anträgen. Die Definitionen dieser Modals sind in
+/src/components/managerView zu finden.
+
+Beide funktionieren ähnlich: sie erhalten den initialen Stand der Daten, die sie darstellen sollen und eine
+Callback-Funktion, die den lokalen Zustand aktuell halten, ohne nach jeder Änderung eine erneute Server-Anfrage triggern
+zu müssen. Trotzdem haben beide jeweils eine Besonderheit:
 
 **EditUserModal:** \
-Das EditUserModal fordert nur die userId als notwendigen Parameter. Wird kein fertiges user-Objekt übergeben, lädt es die Daten des Benutzers selbstständig nach, um sie im Modal darstellen zu können. Falls der User aber schon im Vorfeld geladen wurde, kann er als user-Objekt übergeben werden, um die erneute Anfrage zu vermeiden.
-Da die Manager-Ansicht der einzige Punkt der Anwendung ist, an dem das Modal eingebunden ist, bleibt diese Funktion momentan unbenutzt. Da es aber nun schon einmal existiert und ich die Möglichkeit nicht ausschließen konnte, dass sie in der weiteren Entwicklung der Anwendung noch hätte Verwendung finden können, habe ich sie nicht entfernt.
+Das EditUserModal fordert nur die userId als notwendigen Parameter. Wird kein fertiges user-Objekt übergeben, lädt es
+die Daten des Benutzers selbstständig nach, um sie im Modal darstellen zu können. Falls der User aber schon im Vorfeld
+geladen wurde, kann er als user-Objekt übergeben werden, um die erneute Anfrage zu vermeiden. Da die Manager-Ansicht der
+einzige Punkt der Anwendung ist, an dem das Modal eingebunden ist, bleibt diese Funktion momentan unbenutzt. Da es aber
+nun schon einmal existiert und ich die Möglichkeit nicht ausschließen konnte, dass sie in der weiteren Entwicklung der
+Anwendung noch hätte Verwendung finden können, habe ich sie nicht entfernt.
 
 **RequestsModal:** \
-Das RequestsModal muss mit einer schrumpfenden Liste von Anträgen umgehen können, da beantwortete Anträge aus der Ansicht entfernt werden.
-Deshalb existiert hier ein useEffect-Hook, der bei jeder Änderung des lokalen Stands der Anträge des geöffneten Users den Inhalt des Modals neu rendert.
+Das RequestsModal muss mit einer schrumpfenden Liste von Anträgen umgehen können, da beantwortete Anträge aus der
+Ansicht entfernt werden. Deshalb existiert hier ein useEffect-Hook, der bei jeder Änderung des lokalen Stands der
+Anträge des geöffneten Users den Inhalt des Modals neu rendert.
 
 ### Backend
-Gemäß dem generellen Aufbau des Backends besteht jeder Endpunkt aus drei Schichten: 
-- **/route**: Hier wird die Route definiert, Middleware eingebunden und Authorization und Input-Validierung durchgeführt.
+
+Gemäß dem generellen Aufbau des Backends besteht jeder Endpunkt aus drei Schichten:
+
+- **/route**: Hier wird die Route definiert, Middleware eingebunden und Authorization und Input-Validierung
+  durchgeführt.
 - **/service**: Hier wird die eigentliche Domainlogik implementiert.
 - **/repository**: Hier werden die SQL-Abfragen an die Datenbank definiert.
 
 Die Manager-Ansicht benötigt drei Endpunkte im Backend, um die benötigten Daten zu laden und zu bearbeiten:
 
 #### GET /users/manager/users
+
 [Link zum Code](/backend/route/userManagement.ts#L137) \
 Hier werden alle Benutzer zurückgeliefert, deren Manager der angemeldete Benutzer ist.\
-Es ist quasi keine Authorization zu erledigen, da bei dieser Anfrage keine parameter außer der bereits verifizierten Identität des Antragstellers verwendet werden. \
+Es ist quasi keine Authorization zu erledigen, da bei dieser Anfrage keine parameter außer der bereits verifizierten
+Identität des Antragstellers verwendet werden. \
 Daher werden Anfrage und Antwort mit minimalem Aufwand durchgereicht: \
-route → service → repository → service → route. 
+route → service → repository → service → route.
 
 #### PATCH /users/:id/employment
+
 [Link zum Code](/backend/route/userManagement.ts#L167) \
 Hierüber kann der Manager die Wochenarbeitszeit und die Urlaubstage eines untergebenen Mitarbeiters bearbeiten. \
-Dieser Endpunkt hat eine etwas komplexere Authorization. Zuerst wird der mitgelieferte Payload mittels eines Zod-Schemas validiert.
-Dann folgt die Überprüfung, ob der angemeldete Benutzer der Manager des zu bearbeitenden Mitarbeiters ist.
+Dieser Endpunkt hat eine etwas komplexere Authorization. Zuerst wird der mitgelieferte Payload mittels eines Zod-Schemas
+validiert. Dann folgt die Überprüfung, ob der angemeldete Benutzer der Manager des zu bearbeitenden Mitarbeiters ist.
 Sofern eine gültige Anfrage vorliegt, wird sie an den Service weitergeleitet, der die Datenbank aktualisiert.
 
 #### GET /summary?userId=:id&startDate=:startDate&endDate=:endDate
+
 [Link zum Code](/backend/route/summary.ts) \
-Der Summary-Endpunkt stellt eine nicht-persistente Ressource zur Verfügung, die eine Zusammenfassung der Arbeitszeiten, Urlaubstage und Krankheitstage eines Benutzers für einen bestimmten Zeitraum liefert.
-Er hat dementsprechend keine Funktion in **/repository** und wird ausschließlich durch den Aufruf anderer **/service**-Funktionen mit Leben gefüllt.
+Der Summary-Endpunkt stellt eine nicht-persistente Ressource zur Verfügung, die eine Zusammenfassung der Arbeitszeiten,
+Urlaubstage und Krankheitstage eines Benutzers für einen bestimmten Zeitraum liefert. Er hat dementsprechend keine
+Funktion in **/repository** und wird ausschließlich durch den Aufruf anderer **/service**-Funktionen mit Leben gefüllt.
 
-In **/route** werden die Parameter mithilfe eines Zod-Schemas und weiterer Funktionen validiert. Danach wird noch mehr Authorization durchgeführt,
-indem überprüft wird, ob der angemeldete Benutzer entweder der Benutzer selbst oder dessen Manager ist.
+In **/route** werden die Parameter mithilfe eines Zod-Schemas und weiterer Funktionen validiert. Danach wird noch mehr
+Authorization durchgeführt, indem überprüft wird, ob der angemeldete Benutzer entweder der Benutzer selbst oder dessen
+Manager ist.
 
-In **/service** werden drei Anfragen an den TimeEntriesService von *mika630* durchgeführt, um Listen zu eingetragenen 
-Arbeitszeiten, Urlaubstagen und Krankheitstagen des Benutzers im gegebenen Zeitraum zu laden. Aus diesen Daten wird dann die Zusammenfassung erstellt in Form des folgenden DTOs zurückgegeben:
+In **/service** werden drei Anfragen an den TimeEntriesService von *mika630* durchgeführt, um Listen zu eingetragenen
+Arbeitszeiten, Urlaubstagen und Krankheitstagen des Benutzers im gegebenen Zeitraum zu laden. Aus diesen Daten wird dann
+die Zusammenfassung erstellt in Form des folgenden DTOs zurückgegeben:
 
 ```typescript
 /**
@@ -723,94 +861,131 @@ export default interface Summary {
 ```
 
 ### Honorable Mention: Overview auf Dashboard
-Die Übersicht auf dem Dashboard war anfangs als meine zu bewertende Eigenleistung geplant. 
-Da sie allerdings komplett ohne zusätzliches Backend auskommt und ihren Zustand nur aus der ohnehin im Frontend vorhandenen 
-Liste aller Zeiteinträge des aktuellen Monats generiert werden kann, erfüllt sie den Anspruch als End-to-End-Feature nicht.
 
-Trotzdem bin ich stolz auf das Endprodukt, in dem jedes einzelne Element von mir stammt (inkl. Sidepane mit Animation, Tabs-Feature, DetailEntry mit Animation, und die mühselige Zeitberechnung in timeUtils.ts).
+Die Übersicht auf dem Dashboard war anfangs als meine zu bewertende Eigenleistung geplant. Da sie allerdings komplett
+ohne zusätzliches Backend auskommt und ihren Zustand nur aus der ohnehin im Frontend vorhandenen Liste aller
+Zeiteinträge des aktuellen Monats generiert werden kann, erfüllt sie den Anspruch als End-to-End-Feature nicht.
 
+Trotzdem bin ich stolz auf das Endprodukt, in dem jedes einzelne Element von mir stammt (inkl. Sidepane mit Animation,
+Tabs-Feature, DetailEntry mit Animation, und die mühselige Zeitberechnung in timeUtils.ts).
 
 ## mika630: Timecard
 
 KI als Formulierungshilfe verwendet
 
-Meine Eigenleistung ist die Zeiterfassung. Diese bietet das Herzstück der Anwendung. Dazu gehört die Business Logik aller 6 Endpunkte im Backend sowie das Frontend-Feature zum Ein- und Ausstechen auf dem Dashboard (Timecard Component).
+Meine Eigenleistung ist die Zeiterfassung. Diese bietet das Herzstück der Anwendung. Dazu gehört die Business Logik
+aller 6 Endpunkte im Backend sowie das Frontend-Feature zum Ein- und Ausstechen auf dem Dashboard (Timecard Component).
 
 ### Ideen
-Die gesamte Logik des ein und ausstechens wurde sich im vorhinein überlegt, und anschließend im Backend Service Layer implementiert. Deshalb wird bei jedem Versuch einen Zeiteintrag zu erstellen die Funktion createTimeEntryService, bzw. setEndTimeService aufgerufen.
+
+Die gesamte Logik des ein und ausstechens wurde sich im vorhinein überlegt, und anschließend im Backend Service Layer
+implementiert. Deshalb wird bei jedem Versuch einen Zeiteintrag zu erstellen die Funktion createTimeEntryService, bzw.
+setEndTimeService aufgerufen.
 
 Beim Anlegen eines Zeiteintrags wurde sich folgendes überlegt:
 
-Wenn man sich morgens einsticht, reicht es nur eine Startzeit anzugeben. Somit würde ein POST reichen welcher einen Eintrag nur mit der Starttime anlegt. Wenn man mit dem Arbeiten fertig ist, sticht man sich aus. Hier wird der offene Eintrag mit einem Patch aktualisiert und erhält eine Endzeit. 
-Da es aber auch möglich sein sollte eine vergessene Arbeitszeit einzutragen habe ich mich entschlossen den Parameter Endtime in den POST aufzunehmen (als optionaler Parameter) um dies direkt über einen Request machen zu können.
-Dies war zudem hilfreich als es an die Idee von Urlaubs und Krankheitsanträgen ging, da hier sinnvollerweiße auch direkt Endzeiten mitgegeben werden sollten. Hier wurde der TimeEntry Ressource dann zusätzlich die Variable Type hinzugefügt, da Arbeitseinträge sich in keiner technischen weiße von Urlaubs- oder Krankheitseinträgen unterscheiden.
+Wenn man sich morgens einsticht, reicht es nur eine Startzeit anzugeben. Somit würde ein POST reichen welcher einen
+Eintrag nur mit der Starttime anlegt. Wenn man mit dem Arbeiten fertig ist, sticht man sich aus. Hier wird der offene
+Eintrag mit einem Patch aktualisiert und erhält eine Endzeit. Da es aber auch möglich sein sollte eine vergessene
+Arbeitszeit einzutragen habe ich mich entschlossen den Parameter Endtime in den POST aufzunehmen (als optionaler
+Parameter) um dies direkt über einen Request machen zu können. Dies war zudem hilfreich als es an die Idee von Urlaubs
+und Krankheitsanträgen ging, da hier sinnvollerweiße auch direkt Endzeiten mitgegeben werden sollten. Hier wurde der
+TimeEntry Ressource dann zusätzlich die Variable Type hinzugefügt, da Arbeitseinträge sich in keiner technischen weiße
+von Urlaubs- oder Krankheitseinträgen unterscheiden.
 
 ### Regeln
+
 Folgende Regeln wurden beim Erstellen eines Zeiteintrages definiert:
 Betriebspezifische Arbeitszeitkriterien (diese wurden von uns selbst festgelegt und als sinnvoll betrachtet):
+
 - Keine Arbeit am Wochenende
-- Keine Arbeit an Feiertagen (da wir uns in Baden-Württemberg befinden werden immer die offiziellen Feiertage in BW beachtet)
+- Keine Arbeit an Feiertagen (da wir uns in Baden-Württemberg befinden werden immer die offiziellen Feiertage in BW
+  beachtet)
 - Nur Arbeiten zwischen 06:00 und 23:00
 - Admins dürfen sich nicht einstempeln (Admins sind nur zur Nutzerverwaltung gedacht)
 
 Logische Arbeitszeitkriterien:
+
 - Kein Einstechen, wenn bereits ein offener Zeiteintrag existiert (offen = startzeit aber keine endzeit).
 - Kein Einstechen, wenn die mitgegebene Endzeit vor der mitgegebenen Startzeit liegt
 - Kein Einstechen, wenn die Start oder Endzeit in der Zukunft liegt.
 - Ein neuer Arbeitszeiteintrag darf sich nicht mit einem bereits bestehenden Arbeitszeit Eintrag überschneiden.
 
-Bewusste Entscheidung: Die Überpfüfungsfunktion getOverlappingTimeEntries, welche benutzt wurde um zu überprüfen ob sich keine workeinträge überschneiden, verzichtet absichtlich auf die Überprüfung von Urlaubs/Krankheitstagen die sich überlappen könnten. Die Entscheidung beruht darauf, dass Anträge ohnehin erst genehmigt werden müssen, wobei dies ohnehin vom zuständigen Manager geprüft werden sollte.
+Bewusste Entscheidung: Die Überpfüfungsfunktion getOverlappingTimeEntries, welche benutzt wurde um zu überprüfen ob sich
+keine workeinträge überschneiden, verzichtet absichtlich auf die Überprüfung von Urlaubs/Krankheitstagen die sich
+überlappen könnten. Die Entscheidung beruht darauf, dass Anträge ohnehin erst genehmigt werden müssen, wobei dies
+ohnehin vom zuständigen Manager geprüft werden sollte.
 
-Bei der Fehlerbehandlung habe ich mich für einfache Strings statt eigener Error-Klassen entschieden: der Service gibt entweder den Erfolgswert oder einen beschreibenden String zurück. Die Route verarbeitet den String dann in den passenden HTTP-Statuscode. Das hält die Fehlerbehandlung simpel und für mich übersichtlich.
+Bei der Fehlerbehandlung habe ich mich für einfache Strings statt eigener Error-Klassen entschieden: der Service gibt
+entweder den Erfolgswert oder einen beschreibenden String zurück. Die Route verarbeitet den String dann in den passenden
+HTTP-Statuscode. Das hält die Fehlerbehandlung simpel und für mich übersichtlich.
 
-Der Endpunkt getSingelTimeEntry hat sich am Ende als überflüssig heraus gestellt, ist aber trotzdem noch im Projekt verfügbar. Er wurde zuerst erstellt um die 5 Endpunkte zu füllen, jedoch hat sich getLastTimeEntry als besserer Endpunkt herausgestellt, da man mit diesem gut validieren kann.
+Der Endpunkt getSingelTimeEntry hat sich am Ende als überflüssig heraus gestellt, ist aber trotzdem noch im Projekt
+verfügbar. Er wurde zuerst erstellt um die 5 Endpunkte zu füllen, jedoch hat sich getLastTimeEntry als besserer Endpunkt
+herausgestellt, da man mit diesem gut validieren kann.
 
 ### Backend
+
 Alle Endpunkte sind in 3 Schichten aufgebaut:
 
-In der `/route/timeEntriesRoute.ts` wird die Middleware hinzugefügt, die generelle Route definiert und auch der User Input validiert.
-In `/service/timeEntriesService.ts` wird die generelle Logik implementiert, wie schon im Abschnitt [Regeln](#regeln) angedeutet. In `/repository/timeEntriesRepository.ts` werden letztendlich die eigentlich SQL-Abfragen an die Datenbank gebaut.
+In der `/route/timeEntriesRoute.ts` wird die Middleware hinzugefügt, die generelle Route definiert und auch der User
+Input validiert. In `/service/timeEntriesService.ts` wird die generelle Logik implementiert, wie schon im
+Abschnitt [Regeln](#regeln) angedeutet. In `/repository/timeEntriesRepository.ts` werden letztendlich die eigentlich
+SQL-Abfragen an die Datenbank gebaut.
 
 Die Timecard benötigt 4 der 6 Endpunkte um alle Funktionen bereitzustellen:
 
 #### POST /timeentries/
+
 [Link zum Code](/backend/route/timeEntriesRoute.ts#L24) \
-Wird beim Einstempeln aufgerufen: legt einen neuen Eintrag vom Typ work mit der aktuellen Zeit als Startzeit an. Die Endzeit bleibt hier undefieniert.
-Jeder eingeloggte Nutzer darf einen Eintrag für sich selbst anlegen  was durch die (`authMiddleware("user", true)`) von *justusbruegmann* bereitgestellt wurde. Der eigentliche Aufwand steckt danach im Service, der alle Regeln überprüft die [oben](#regeln) bereits beschrieben wurden.
+Wird beim Einstempeln aufgerufen: legt einen neuen Eintrag vom Typ work mit der aktuellen Zeit als Startzeit an. Die
+Endzeit bleibt hier undefieniert. Jeder eingeloggte Nutzer darf einen Eintrag für sich selbst anlegen was durch die
+(`authMiddleware("user", true)`) von *justusbruegmann* bereitgestellt wurde. Der eigentliche Aufwand steckt danach im
+Service, der alle Regeln überprüft die [oben](#regeln) bereits beschrieben wurden.
 
 #### GET /timeentries/last
+
 [Link zum Code](/backend/route/timeEntriesRoute.ts#L141) \
-Wird beim Laden der Timecard aufgerufen und liefert den zuletzt angelegten work-Eintrag des angemeldeten Nutzers. Ist dessen endTime null, wird `"im Dienst"` angezeigt und der Button wechselt entsprechend auf den `"Ausstempeln"` Modus.
-Da hier ausschließlich nach den eigenen Einträgen gefragt wird (die userId kommt aus dem Token, nicht aus der Anfrage), ist auch hier keine weitere Authorization nötig.
+Wird beim Laden der Timecard aufgerufen und liefert den zuletzt angelegten work-Eintrag des angemeldeten Nutzers. Ist
+dessen endTime null, wird `"im Dienst"` angezeigt und der Button wechselt entsprechend auf den `"Ausstempeln"` Modus. Da
+hier ausschließlich nach den eigenen Einträgen gefragt wird (die userId kommt aus dem Token, nicht aus der Anfrage), ist
+auch hier keine weitere Authorization nötig.
 
 #### PATCH /timeentries/:id
-[Link zum Code](/backend/route/timeEntriesRoute.ts#L70) \
-Wird beim Ausstempeln aufgerufen und aktualisiert den offenen Eintrag den man über `GET /timeentries/last` bekommt.
-Der Service prüft hier dann zuerst, ob der Eintrag existiert und ob er tatsächlich zum Nutzer gehört der sich ausstechen will, bevor die restlichen Logik Regeln wie Endzeit schon da geprüft werden.
 
-Zusetzlich wurde nach dem Deployment noch eine 15 sekündige Toleranz hinzugefügt, da in der deployten Version des Codes die Startzeit und/oder Endzeit teils leicht in der Zukunft lag, wodurch gültige Anfragen abgelehnt wurden. (auch in createTimeEntryService zu finden)
+[Link zum Code](/backend/route/timeEntriesRoute.ts#L70) \
+Wird beim Ausstempeln aufgerufen und aktualisiert den offenen Eintrag den man über `GET /timeentries/last` bekommt. Der
+Service prüft hier dann zuerst, ob der Eintrag existiert und ob er tatsächlich zum Nutzer gehört der sich ausstechen
+will, bevor die restlichen Logik Regeln wie Endzeit schon da geprüft werden.
+
+Zusetzlich wurde nach dem Deployment noch eine 15 sekündige Toleranz hinzugefügt, da in der deployten Version des Codes
+die Startzeit und/oder Endzeit teils leicht in der Zukunft lag, wodurch gültige Anfragen abgelehnt wurden. (auch in
+createTimeEntryService zu finden)
 
 ```typescript
 export async function setEndTimeService(timeEntryId: number, newEndTime: Date, userid: number): Promise<TimeEntry | string> {
     try {
-        ...
-        
+    ...
+
         if (newEndTime.getTime() > Date.now() + 15000) {
             return "end time can not be in the future";
         }
 
-        ...
-    }
-    catch (e) {
-        ...
+    ...
+    } catch (e) {
+    ...
     }
 }
 ```
 
 #### GET /users/:userId/timeentries
-[Link zum Code](/backend/route/timeEntriesRoute.ts#L108) \
-Dieser Endpunkt wird im Frontend alle 60s aufgerufen über ein `useEffect()`, da man die "Heute gearbeitet" anzeige ja jede Minute akutalisieren muss. Hierzu hole ich mir über die Parameter der Funktion dann nur die Einträge für den heutigen Tag und rechne diese zusammen. Die userId steckt hier im Pfad, deshalb wird geprüft, ob die angefragte userId mit der des eingeloggten Id des Nutzers übereinstimmt, sonst wird ein unauthorized geworfen. Ein Nutzer könnte sonst über die URL versuchen, fremde Zeiteinträge abzufragen was ja nicht möglich sein soll.
 
+[Link zum Code](/backend/route/timeEntriesRoute.ts#L108) \
+Dieser Endpunkt wird im Frontend alle 60s aufgerufen über ein `useEffect()`, da man die "Heute gearbeitet" anzeige ja
+jede Minute akutalisieren muss. Hierzu hole ich mir über die Parameter der Funktion dann nur die Einträge für den
+heutigen Tag und rechne diese zusammen. Die userId steckt hier im Pfad, deshalb wird geprüft, ob die angefragte userId
+mit der des eingeloggten Id des Nutzers übereinstimmt, sonst wird ein unauthorized geworfen. Ein Nutzer könnte sonst
+über die URL versuchen, fremde Zeiteinträge abzufragen was ja nicht möglich sein soll.
 
 ### Frontend
 
@@ -820,30 +995,197 @@ Die Timecard sieht so aus:
 
 ![Timecard](images/dashboard/Timecard.png)
 
-Hier sieht man die wichtigsten Informationen auf einen Blick. Die Uhrzeit, ob man schon eingestochen ist oder nicht und wie lange man am heutigen Tag schon gearbeitet hat. Zudem in grün bzw. rot ist das Einstechen bzw. Ausstechen hervorgehoben, da dies die Hauptfunktion darstellt und direkt erkennbar sein muss. Der Button `Stundenübersicht` wurde von mir eingebaut die ausgeführte Funktion beim klicken gehört aber zu *SebastianAnhalt*.
+Hier sieht man die wichtigsten Informationen auf einen Blick. Die Uhrzeit, ob man schon eingestochen ist oder nicht und
+wie lange man am heutigen Tag schon gearbeitet hat. Zudem in grün bzw. rot ist das Einstechen bzw. Ausstechen
+hervorgehoben, da dies die Hauptfunktion darstellt und direkt erkennbar sein muss. Der Button `Stundenübersicht` wurde
+von mir eingebaut die ausgeführte Funktion beim klicken gehört aber zu *SebastianAnhalt*.
 
 ## brdly06: Notifications
+
+### Kontext
+
+Notifications (Abb. 2) informieren den angemeldeten Nutzer über bestimmte Ereignisse, die für ihn relevant sind, ohne
+dass er aktiv danach suchen muss. Es gibt aktuell zwei Arten von Benachrichtigungen:
+
+- **request**: Ein vom Nutzer gestellter Antrag (Urlaub/Krankheit) wurde von seinem Manager bearbeitet.
+- **worktime_exceeded**: Die tägliche Arbeits- oder Pausenzeit wurde nicht eingehalten.
+
+Erreichbar sind die Notifications über das Glocken-Icon oben im Header auf dem Dashboard. (Abb. 1)
+
+### Ideen
+
+Die Entscheidung für ein Sidepane mit Glocken-Icon anstelle einer eigenen Seite wurde bewusst getroffen:
+Benachrichtigungen sollen direkt vom Dashboard aus zugänglich sein, ohne dass ein Seitenwechsel nötig ist. Das Gefühl,
+Inhalte sofort angezeigt zu bekommen, wurde als wichtiger empfunden als eine separate Seite. Als Icon wurde eine Glocke
+gewählt, da sie im Kontext von Benachrichtigungen allgemein etabliert und wiedererkennbar ist.
+
+Der read/unread-Status (statt Benachrichtigungen nur löschen zu können) war ursprünglich nicht mit einer weiteren Idee
+verbunden, sondern wurde vor allem eingeführt, weil das Feature sonst zu wenig eigene Endpunkte gehabt hätte. Erst im
+Nachhinein kam die (nicht umgesetzte, rein konzeptionelle) Idee auf, gelesene Benachrichtigungen automatisch nach ca. 5
+Werktagen zu entfernen, an denen tatsächlich gearbeitet wurde. Das würde eine separate Prüfung, ähnlich wie diese bei
+der Generierung von Benachrichtigungen erfolgt, erfordern. Diese Idee ist allerdings nicht implementiert.
+
+### Gesamtprojekt / Einbindung
+
+Auf dem Dashboard wird beim Laden der Seite `loadNotifications()` aufgerufen, welche die Benachrichtigungsliste des
+angemeldeten Nutzers lädt und im lokalen State der Dashboard-Komponente (`useState<Notification[]>`) hält.
+
+Klickt der Nutzer auf das Glocken-Icon im Header, öffnet sich über den `ModalContext` ein Sidepane mit der
+`Notifications`-Komponente, und die Liste wird zusätzlich erneut nachgeladen, damit auch neu hinzugekommene
+Benachrichtigungen sichtbar sind.
+
+Innerhalb des Sidepane werden zwei Callback-Funktionen an die Komponente durchgereicht:
+
+- `updateNotification(id, isRead)`: aktualisiert den read-Status einer einzelnen Benachrichtigung im lokalen State
+- `killNotification(id)`: entfernt eine gelöschte Benachrichtigung aus dem lokalen State
+
+Dadurch muss nach jeder Interaktion (Lesen/Löschen) nicht die komplette Liste neu vom Backend geladen werden.
+
+### Code
+
+**Backend** (Ordner `backend`):
+
+- `/repository/notification.ts` – Datenbankzugriff
+- `/route/notification.ts` – Routen-Definition
+- `/schemas/notifications.ts` – Zod-Schemas für Request-Bodies
+- `/service/notification.ts` – Domainlogik
+
+**Frontend** (Ordner `frontend`):
+
+- `/src/components/notifications/Notifications.tsx` + zugehöriges `.module.css` – Darstellung der Benachrichtigungsliste
+- `/src/scripts/notifications.ts` – fetch-Funktionen zur Kommunikation mit dem Backend
+- `/src/types/Notification.ts` – Typdefinition
+- Einbindung erfolgt in `/src/app/dashboard/page.tsx` (Glocken-Icon im Header, State-Verwaltung, Öffnen des Sidepane)
+
+### Backend
+
+Wie der Rest des Backends folgt auch Notifications dem Drei-Schichten-Modell (route → service → repository). Es gibt
+fünf Endpunkte:
+
+**GET /users/:id/notifications**
+Liefert alle Benachrichtigungen eines Nutzers. Input Params: `id` (userId) \
+Output: Liste von Notification-Objekten \
+Statuscodes: 200 OK, 403 wenn die angefragte `id` nicht mit dem angemeldeten Nutzer übereinstimmt, 500 bei internem
+Fehler
+
+**POST /notifications/**
+Erstellt eine neue Benachrichtigung. Input Body:
+`{ managerId: number | null, type: "request" | "worktime_exceeded", description: string }` \
+Output: `{ message: "created successfully" }` \
+Statuscodes: 201 Created, 500 bei internem Fehler \
+Der Body wird vorab über das Zod-Schema `notificationPostBodySchema` validiert.
+
+**GET /notifications/:id**
+Liefert eine einzelne Benachrichtigung. Statuscodes: 200 OK, 403 wenn die Benachrichtigung nicht dem angemeldeten Nutzer
+gehört, 404 wenn nicht gefunden, 500 bei internem Fehler
+
+**PATCH /notifications/:id**
+Ändert den read-Status einer Benachrichtigung. Input Body: `{ read: boolean }` \
+Statuscodes: 200 OK, 403 wenn nicht Eigentümer, 404 wenn nicht gefunden, 500 bei internem Fehler
+
+**DELETE /notifications/:id**
+Löscht eine Benachrichtigung. Statuscodes: 200 OK, 403 wenn nicht Eigentümer, 404 wenn nicht gefunden, 500 bei internem
+Fehler
+
+Eine Benachrichtigung enthält eine eindeutige ID, die zugehörige Nutzer-ID, optional die ID des Managers, den Typ der
+Benachrichtigung (request oder worktime_exceeded), eine Beschreibung, den Read-Status sowie den Zeitpunkt der
+Erstellung.
+
+Die Autorisierung erfolgt über `authMiddleware("user", true)`. Zusätzlich wird bei den Endpunkten mit `:id` im
+Route-Handler selbst geprüft, ob die angefragte Ressource wirklich dem angemeldeten Nutzer gehört (Vergleich von
+`userId` mit `res.locals.user.id`), bevor gelesen, geändert oder gelöscht werden darf.
+
+Beispielhaft der GET-Endpunkt für die Liste:
+
+```typescript
+router.get('/users/:id/notifications', validateUserID, authMiddleware("user", true), async (req, res) => {
+    try {
+        const userid = Number(req.params.id);
+
+        if (res.locals.user.id !== userid)
+            return res.status(403).send("forbidden");
+
+        const notificationList = await notificationListGet(userid);
+        return res.status(200).send(notificationList);
+    } catch (e) {
+        res.status(500).send("internal error");
+    }
+})
+```
+
+Im Service-Layer wird beim Laden der Liste automatisch geprüft, ob für den aktuellen Tag Benachrichtigungen zur
+Arbeitszeit generiert werden müssen, bevor die eigentliche Liste aus der Datenbank geladen wird:
+
+```typescript
+export async function notificationListGet(userId: number) {
+    try {
+        const today = new Date().toISOString().slice(0, 10);
+
+        await generateWorkTimeNotifications(userId, today);
+
+        const notificationList = await getNotificationList(userId);
+        return notificationList;
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
+}
+```
+
+Die restlichen Service-Funktionen (`notificationPost`, `notificationGet`, `notificationPatch`, `notificationDelete`)
+reichen Aufrufe im Wesentlichen direkt an das Repository weiter und behandeln dabei Fehler einheitlich per try/catch.
+
+### Frontend
+
+Die `Notifications`-Komponente erhält die Liste der Benachrichtigungen sowie die beiden Callback-Funktionen
+`updateNotification` und `killNotification` als Props und stellt jede Benachrichtigung in einer eigenen `Card`
+-Komponente dar.
+
+Pro Benachrichtigung gibt es:
+
+- eine Überschrift, abhängig vom `type` ("Zeitregelung missachtet" bei `worktime_exceeded`, "Anfrage bearbeitet" bei
+  `request`)
+- den read/unread-Status mit einem kleinen Dropdown-Pfeil, über den zwischen "Gelesen" und "Ungelesen" gewechselt werden
+  kann
+- den Beschreibungstext sowie das Erstellungsdatum (formatiert über `toLocaleString("de-DE", …)`)
+- einen "Löschen"-Button
+
+Während einer Anfrage an das Backend (Statusänderung oder Löschen) wird die betroffene Karte per lokalem Loading-State
+(`loadingReadId` / `loadingDeleteId`) optisch als ladend markiert und ein Spinner angezeigt, um doppelte Klicks zu
+verhindern. Ein `useEffect`-Hook mit `mousedown`-Listener sorgt dafür, dass ein geöffnetes Dropdown-Menü geschlossen
+wird, sobald außerhalb davon geklickt wird.
+
+#### Abb. 1
+
+<img src="images/dashboard/NotificationIcon.png" width="600" alt="Glocken-Icon im Header, über das das Notifications-Sidepane geöffnet wird">
+
+(Glocken-Icon im Header, über das das Notifications-Sidepane geöffnet wird)
+
+#### Abb. 2
+
+<img src="images/dashboard/Notifications.png" width="600" alt="Benachrichtigungen">
+
+(Sidepane mit der Liste der Benachrichtigungen: einmal im gelesen-Zustand, einmal mit geöffnetem Gelesen/Ungelesen-Menü
+und einmal im ungelesen-Zustand)
 
 ## FHG: Requests erstellen
 
 ### Funktion
 
-Wichtig: Die Anträge sind erst seit Anfang des zweiten Semesters Teil der Website. 
-Sie erweitern den Funktionsumfang der Anwendung und erfüllen zugleich die Mindestanforderung an Anzahl der implementierten Endpunkte pro Person.
+Wichtig: Die Anträge sind erst seit Anfang des zweiten Semesters Teil der Website. Sie erweitern den Funktionsumfang der
+Anwendung und erfüllen zugleich die Mindestanforderung an Anzahl der implementierten Endpunkte pro Person.
 
 #### Wo können die Anträge erstellt werden?
 
-Im Frontend können Anträge erstellt werden, indem man auf einen Tag im Kalender klickt.
-Anschließend öffnet sich eine Sidebar. Hier wird eine Liste an Zeiteinträgen für den ausgewählten Tag angezeigt. 
-Zudem gibt es zwei Buttons: 
-Der blaue Button links ist zum manuellen Nachtragen da. 
-Der weiße Button rechts ist zum Antrag erstellen da. 
+Im Frontend können Anträge erstellt werden, indem man auf einen Tag im Kalender klickt. Anschließend öffnet sich eine
+Sidebar. Hier wird eine Liste an Zeiteinträgen für den ausgewählten Tag angezeigt. Zudem gibt es zwei Buttons:
+Der blaue Button links ist zum manuellen Nachtragen da. Der weiße Button rechts ist zum Antrag erstellen da.
 
 ### Frontend
 
-Wird der Button "Antrag erstellen" gedrückt, öffnet sich ein Popup. 
-Dieses Popup beinhaltet ein Formular für einen Antrag. 
-In diesem Formular kann der Nutzer die Daten für den Antrag eingeben. Dies beinhaltet den Typ des Antrags, das Startdatum, das Enddatum sowie ein Textfeld um eine Bemerkung abzugeben. 
+Wird der Button "Antrag erstellen" gedrückt, öffnet sich ein Popup. Dieses Popup beinhaltet ein Formular für einen
+Antrag. In diesem Formular kann der Nutzer die Daten für den Antrag eingeben. Dies beinhaltet den Typ des Antrags, das
+Startdatum, das Enddatum sowie ein Textfeld um eine Bemerkung abzugeben.
 
 <img src="images/dashboard/CreateEntry.png" width="350">
 
@@ -851,18 +1193,19 @@ Das Antrag-Popup ist in 3 Komponenten aufgebaut:
 
 1. Sidebar Tagesansicht [Link zum Code](/frontend/src/components/timeAdjustment/DailyDetailsPane.tsx)
 
-- Hier ist nur der Button "Antrag erstellen" relevant. 
-Dieser öffnet das Popup.
+- Hier ist nur der Button "Antrag erstellen" relevant. Dieser öffnet das Popup.
 
 2. Popup [Link zum Code](/frontend/src/components/timeAdjustment/RequestPopup.tsx)
 
-- Das Popup besteht aus dem Titel "Antrag erstellen", zwei Tabs, Errortext und zwei Buttons. 
+- Das Popup besteht aus dem Titel "Antrag erstellen", zwei Tabs, Errortext und zwei Buttons.
 
 - Die Tabs rufen die dritte Komponente auf (siehe unten).
 
-- Der Errortext ist zu Beginn unsichtbar und wird nur angezeigt, wenn es beim Erstellen eines Antrags zu einem Fehler kommt.
+- Der Errortext ist zu Beginn unsichtbar und wird nur angezeigt, wenn es beim Erstellen eines Antrags zu einem Fehler
+  kommt.
 
-- Der Button "Abbrechen" schließt das Popup und der Button "Antrag erstellen" ruft den Endpunkt im Backend zum Erstellen eines Antrags auf.
+- Der Button "Abbrechen" schließt das Popup und der Button "Antrag erstellen" ruft den Endpunkt im Backend zum Erstellen
+  eines Antrags auf.
 
 - Das Popup ist eine Standard-Komponente in unserem Projekt, die *SebastianAnhalt* für alle erstellt hat.
 
@@ -870,13 +1213,14 @@ Dieser öffnet das Popup.
 
 - Das Abwesenheitsformular besteht aus drei Unterüberschriften, zwei Eingabefelder und einem Textfeld.
 
-- Jede Unterüberschrift gibt an für was das folgende Inputfeld da ist. 
+- Jede Unterüberschrift gibt an für was das folgende Inputfeld da ist.
 
-- Mit den zwei "Datum-Inputfelder" kann ein Startdatum und ein Enddatum eingegeben werden. 
+- Mit den zwei "Datum-Inputfelder" kann ein Startdatum und ein Enddatum eingegeben werden.
 
 - Dies geht sowohl durch das Klicken auf den Tag/Monat/Jahr sowie über das Kalender-Icon.
 
-- Das Textfeld ist für jegliche Bemerkungen da. Dieses Feld ist optional. Hier kann zum Beispiel ein Hinweis für den Manager eingetragen werden.
+- Das Textfeld ist für jegliche Bemerkungen da. Dieses Feld ist optional. Hier kann zum Beispiel ein Hinweis für den
+  Manager eingetragen werden.
 
 Wurde ein Antrag erstellt, wird ein Script aufgerufen, das die Anfrage an den passenden Endpunkt im Backend stellt.
 [Link zum Code](/frontend/src/scripts/requests.ts)
@@ -891,31 +1235,31 @@ Das Styling zu den jeweiligen Komponenten kann hier gefunden werden:
 
 ### Backend
 
-Jeder Endpunkt im Backend ist folgendermaßen aufgebaut: 
-An erster Stelle steht immer die Route-Schicht. In dieser Schicht wird die Route definiert, Middleware aufgerufen sowie Autorisierung und Input-Validierung durchgeführt.
-Die zweite Schicht ist die Service-Schicht. Hier wird die eigentliche Logik implementiert.
-Zum Schluss kommt dann die dritte und lezte Schicht, die Repository-Schicht. In dieser werden die SQL-Abfragen an die Datenbank erstellt und geschickt.
+Jeder Endpunkt im Backend ist folgendermaßen aufgebaut:
+An erster Stelle steht immer die Route-Schicht. In dieser Schicht wird die Route definiert, Middleware aufgerufen sowie
+Autorisierung und Input-Validierung durchgeführt. Die zweite Schicht ist die Service-Schicht. Hier wird die eigentliche
+Logik implementiert. Zum Schluss kommt dann die dritte und lezte Schicht, die Repository-Schicht. In dieser werden die
+SQL-Abfragen an die Datenbank erstellt und geschickt.
 
 Im Backend wird beim Erstellen eines Antrages folgender Endpunkt aufgerufen:
 
 #### POST /requests
 
-[Link zum Code](/backend/route/requests.ts) 
+[Link zum Code](/backend/route/requests.ts)
 
-Die Autorisierung ist hier sehr einfach, da jede Art von Nutzern einen Antrag erstellen kann. Dies wird mithilfe der Autorisierungsmiddleware gemacht.
-Die Parameter Typ, Startdatum, Enddatum und Bemerkung werden im Request Body mitgeschickt.
-Dieser wird im Backend in der Middleware mittels eines Zod-Schemas validiert.
-Sofern alles gültig ist, wird der Service aufgerufen.
-Dieser ist hier zu finden: [Link zum Code](/backend/service/requests.ts)
+Die Autorisierung ist hier sehr einfach, da jede Art von Nutzern einen Antrag erstellen kann. Dies wird mithilfe der
+Autorisierungsmiddleware gemacht. Die Parameter Typ, Startdatum, Enddatum und Bemerkung werden im Request Body
+mitgeschickt. Dieser wird im Backend in der Middleware mittels eines Zod-Schemas validiert. Sofern alles gültig ist,
+wird der Service aufgerufen. Dieser ist hier zu finden: [Link zum Code](/backend/service/requests.ts)
 
-Im Service finden vor allem die ganze Validierung der Inputs statt.
-Hier muss validiert werden, ob im gewählten Zeitraum bereits ein Zeiteintrag oder Request eingetragen ist. Dazu werden die ServiceFunktionen getTimeEntriesService von *mika630* und getRequestsForUser von mir a.
-Außerdem muss bei einem Antrag auf Urlaub überprüft werden, ob der Nutzer noch genügend Urlaubstage zur Verfügung hat.
-Dazu müssen Feiertage und Wochenenden für die Berechnung der Urlaubstage abgezogen werden.
-Wenn die ganze Validierung zu Ende ist und soweit alles passt, wird das repository aufgerufen.
-Das repository ist hier zu finden: [Link zum Code](/backend/repository/requests.ts)
+Im Service finden vor allem die ganze Validierung der Inputs statt. Hier muss validiert werden, ob im gewählten Zeitraum
+bereits ein Zeiteintrag oder Request eingetragen ist. Dazu werden die ServiceFunktionen getTimeEntriesService von
+*mika630* und getRequestsForUser von mir a. Außerdem muss bei einem Antrag auf Urlaub überprüft werden, ob der Nutzer
+noch genügend Urlaubstage zur Verfügung hat. Dazu müssen Feiertage und Wochenenden für die Berechnung der Urlaubstage
+abgezogen werden. Wenn die ganze Validierung zu Ende ist und soweit alles passt, wird das repository aufgerufen. Das
+repository ist hier zu finden: [Link zum Code](/backend/repository/requests.ts)
 
-Das repository erstellt dann den neuen Antrag in der Datenbank. 
+Das repository erstellt dann den neuen Antrag in der Datenbank.
 
 Das im Backend verwendete TypeScript-Interface für einen Antrag sieht folgendermaßen aus:
 
@@ -925,7 +1269,7 @@ Das im Backend verwendete TypeScript-Interface für einen Antrag sieht folgender
  */
 export type DateString = string;
 
-export default interface Request{
+export default interface Request {
     userId: number,
     managerId: number | null,
     type: "holiday" | "sick",
@@ -935,39 +1279,52 @@ export default interface Request{
     isApproved?: boolean | null
 }
 ```
+
 In der Datenbank hat jeder Antrag eine eindeutige Id. Außerdem sind remark und isApproved nicht optional sondern null.
 
 ### Entscheidungen und Ideen
 
-Wichtig zu wissen sind folgende Punkte: 
+Wichtig zu wissen sind folgende Punkte:
 
-- ein Antrag von einem Nutzer kann nur von seinem Manager angenommen oder abgelehnt werden. 
+- ein Antrag von einem Nutzer kann nur von seinem Manager angenommen oder abgelehnt werden.
 - Wird ein Antrag angenommen, wird für jeden Tag ein Zeiteintrag mit der Dauer des Tagessolls des Nutzers angelegt.
 - Wenn ein Antrag erstellt ist, erscheint dieser in der Manager-Ansicht des zugehörigen Managers.
-- Sollte ein Fehler auftreten werden selbst definierte Fehler geworfen (Details siehe unten). 
+- Sollte ein Fehler auftreten werden selbst definierte Fehler geworfen (Details siehe unten).
 
-Wir haben uns bewusst dazu entschieden, dass die ManagerId bei einem Antrag auch null sein kann für den Fall, dass ein Manager gelöscht wird.
+Wir haben uns bewusst dazu entschieden, dass die ManagerId bei einem Antrag auch null sein kann für den Fall, dass ein
+Manager gelöscht wird.
 
-Die Property isApproved hat drei Zustände: True, False und null. Null steht für "(noch) nicht bearbeitet". Wird ein Antrag erstellt wird dementsprechend standardmäßig null in das Feld gesetzt. 
+Die Property isApproved hat drei Zustände: True, False und null. Null steht für "(noch) nicht bearbeitet". Wird ein
+Antrag erstellt wird dementsprechend standardmäßig null in das Feld gesetzt.
 
-Wir haben uns zudem gegen halbtägige Urlaubs- bzw Krankheitsanträge entschieden. Deshalb darf der Nutzer keine Zeiteinträge an den Tagen haben, für die der Antrag gestellt wird.
+Wir haben uns zudem gegen halbtägige Urlaubs- bzw Krankheitsanträge entschieden. Deshalb darf der Nutzer keine
+Zeiteinträge an den Tagen haben, für die der Antrag gestellt wird.
+
 ### Errors
 
-Kommt es während der Verarbeitung des Requests zu einem Fehler, werden selbst definierte Fehler geworfen. 
-Diese werden geworfen, um dem Nutzer im Frontend Feedback zu geben, weshalb das Erstellen eines Antrags fehlgeschlagen ist. 
-Der Code dazu liegt [hier](/backend/errors/requestErrors.ts) .
-Hierzu können viele verschiedene Fehler geworfen werden.
-Die wichtigsten sind:
+Kommt es während der Verarbeitung des Requests zu einem Fehler, werden selbst definierte Fehler geworfen. Diese werden
+geworfen, um dem Nutzer im Frontend Feedback zu geben, weshalb das Erstellen eines Antrags fehlgeschlagen ist. Der Code
+dazu liegt [hier](/backend/errors/requestErrors.ts) . Hierzu können viele verschiedene Fehler geworfen werden. Die
+wichtigsten sind:
+
 #### InvalidDateRangeError
-Dieser Fehler wird geworfen, wenn das Startdatum des Antrags nachF dem Enddatum liegt. Diese Validierung findet jedoch auch im Frontend statt, um dem Nutzer schnelleres Feedback zu geben.
+
+Dieser Fehler wird geworfen, wenn das Startdatum des Antrags nachF dem Enddatum liegt. Diese Validierung findet jedoch
+auch im Frontend statt, um dem Nutzer schnelleres Feedback zu geben.
 
 #### RequestOverlapWithTimeEntryError
-Dieser Fehler wird geworfen, wenn im Zeitraum des Antrags bereits ein Zeiteintrag eingetragen ist. Dadurch wird verhindert, dass für denselben Tag sowohl ein bereits vorhandener Zeiteintrag als auch ein durch den Antrag erzeugten Ulraubszeiteintrag existiert. 
+
+Dieser Fehler wird geworfen, wenn im Zeitraum des Antrags bereits ein Zeiteintrag eingetragen ist. Dadurch wird
+verhindert, dass für denselben Tag sowohl ein bereits vorhandener Zeiteintrag als auch ein durch den Antrag erzeugten
+Ulraubszeiteintrag existiert.
 
 #### RequestOverlapWithRequestError
-Passend zum vorherigen Fehler wird dieser Fehler geworfen, wenn bereits ein Antrag im gewählten Zeitraum vorhanden ist. So kann zum Beispiel kein doppelter Urlaub eingetragen werden. 
+
+Passend zum vorherigen Fehler wird dieser Fehler geworfen, wenn bereits ein Antrag im gewählten Zeitraum vorhanden ist.
+So kann zum Beispiel kein doppelter Urlaub eingetragen werden.
 
 #### NotEnoughHolidaysLeftError
-Wenn man nicht genügend Urlaubstage mehr zur Verfügung hat, wird dieser Fehler geworfen. 
+
+Wenn man nicht genügend Urlaubstage mehr zur Verfügung hat, wird dieser Fehler geworfen.
 
 Für jeden der oben genannten Fehler wird ein Fehlertext im Frontend ausgegeben der den Nutzer auf den Fehler hinweist.
