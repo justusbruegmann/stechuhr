@@ -778,12 +778,13 @@ Aus den Antworten wird ein erweitertes User-Objekt zusammengesetzt, in dem die r
 zusammengefasst sind:
 
 ```typescript
-type UserWithSummaryEntries = User & {
+type ExtendedUser = User & {
     summaryEntries: {
         vacationDaysThisYear: number | null;
         sickDaysThisYear: number | null;
         hoursWorkedThisWeek: number | null;
-    };
+    },
+    openRequests: Request[],
 };
 ```
 

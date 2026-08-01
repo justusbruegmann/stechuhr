@@ -21,7 +21,7 @@ import {getAllRequestsAManagerIsResponsibleFor} from "@/scripts/requests";
 import AnswerRequestModal from "@/components/managerView/answerRequestModal";
 
 
-export type UserWithExtraFields = User & {
+export type ExtendedUser = User & {
     summaryEntries: {
         vacationDaysThisYear: number | null;
         sickDaysThisYear: number | null;
@@ -42,7 +42,7 @@ export default function ManagerView() {
     const answerModalId = useRef<string | null>(null);
     const [answerModalUserId, setAnswerModalUserId] = React.useState<number | null>(null);
 
-    const [users, setUsers] = React.useState<Record<number, UserWithExtraFields>>({});
+    const [users, setUsers] = React.useState<Record<number, ExtendedUser>>({});
     const [loading, setLoading] = React.useState(true);
 
     useEffect(() => {
@@ -86,7 +86,7 @@ export default function ManagerView() {
 
         const openRequests = await loadRequests();
 
-        const extendedUser: UserWithExtraFields[] = response.map((user: User, index: number) => {
+        const extendedUser: ExtendedUser[] = response.map((user: User, index: number) => {
             const summaryMonth = summariesMonth[index];
             const summaryWeek = summariesWeek[index];
 
