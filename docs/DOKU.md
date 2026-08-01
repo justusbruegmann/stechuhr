@@ -3,7 +3,7 @@
     - justusbruegmann: 4865545
     - SebastianAnhalt: 7020807
     - mika630: 1586623
-    - FHG : nummer Einfügen Bitte beachten Github Email und git Email unterschiedlich da Firmen Laptop
+    - FHG : 3320563 -> Bitte beachten: Github Email und git Email unterschiedlich da Firmen Laptop
     - brdly06: Nummer einfügen
 AI als Formulierungshilfe verwendet
 # Was macht die Anwendung? (Mika)
@@ -91,7 +91,7 @@ Dann muss eine ".env" im Backend Ordner ein mit
 ``DATABASE_URL=<DATENBANK_URL EINSETZEN>
 `` vorhandensein.
 
-Datenbank_URL wird noch bereit gestellt
+Datenbank_URL wird per Moodle bereitgestellt
 
 zum Starten ``npm run dev``
 nach jeder Änderung muss der command neu ausgeführt werden (kein HMR) und gewartet werden bis ``✓ Database connection successful
@@ -110,7 +110,7 @@ Zuerst das Projekt Klonen
 ``git clone https://github.com/justusbruegmann/stechuhr.git``
 
 ### Bauen
-Zum Bauen muss das ``build.ps1`` script ausgeführt werden oder eins der Scripte ausgeführt werden aus dem root directory:
+Zum Bauen muss das ``build.ps1`` script ausgeführt werden oder eins der Plattformspezifischen Scripte ausgeführt aus dem root directory:
 
 Beim build muss eine ".env.local" im frontend Ordner ein mit
 ``NEXT_PUBLIC_BACKEND_URL=<BACKENDURL EINSETZEN>
@@ -133,7 +133,7 @@ Zum Starten muss eine ".env" im Backend Ordner ein mit
 ``DATABASE_URL=<DATENBANK_URL EINSETZEN>
 `` vorhandensein.
 
-Datenbank_URL wird noch bereit gestellt
+Datenbank_URL wird per Moodle bereitgestellt
 
 ### Starten
 Backend und Frontend laufen als getrennte Prozesse und werden jeweils in einem eigenen Terminal gestartet:
@@ -141,21 +141,19 @@ Backend und Frontend laufen als getrennte Prozesse und werden jeweils in einem e
 Backend (Terminal 1):
 ```cmd
    cd backend
-   npm start
+   npm run start
    ```   
    
   Warten bis ✓ Database connection successful in der Console erscheint, dann ist das Backend bereit.
 
   Frontend (Terminal 2):
 
-      cd frontend
-      npm start
+```cmd
+   cd frontend
+   npm run start
+   ```  
 
   Die Anwendung ist danach unter http://localhost:3000 erreichbar.
-
-
-# Webdesign (Aaron & Felix)
-
 
 
 # Was macht die Anwendung (Mika)
@@ -306,15 +304,19 @@ Enthält nur eine Komponente: Ein Popup zum Ändern des One-Time-Passwords, das 
 **ManagerView** `Sebastian Anhalt` \
 Enthält die Komponenten, die auf der /manager_view Seite verwendet werden: ein Popup zum Bearbeiten der vertraglichen Arbeitszeiten sowie Urlaubszeiten eines Benutzers, und die Tabellen zur Darstellung der Arbeitszeiten, Urlaubszeiten und Krankheitstage mehrerer User-Accounts.
 
+**Notifications** `brdly06*` \
+Hier liegt die Notifications-Komponente, die auf dem Dashboard eingebunden ist und die Benachrichtigungen anzeigt.
+
 **Overview** `Sebastian Anhalt` \
 Enthält die Komponenten, die auf dem Dashboard eine Zusammenfassung der geleisteten Arbeitszeit und des Tages-, Wochen- und Monatsfortschritts darstellen.
 
 **TimeAdjustment** `FHG` \
 Die DailyDetailsPane zeigt alle eingetragenen Arbeitszeiten eines Tages an und ist öffenbar, indem man auf einen Tag im Kalender klickt.
-Über den 'Manuell-Nachtragen'-Button öffnet sich ein Popup, in welchem die beiden anderen Komponenten dieses Ordners Verwendung finden.
+Über den 'Manuell-Nachtragen'-Button öffnet sich ein Popup, in welchem die beiden relevanten Komponenten dieses Ordners Verwendung finden.
+Zusätzlich gibt es in der Tagesübersicht auch einen Button zum Erstellen von Anträgen. Beim klicken öffnet sich die letzte Komponente in diesem Ordner, das RequestPopup, über das sowohl Urlaubs- als auch Krankheitstage beantragt werden können.
 
 **Timecard** `mika630` \
-Die Timecard-Komponente ist die Einstempelfunktion auf dem Dashboard. Sie zeigt u.a. die aktuelle Uhrzeit, die aktuelle Arbeitszeit und den aktuellen Status (gestempelt / nicht gestempelt) an.
+Die Timecard-Komponente beschreibt die Einstempelfunktion auf dem Dashboard. Sie zeigt u.a. die aktuelle Uhrzeit, die aktuelle Arbeitszeit und den aktuellen Status (gestempelt / nicht gestempelt) an.
 
 **Usermanagement** `justusbruegmann` \
 Enthält die Komponenten, die auf der /admin_view Seite zur Darstellung und Verwaltung aller User Accounts verwendet werden.
@@ -364,6 +366,9 @@ Die Project Root beinhaltet die üblichen Konfigurationsdateien wie *.env*, *.gi
 **/drizzle** \
 Der Drizzle-Ordner beinhaltet nur das ORM-Schema, auf dem die Datenbankverbindung der repository-Funktionen basiert.
 
+**/errors** \
+In diesem Ordner sind die benutzerdefinierten Fehlerklassen abgelegt. Da nur der Requests-Handler eigene Fehler nutzt, gibt es nur eine Datei requestErrors.ts.
+
 **/middleware** \
 In diesem Ordner sind die Middleware-Funktionen abgelegt, die von mehreren Routen verwendet werden.
 
@@ -377,7 +382,55 @@ Geteilte TypeScript types und interfaces sind hier abgelegt.
 Hier befinden sich geteilte Hilfsfunktionen, die an verschiedenen Stellen in der Anwendung Verwendung finden.
 Sie sind grob nach Anwendungsgebiet gruppiert.
 
+# Webdesign
 
+## Allgemein
+
+Allgemein haben wir uns bei der Stechuhr für ein sehr schlichtes und einfaches Design entschieden. Wichtig war uns, dass das Design der Stechuhr für jede Altersgruppe möglichst zugänglich und intuitiv ist. Wichtige Funktionen sollten einfach zugänglich sein. Uns war es wichtig, dass der Nutzer den Aufbau der Website schnell versteht und ohne Probleme erkennen kann, wo welche Funktion aufgerufen werden kann. Zudem wollten wir Funktionen, die thematisch zusammenhängen, auch auf der Website in gleich Bereichen setzen. So haben wir zum Beispiel die Funktion des manuellen Nachtragen mit in die Sidebar der Tagesansicht integriert, da man Zeiteinträge stets für einen bestimmten Tag anordnet. Funktionen, die allgemeiner sind, wie zum Beispiel die Übersichtsanzeige, haben wir auf das Dashboard gesetzt. Funktionen, die viel benutzt werden, wie zum Beispiel das Ein- und Ausstempeln, haben wir bewusst groß auf die Hauptseite plaziert.
+
+Zusätzlich haben wir versucht, möglichst konsistentes Styling zu verwenden, auch wenn das zu fünft gar nicht so einfach ist.
+
+## Benutzeroberfläche (UI)
+
+Um einen ruhigen Eindruck in der gesamten Anwendung zu erzeugen, haben wir uns hauptsächlich auf die drei Farben Grün, Rot und Blau fokussiert. Dadurch bleiben wichtige Elemente gut erkennbar und die Benutzeroberfläche wirkt nicht überladen (s. [Abb. 1](#design-abb-1)). Um einen persönlichen Bezug zum Projekt herzustellen, stammen die drei Hauptfarben jeweils aus den Akzentfarben der Firmen der Gruppenmitglieder. Dementsprechend ist das Grün aus dem Logo von Init, das Rot von SEW Eurodrive und das Blau von der SICK AG. Um Ereignisse und Einträge zu verdeutlichen, wurden beim Kalender zusätzlich weitere Farben benutzt. Zum Beispiel Gelb, wenn ein Mitarbeiter an einem Tag als Krank vermerkt wurde (s. [Abb. 1](#design-abb-1)).
+Die Schriftart ist in der gesamten Anwendung klar und schlicht gehalten, um eine einfache und verständliche Lesbarkeit zu ermöglichen (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2)).
+Für einen intuitiven Bewegungsfluss sind alle Buttons mit ihren Funktionen beschriftet und, an geeigneten Stellen, bekannte Icons als Ersatz für Buttons gewählt worden (s. [Abb. 1](#design-abb-1)). Zudem besitzen Buttons einen Ladekreis, um dem Nutzer zu symbolisieren, dass etwas passiert, wenn er einen Button betätigt.
+Die Benutzeroberfläche wurde bewusst minimalistisch gestaltet. Es werden nur die Informationen angezeigt, die für den jeweiligen Benutzer relevant sind. Dadurch wirkt die Anwendung aufgeräumt und leicht verständlich.
+
+## Benutzererfahrung (UX)
+
+Bei der Entwicklung wurde darauf geachtet, dass die wichtigsten Aufgaben und Daten, trotz minimalistischem Design, mit möglichst wenigen Klicks erledigt und eingesehen werden können (s. [Abb. 1](#design-abb-1)). Dadurch wird der Arbeitsablauf beschleunigt, obwohl viele Funktionen auf den ersten Blick auf der Startseite im Verborgenen bleiben.
+
+Beispiele:
+
+- Das Ein- und Ausstempeln erfolgt direkt über die Startseite
+- Das Nachtragen, Anträge erstellen, sowie die Einsicht der Benachrichtigungen ist jeweils nur einen Klick von der Startseite entfernt
+- Die Kalenderansicht ermöglicht eine schnelle Übersicht über bereits erfasste Arbeitstage
+
+Sollte der Nutzer Fehlerhafte Eingaben tätigen oder sich nicht an die Arbeits- oder Pausenzeitregelung seines Unternehmens halten, bekommt er dies durch verschiedene unterschiedliche Fehlermeldungen mitgeteilt 
+
+## Grunprinzipien aus den Vorlesungen
+
+- Styleguide -> Konsistenz (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2))
+- Farbe kann Aufmerksamkeit erregen -> wenig auffällige Farben, da Stechuhr-Funktionen am wichtigsten sind, auffällige Farben nur an wichtigen Stellen wie Ein- und Ausstempeln (s. [Abb. 1](#design-abb-1))
+- Farben -> Können Informationen vermitteln z.B.: Rot -> Gefahr, Grün -> Positiv (s. [Abb. 1](#design-abb-1))
+- Schriftart -> größtenteils einheitlich (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2))
+- Keine Angst vor Weißraum -> schlichtes Design (s. [Abb. 1](#design-abb-1) & [Abb. 2](#design-abb-2))
+- Feedback -> Rückmeldung von Button z.B.: hover effekt (s. [Abb. 2](#design-abb-2))
+- Gesetz der Nähe -> Objekt, die nah beieinander liegen, werden als zusammengehörig wahrgenommen (s. [Abb. 1](#design-abb-1): Zeitkarte links)
+
+<p align="center" id="design-abb-1">
+Abb. 1
+</p>
+<p align="center">
+<img src="images/webDesign/dashboardAnsicht.png" width="600">
+</p>
+<p align="center" id="design-abb-2">
+Abb. 2
+</p>
+<p align="center">
+<img src="images/webDesign/managerAnsicht.png" width="600">
+</p>
 
 # Eigenleistung
 
@@ -445,13 +498,24 @@ rolesAboveAllowed sagt aus, ob eine Route, welche ein User zugreifen darf, auch 
 Backend Code ist im Ordner "backend" zu finden.  
 Dabei gibt es in /route,/service,/repository die Datein Auth.ts und der OTPchange liegt in Usermanagement.ts  
 Dazu sind in /utils hashing.ts und auth.ts  
-Ebenfalls gibt es in /middleware die authmiddleware().
+Ebenfalls gibt es in /middleware die authmiddleware(). \
+[Link zur Route](/backend/route/) \
+[Link zum Service](/backend/service/) \
+[Link zum Repository](/backend/repository/) \
+[Link zu Utils](/backend/utils/)\
+[Link zur Middleware](/backend/middleware/)
 
 Frontend code ist im Ordner "frontend" zu finden.  
 Für das Loginform sind in src/app/login die relevante css und page.tsx zu finden.  
 Für die Passwortänderung das Popup ist in src/components/login die PasswordChangeModal.tsx zu finden
 
+[Link zur Login Page](/frontend/src/app/login/) \
+[Link zum Passwort Popup](/frontend/src/components/login/)
+
+
 Alle drei fetch calls die für die Auth verantwortlich ist sind in src/scripts/auth.ts zu finden.
+[Link zu den Fetches](/frontend/src/scripts/auth.ts/)
+
 
 Es gibt auch noch die authCheck() Methode das Prinzip von der wird öfters im Frontend von allen verwendet.  
 Diese hier ist spziell in src/app/dashboard/page.tsx zufinden
@@ -498,7 +562,7 @@ Die Auth hat 3 Routen
         - 404: wenn auth() return undefined  
         - 485: Custom code dafür wenn der User ein one-time-password gesetzt hat. damit das frontend nur eine zahl checken muss     
         - 500: Alg error  
-3. PATCH aufgrund von CORS aktuell PUT /users/otp/:id zum ändern des oneTimePassword das man vom Admin bekommt  
+3. PATCH /users/:id/otp zum ändern des oneTimePassword das man vom Admin bekommt  
     input body: {"currentpwd","newpwd"}  
     input params: id  
     output text: "changed succesfully"  
@@ -557,7 +621,7 @@ Eine genaue Kennzeichnung ist hier schier unmöglich, da die KI einen bestehende
 Die Webseite nutzt kein SSR. Deshalb ist es kaum möglich, die Route /manager_view Nicht-Manager-Accounts unzugänglich zu machen.
 Der Zugriff darauf ist ausschließlich dadurch etwas erschwert, dass nur Manager den Button im Header angezeigt bekommen, der auf diese Seite führt.
 
-Die eigenltiche Sicherheit wird durch das Backend gewährleistet. Bei der Anfrage nach Benutzern, deren Manager der angemeldete Benutzer ist, wird dementsprechend unberechtigten Accounts eine leere Liste zurückgeliefert.
+Die eigentliche Sicherheit wird durch das Backend gewährleistet. Bei der Anfrage nach Benutzern, deren Manager der angemeldete Benutzer ist, wird dementsprechend unberechtigten Accounts eine leere Liste zurückgeliefert.
 Sie sehen dann grafisch dieselbe Fehlermeldung wie Manager-Accounts, die keine untergebenen Mitarbeiter haben:
 
 
@@ -613,7 +677,6 @@ Gemäß dem generellen Aufbau des Backends besteht jeder Endpunkt aus drei Schic
 - **/route**: Hier wird die Route definiert, Middleware eingebunden und Authorization und Input-Validierung durchgeführt.
 - **/service**: Hier wird die eigentliche Domainlogik implementiert.
 - **/repository**: Hier werden die SQL-Abfragen an die Datenbank definiert.
-
 
 Die Manager-Ansicht benötigt drei Endpunkte im Backend, um die benötigten Daten zu laden und zu bearbeiten:
 
@@ -761,4 +824,150 @@ Hier sieht man die wichtigsten Informationen auf einen Blick. Die Uhrzeit, ob ma
 
 ## brdly06: Notifications
 
-## FHG: Requests
+## FHG: Requests erstellen
+
+### Funktion
+
+Wichtig: Die Anträge sind erst seit Anfang des zweiten Semesters Teil der Website. 
+Sie erweitern den Funktionsumfang der Anwendung und erfüllen zugleich die Mindestanforderung an Anzahl der implementierten Endpunkte pro Person.
+
+#### Wo können die Anträge erstellt werden?
+
+Im Frontend können Anträge erstellt werden, indem man auf einen Tag im Kalender klickt.
+Anschließend öffnet sich eine Sidebar. Hier wird eine Liste an Zeiteinträgen für den ausgewählten Tag angezeigt. 
+Zudem gibt es zwei Buttons: 
+Der blaue Button links ist zum manuellen Nachtragen da. 
+Der weiße Button rechts ist zum Antrag erstellen da. 
+
+### Frontend
+
+Wird der Button "Antrag erstellen" gedrückt, öffnet sich ein Popup. 
+Dieses Popup beinhaltet ein Formular für einen Antrag. 
+In diesem Formular kann der Nutzer die Daten für den Antrag eingeben. Dies beinhaltet den Typ des Antrags, das Startdatum, das Enddatum sowie ein Textfeld um eine Bemerkung abzugeben. 
+
+<img src="images/dashboard/CreateEntry.png" width="350">
+
+Das Antrag-Popup ist in 3 Komponenten aufgebaut:
+
+1. Sidebar Tagesansicht [Link zum Code](/frontend/src/components/timeAdjustment/DailyDetailsPane.tsx)
+
+- Hier ist nur der Button "Antrag erstellen" relevant. 
+Dieser öffnet das Popup.
+
+2. Popup [Link zum Code](/frontend/src/components/timeAdjustment/RequestPopup.tsx)
+
+- Das Popup besteht aus dem Titel "Antrag erstellen", zwei Tabs, Errortext und zwei Buttons. 
+
+- Die Tabs rufen die dritte Komponente auf (siehe unten).
+
+- Der Errortext ist zu Beginn unsichtbar und wird nur angezeigt, wenn es beim Erstellen eines Antrags zu einem Fehler kommt.
+
+- Der Button "Abbrechen" schließt das Popup und der Button "Antrag erstellen" ruft den Endpunkt im Backend zum Erstellen eines Antrags auf.
+
+- Das Popup ist eine Standard-Komponente in unserem Projekt, die *SebastianAnhalt* für alle erstellt hat.
+
+3. Abwesenheitsformular [Link zum Code](/frontend/src/components/timeAdjustment/AbsenceForm.tsx)
+
+- Das Abwesenheitsformular besteht aus drei Unterüberschriften, zwei Eingabefelder und einem Textfeld.
+
+- Jede Unterüberschrift gibt an für was das folgende Inputfeld da ist. 
+
+- Mit den zwei "Datum-Inputfelder" kann ein Startdatum und ein Enddatum eingegeben werden. 
+
+- Dies geht sowohl durch das Klicken auf den Tag/Monat/Jahr sowie über das Kalender-Icon.
+
+- Das Textfeld ist für jegliche Bemerkungen da. Dieses Feld ist optional. Hier kann zum Beispiel ein Hinweis für den Manager eingetragen werden.
+
+Wurde ein Antrag erstellt, wird ein Script aufgerufen, das die Anfrage an den passenden Endpunkt im Backend stellt.
+[Link zum Code](/frontend/src/scripts/requests.ts)
+
+Das Styling zu den jeweiligen Komponenten kann hier gefunden werden:
+
+- Sidebar Tagesansicht [Link zum Code](/frontend/src/components/timeAdjustment/DailyDetailsPane.module.css)
+
+- Popup [Link zum Code](/frontend/src/components/timeAdjustment/RequestPopup.module.css)
+
+- Abwesenheitsformular [Link zum Code](/frontend/src/components/timeAdjustment/AbsenceForm.module.css)
+
+### Backend
+
+Jeder Endpunkt im Backend ist folgendermaßen aufgebaut: 
+An erster Stelle steht immer die Route-Schicht. In dieser Schicht wird die Route definiert, Middleware aufgerufen sowie Autorisierung und Input-Validierung durchgeführt.
+Die zweite Schicht ist die Service-Schicht. Hier wird die eigentliche Logik implementiert.
+Zum Schluss kommt dann die dritte und lezte Schicht, die Repository-Schicht. In dieser werden die SQL-Abfragen an die Datenbank erstellt und geschickt.
+
+Im Backend wird beim Erstellen eines Antrages folgender Endpunkt aufgerufen:
+
+#### POST /requests
+
+[Link zum Code](/backend/route/requests.ts) 
+
+Die Autorisierung ist hier sehr einfach, da jede Art von Nutzern einen Antrag erstellen kann. Dies wird mithilfe der Autorisierungsmiddleware gemacht.
+Die Parameter Typ, Startdatum, Enddatum und Bemerkung werden im Request Body mitgeschickt.
+Dieser wird im Backend in der Middleware mittels eines Zod-Schemas validiert.
+Sofern alles gültig ist, wird der Service aufgerufen.
+Dieser ist hier zu finden: [Link zum Code](/backend/service/requests.ts)
+
+Im Service finden vor allem die ganze Validierung der Inputs statt.
+Hier muss validiert werden, ob im gewählten Zeitraum bereits ein Zeiteintrag oder Request eingetragen ist. Dazu werden die ServiceFunktionen getTimeEntriesService von *mika630* und getRequestsForUser von mir a.
+Außerdem muss bei einem Antrag auf Urlaub überprüft werden, ob der Nutzer noch genügend Urlaubstage zur Verfügung hat.
+Dazu müssen Feiertage und Wochenenden für die Berechnung der Urlaubstage abgezogen werden.
+Wenn die ganze Validierung zu Ende ist und soweit alles passt, wird das repository aufgerufen.
+Das repository ist hier zu finden: [Link zum Code](/backend/repository/requests.ts)
+
+Das repository erstellt dann den neuen Antrag in der Datenbank. 
+
+Das im Backend verwendete TypeScript-Interface für einen Antrag sieht folgendermaßen aus:
+
+```typescript
+/**
+ * Strings to represent a date in the format YYYY-MM-DD
+ */
+export type DateString = string;
+
+export default interface Request{
+    userId: number,
+    managerId: number | null,
+    type: "holiday" | "sick",
+    startDate: DateString,
+    endDate: DateString,
+    remark?: string | null,
+    isApproved?: boolean | null
+}
+```
+In der Datenbank hat jeder Antrag eine eindeutige Id. Außerdem sind remark und isApproved nicht optional sondern null.
+
+### Entscheidungen und Ideen
+
+Wichtig zu wissen sind folgende Punkte: 
+
+- ein Antrag von einem Nutzer kann nur von seinem Manager angenommen oder abgelehnt werden. 
+- Wird ein Antrag angenommen, wird für jeden Tag ein Zeiteintrag mit der Dauer des Tagessolls des Nutzers angelegt.
+- Wenn ein Antrag erstellt ist, erscheint dieser in der Manager-Ansicht des zugehörigen Managers.
+- Sollte ein Fehler auftreten werden selbst definierte Fehler geworfen (Details siehe unten). 
+
+Wir haben uns bewusst dazu entschieden, dass die ManagerId bei einem Antrag auch null sein kann für den Fall, dass ein Manager gelöscht wird.
+
+Die Property isApproved hat drei Zustände: True, False und null. Null steht für "(noch) nicht bearbeitet". Wird ein Antrag erstellt wird dementsprechend standardmäßig null in das Feld gesetzt. 
+
+Wir haben uns zudem gegen halbtägige Urlaubs- bzw Krankheitsanträge entschieden. Deshalb darf der Nutzer keine Zeiteinträge an den Tagen haben, für die der Antrag gestellt wird.
+### Errors
+
+Kommt es während der Verarbeitung des Requests zu einem Fehler, werden selbst definierte Fehler geworfen. 
+Diese werden geworfen, um dem Nutzer im Frontend Feedback zu geben, weshalb das Erstellen eines Antrags fehlgeschlagen ist. 
+Der Code dazu liegt [hier](/backend/errors/requestErrors.ts) .
+Hierzu können viele verschiedene Fehler geworfen werden.
+Die wichtigsten sind:
+#### InvalidDateRangeError
+Dieser Fehler wird geworfen, wenn das Startdatum des Antrags nachF dem Enddatum liegt. Diese Validierung findet jedoch auch im Frontend statt, um dem Nutzer schnelleres Feedback zu geben.
+
+#### RequestOverlapWithTimeEntryError
+Dieser Fehler wird geworfen, wenn im Zeitraum des Antrags bereits ein Zeiteintrag eingetragen ist. Dadurch wird verhindert, dass für denselben Tag sowohl ein bereits vorhandener Zeiteintrag als auch ein durch den Antrag erzeugten Ulraubszeiteintrag existiert. 
+
+#### RequestOverlapWithRequestError
+Passend zum vorherigen Fehler wird dieser Fehler geworfen, wenn bereits ein Antrag im gewählten Zeitraum vorhanden ist. So kann zum Beispiel kein doppelter Urlaub eingetragen werden. 
+
+#### NotEnoughHolidaysLeftError
+Wenn man nicht genügend Urlaubstage mehr zur Verfügung hat, wird dieser Fehler geworfen. 
+
+Für jeden der oben genannten Fehler wird ein Fehlertext im Frontend ausgegeben der den Nutzer auf den Fehler hinweist.
