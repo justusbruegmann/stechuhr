@@ -12,7 +12,7 @@
 
 Zusätzlich zu dieser Dokumentation ist auf [unserer Domain](https://apidocs.how2centeradiv.dev/) eine API-Doku zu finden.
 Diese ist komplett KI-generiert und nicht Teil der zu bewertenden Abgabe. 
-Sie kann aber als Nachschlagewerk oder zum Kennenlernen der Struktur der API sehr nützlich sein.
+Sie kann aber als Nachschlagewerk oder zum Kennenlernen der Struktur der API sehr nützlich sein. 
 
 # Aufgabenverteilung 
 
