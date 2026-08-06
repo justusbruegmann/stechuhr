@@ -8,7 +8,7 @@
     - FHG : 3320563 -> Bitte beachten: Github Email und git Email unterschiedlich da Firmen Laptop
     - brdly06: 9714570
 
-## Information
+## Information 
 
 Zusätzlich zu dieser Dokumentation ist auf [unserer Domain](https://apidocs.how2centeradiv.dev/) eine API-Doku zu finden.
 Diese ist komplett KI-generiert und nicht Teil der zu bewertenden Abgabe. 
